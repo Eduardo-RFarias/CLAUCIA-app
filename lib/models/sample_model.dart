@@ -59,8 +59,8 @@ class Sample {
   final int id;
   final int woundId;
   final String? woundPhoto; // Path to the wound photo
-  final WagnerClassification
-  mlClassification; // ML model classification (mock: always Grade 0)
+  final WagnerClassification?
+  mlClassification; // ML model classification (null if no photo provided)
   final WagnerClassification?
   professionalClassification; // User can set this later
   final WoundSize? size; // Optional size measurements
@@ -74,7 +74,7 @@ class Sample {
     required this.id,
     required this.woundId,
     this.woundPhoto,
-    this.mlClassification = WagnerClassification.grade0, // Mock: always Grade 0
+    this.mlClassification, // Now nullable - set only when photo is provided
     this.professionalClassification,
     this.size,
     required this.date,
@@ -89,10 +89,12 @@ class Sample {
       id: json['id'] ?? 0,
       woundId: json['woundId'] ?? 0,
       woundPhoto: json['woundPhoto'],
-      mlClassification: WagnerClassification.values.firstWhere(
-        (e) => e.grade == (json['mlClassification'] ?? 0),
-        orElse: () => WagnerClassification.grade0,
-      ),
+      mlClassification:
+          json['mlClassification'] != null
+              ? WagnerClassification.values.firstWhere(
+                (e) => e.grade == json['mlClassification'],
+              )
+              : null,
       professionalClassification:
           json['professionalClassification'] != null
               ? WagnerClassification.values.firstWhere(
@@ -114,7 +116,7 @@ class Sample {
       'id': id,
       'woundId': woundId,
       'woundPhoto': woundPhoto,
-      'mlClassification': mlClassification.grade,
+      'mlClassification': mlClassification?.grade,
       'professionalClassification': professionalClassification?.grade,
       'size': size?.toJson(),
       'date': date.toIso8601String(),
@@ -156,9 +158,12 @@ class Sample {
     );
   }
 
-  // Get the effective classification (professional override or ML)
+  // Get the effective classification (professional override, ML, or fallback)
   WagnerClassification get effectiveClassification {
-    return professionalClassification ?? mlClassification;
+    // Priority: Professional classification > ML classification > Grade 0 fallback
+    return professionalClassification ??
+        mlClassification ??
+        WagnerClassification.grade0;
   }
 
   // Check if professional has overridden the ML classification

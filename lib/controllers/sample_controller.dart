@@ -88,12 +88,20 @@ class SampleController extends GetxController {
     }
   }
 
-  // Get sample by ID
-  Sample? getSampleById(int sampleId) {
+  // Delete sample
+  Future<void> deleteSample(int sampleId) async {
     try {
-      return samples.firstWhere((sample) => sample.id == sampleId);
+      isUpdating.value = true;
+
+      await _sampleService.deleteSample(sampleId);
+
+      // Remove the sample from the list
+      samples.removeWhere((s) => s.id == sampleId);
     } catch (e) {
-      return null;
+      // Error is handled at the UI level if needed
+      rethrow;
+    } finally {
+      isUpdating.value = false;
     }
   }
 
@@ -111,11 +119,6 @@ class SampleController extends GetxController {
     return woundSamples.first;
   }
 
-  // Refresh samples for current wound
-  Future<void> refreshSamples(int woundId) async {
-    await loadSamplesByWoundId(woundId);
-  }
-
   // Get reviewed samples count
   int get reviewedSamplesCount {
     return samples.where((sample) => sample.hasBeenReviewed).length;
@@ -124,11 +127,6 @@ class SampleController extends GetxController {
   // Get pending review samples count
   int get pendingReviewSamplesCount {
     return samples.where((sample) => !sample.hasBeenReviewed).length;
-  }
-
-  // Mock ML classification
-  Future<WagnerClassification> classifyWoundWithML(String imagePath) async {
-    return await _sampleService.classifyWoundWithML(imagePath);
   }
 
   // Helper method to clean error messages

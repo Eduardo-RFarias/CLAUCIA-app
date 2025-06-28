@@ -126,6 +126,31 @@ class PatientController extends GetxController {
     }
   }
 
+  // Delete patient
+  Future<void> deletePatient(int patientId) async {
+    try {
+      isLoading.value = true;
+      hasError.value = false;
+      errorMessage.value = '';
+
+      await _patientService.deletePatient(patientId);
+
+      // Remove the patient from the list
+      patients.removeWhere((p) => p.id == patientId);
+
+      // Removed snackbar to prevent navigation conflicts
+      // Success feedback is handled at the UI level
+    } catch (e) {
+      hasError.value = true;
+      errorMessage.value = _cleanErrorMessage(e.toString());
+      // Removed snackbar to prevent navigation conflicts
+      // Error feedback is handled at the UI level
+      rethrow;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   // Search patients by name
   List<Patient> searchPatients(String query) {
     if (query.isEmpty) return patients;

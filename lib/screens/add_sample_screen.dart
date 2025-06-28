@@ -427,7 +427,7 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
                       ),
                     ),
                     SizedBox(width: 12),
-                    Text('Creating Sample...'),
+                    Text('Processing Sample...'),
                   ],
                 )
                 : const Text(

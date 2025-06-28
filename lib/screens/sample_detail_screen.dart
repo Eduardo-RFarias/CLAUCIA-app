@@ -43,6 +43,12 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
               _showUpdateClassificationDialog();
             },
           ),
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: () {
+              _showDeleteConfirmationDialog();
+            },
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -280,13 +286,50 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
               ),
               const SizedBox(height: 16),
 
-              // ML Classification
-              _buildClassificationCard(
-                title: 'AI Classification',
-                classification: currentSample.mlClassification,
-                subtitle: 'Automatic analysis',
-                icon: Icons.smart_toy,
-              ),
+              // ML Classification (only show if available)
+              if (currentSample.mlClassification != null)
+                _buildClassificationCard(
+                  title: 'AI Classification',
+                  classification: currentSample.mlClassification!,
+                  subtitle: 'Automatic analysis',
+                  icon: Icons.smart_toy,
+                )
+              else
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.grey.shade200),
+                  ),
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.photo_camera_outlined,
+                        color: Colors.grey.shade600,
+                        size: 24,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'No AI Classification',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey.shade800,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Photo required for AI analysis',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
 
               const SizedBox(height: 12),
 
@@ -706,7 +749,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'AI Classification: ${currentSample.mlClassification.displayName}',
+                  'AI Classification: ${currentSample.mlClassification?.displayName ?? 'Not available (no photo provided)'}',
                   style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                 ),
                 const SizedBox(height: 16),
@@ -784,6 +827,96 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
     } finally {
       // Always close the dialog, whether success or error
       Get.back();
+    }
+  }
+
+  void _showDeleteConfirmationDialog() {
+    Get.dialog(
+      AlertDialog(
+        title: const Text('Delete Sample'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Are you sure you want to delete this sample?'),
+            const SizedBox(height: 8),
+            Text(
+              'Sample #${currentSample.id}',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Colors.red.shade700,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'This action cannot be undone.',
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          Obx(
+            () => ElevatedButton(
+              onPressed:
+                  sampleController.isUpdating.value ? null : _deleteSample,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red.shade600,
+                foregroundColor: Colors.white,
+              ),
+              child:
+                  sampleController.isUpdating.value
+                      ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
+                        ),
+                      )
+                      : const Text('Delete'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _deleteSample() async {
+    try {
+      await sampleController.deleteSample(currentSample.id);
+
+      // Close confirmation dialog first
+      Get.back();
+
+      // Then navigate back to the previous screen
+      Get.back();
+
+      // Show success message
+      Get.snackbar(
+        'Success',
+        'Sample deleted successfully',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } catch (e) {
+      // Close confirmation dialog if still open
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+
+      // Show error message
+      Get.snackbar(
+        'Error',
+        'Failed to delete sample: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 }

@@ -1,5 +1,6 @@
 import '../models/wound_model.dart';
 import '../models/sample_model.dart';
+import 'sample_service.dart';
 
 class WoundService {
   // TODO: Remove singleton pattern when migrating to real API
@@ -26,7 +27,7 @@ class WoundService {
           id: 1,
           woundId: 1,
           woundPhoto: null,
-          mlClassification: WagnerClassification.grade0,
+          mlClassification: null, // No photo, no ML classification
           professionalClassification: WagnerClassification.grade1,
           size: WoundSize(height: 2.5, width: 1.8),
           date: DateTime.now().subtract(const Duration(days: 2)),
@@ -89,7 +90,7 @@ class WoundService {
           id: 4,
           woundId: 3,
           woundPhoto: null,
-          mlClassification: WagnerClassification.grade0,
+          mlClassification: null, // No photo, no ML classification
           professionalClassification: WagnerClassification.grade3,
           size: WoundSize(height: 4.2, width: 3.1),
           date: DateTime.now().subtract(const Duration(days: 3)),
@@ -163,7 +164,7 @@ class WoundService {
           id: 7,
           woundId: 6,
           woundPhoto: null,
-          mlClassification: WagnerClassification.grade0,
+          mlClassification: null, // No photo, no ML classification
           professionalClassification: null, // Pending review
           size: WoundSize(height: 1.8, width: 1.5),
           date: DateTime.now().subtract(const Duration(hours: 2)),
@@ -185,27 +186,6 @@ class WoundService {
       ..sort(
         (a, b) => b.updatedAt.compareTo(a.updatedAt),
       ); // Sort by most recent first
-  }
-
-  // Get all wounds
-  Future<List<Wound>> getAllWounds() async {
-    // Simulate API delay
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    return List.from(_mockWounds)
-      ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
-  }
-
-  // Get wound by ID
-  Future<Wound?> getWoundById(int id) async {
-    // Simulate API delay
-    await Future.delayed(const Duration(milliseconds: 300));
-
-    try {
-      return _mockWounds.firstWhere((wound) => wound.id == id);
-    } catch (e) {
-      return null;
-    }
   }
 
   // Create new wound
@@ -235,6 +215,31 @@ class WoundService {
     );
 
     _mockWounds.add(newWound);
+
+    // TODO: Remove cross-service call when migrating to real API
+    // API will handle wound-sample relationships automatically
+    // Always create an initial sample when creating a wound
+    final initialSample = Sample(
+      id: 0, // Will be set by sample service
+      woundId: newWound.id,
+      woundPhoto: null,
+      mlClassification: null,
+      professionalClassification: null,
+      size: null,
+      date: DateTime.now(),
+      responsibleProfessionalId: 1, // Mock user ID
+      responsibleProfessionalName: 'Current User', // Mock user name
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+
+    SampleService().createSample(
+      woundId: newWound.id,
+      woundPhoto: initialSample.woundPhoto,
+      size: initialSample.size,
+      professionalClassification: initialSample.professionalClassification,
+    );
+
     return newWound;
   }
 
@@ -268,12 +273,6 @@ class WoundService {
     }
   }
 
-  // Get wounds count for a patient
-  Future<int> getWoundsCountByPatientId(int patientId) async {
-    final wounds = await getWoundsByPatientId(patientId);
-    return wounds.where((wound) => wound.isActive).length;
-  }
-
   // TODO: Remove this method when migrating to real API
   // API will handle wound-sample relationships automatically
   // Add sample to wound (called by sample service)
@@ -287,5 +286,69 @@ class WoundService {
         updatedAt: DateTime.now(),
       );
     }
+  }
+
+  // TODO: Remove this method when migrating to real API
+  // API will handle wound-sample relationships automatically
+  // Remove sample from wound (called by sample service)
+  void removeSampleFromWound(int woundId, int sampleId) {
+    final woundIndex = _mockWounds.indexWhere((w) => w.id == woundId);
+    if (woundIndex != -1) {
+      final wound = _mockWounds[woundIndex];
+      final updatedSamples =
+          wound.samples.where((s) => s.id != sampleId).toList();
+      _mockWounds[woundIndex] = wound.copyWith(
+        samples: updatedSamples,
+        updatedAt: DateTime.now(),
+      );
+    }
+  }
+
+  // Delete wound and all its samples
+  Future<void> deleteWound(int woundId) async {
+    // Simulate API delay
+    await Future.delayed(const Duration(milliseconds: 800));
+
+    // In a real app, this would be a DELETE request to your API
+    /*
+    final response = await http.delete(
+      Uri.parse('$baseUrl/wounds/$woundId'),
+      headers: {'Content-Type': 'application/json'},
+    );
+    
+    if (response.statusCode != 204) {
+      throw Exception('Failed to delete wound');
+    }
+    */
+
+    final woundIndex = _mockWounds.indexWhere((w) => w.id == woundId);
+    if (woundIndex == -1) {
+      throw Exception('Wound not found');
+    }
+
+    _mockWounds.removeAt(woundIndex);
+
+    // TODO: Remove cross-service call when migrating to real API
+    // API will handle cascading deletes automatically
+    // Delete all samples associated with this wound
+    final sampleService = SampleService();
+    await sampleService.deleteSamplesByWoundId(woundId);
+  }
+
+  // TODO: Remove this method when migrating to real API
+  // API will handle cascading deletes automatically
+  // Delete all wounds for a patient (called when patient is deleted)
+  Future<void> deleteWoundsByPatientId(int patientId) async {
+    final patientWounds =
+        _mockWounds.where((w) => w.patientId == patientId).toList();
+
+    // Delete all samples for each wound first
+    final sampleService = SampleService();
+    for (final wound in patientWounds) {
+      await sampleService.deleteSamplesByWoundId(wound.id);
+    }
+
+    // Remove all wounds for this patient
+    _mockWounds.removeWhere((wound) => wound.patientId == patientId);
   }
 }

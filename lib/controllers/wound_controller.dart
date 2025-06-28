@@ -60,6 +60,29 @@ class WoundController extends GetxController {
     }
   }
 
+  // Delete wound
+  Future<void> deleteWound(int woundId) async {
+    try {
+      isLoading.value = true;
+      error.value = '';
+
+      await _woundService.deleteWound(woundId);
+
+      // Remove the wound from the list
+      wounds.removeWhere((w) => w.id == woundId);
+
+      // Removed snackbar to prevent navigation conflicts
+      // Success feedback is handled at the UI level
+    } catch (e) {
+      error.value = _cleanErrorMessage(e.toString());
+      // Removed snackbar to prevent navigation conflicts
+      // Error feedback is handled at the UI level
+      rethrow;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   // GetX Reactive Utility Methods (for UI state management)
   List<Wound> get activeWounds =>
       wounds.where((wound) => wound.isActive).toList();
@@ -70,15 +93,6 @@ class WoundController extends GetxController {
   int get activeWoundsCount => activeWounds.length;
   int get healedWoundsCount => healedWounds.length;
   int get totalWoundsCount => wounds.length;
-
-  // Get wound by ID (useful for navigation state)
-  Wound? getWoundById(int id) {
-    try {
-      return wounds.firstWhere((wound) => wound.id == id);
-    } catch (e) {
-      return null;
-    }
-  }
 
   // Helper method to clean error messages
   String _cleanErrorMessage(String error) {

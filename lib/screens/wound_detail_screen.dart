@@ -6,6 +6,7 @@ import 'dart:io';
 import '../models/wound_model.dart';
 import '../models/sample_model.dart';
 import '../controllers/sample_controller.dart';
+import '../controllers/wound_controller.dart';
 import 'add_sample_screen.dart';
 import 'sample_detail_screen.dart';
 
@@ -20,6 +21,7 @@ class WoundDetailScreen extends StatefulWidget {
 
 class _WoundDetailScreenState extends State<WoundDetailScreen> {
   final SampleController sampleController = Get.find<SampleController>();
+  final WoundController woundController = Get.find<WoundController>();
 
   @override
   void initState() {
@@ -37,6 +39,14 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Get.back(),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: () {
+              _showDeleteConfirmationDialog();
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -531,7 +541,11 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
                       width: 12,
                       height: 12,
                       decoration: BoxDecoration(
-                        color: sample.effectiveClassification.color,
+                        color:
+                            (sample.mlClassification != null ||
+                                    sample.professionalClassification != null)
+                                ? sample.effectiveClassification.color
+                                : Colors.grey.shade400,
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -549,11 +563,19 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
                             ),
                           ),
                           Text(
-                            sample.effectiveClassification.displayName,
+                            (sample.mlClassification != null ||
+                                    sample.professionalClassification != null)
+                                ? sample.effectiveClassification.displayName
+                                : 'Pending assessment',
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              color: sample.effectiveClassification.color,
+                              color:
+                                  (sample.mlClassification != null ||
+                                          sample.professionalClassification !=
+                                              null)
+                                      ? sample.effectiveClassification.color
+                                      : Colors.grey.shade600,
                             ),
                           ),
                         ],
@@ -691,5 +713,103 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
 
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
+  }
+
+  void _showDeleteConfirmationDialog() {
+    Get.dialog(
+      AlertDialog(
+        title: const Text('Delete Wound'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Are you sure you want to delete this wound?'),
+            const SizedBox(height: 8),
+            Text(
+              widget.wound.location,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Colors.red.shade700,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'This will also delete all ${sampleController.samples.length} associated samples.',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.orange.shade700,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'This action cannot be undone.',
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          Obx(
+            () => ElevatedButton(
+              onPressed: woundController.isLoading.value ? null : _deleteWound,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red.shade600,
+                foregroundColor: Colors.white,
+              ),
+              child:
+                  woundController.isLoading.value
+                      ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
+                        ),
+                      )
+                      : const Text('Delete'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _deleteWound() async {
+    try {
+      await woundController.deleteWound(widget.wound.id);
+
+      // Close confirmation dialog first
+      Get.back();
+
+      // Then navigate back to the previous screen
+      Get.back();
+
+      // Show success message after navigation
+      Get.snackbar(
+        'Success',
+        'Wound deleted successfully',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } catch (e) {
+      // Close confirmation dialog if still open
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+
+      // Show error message
+      Get.snackbar(
+        'Error',
+        'Failed to delete wound: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
   }
 }

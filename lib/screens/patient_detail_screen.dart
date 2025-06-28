@@ -6,6 +6,7 @@ import '../models/patient_model.dart';
 import '../models/wound_model.dart';
 import '../controllers/wound_controller.dart';
 import '../controllers/sample_controller.dart';
+import '../controllers/patient_controller.dart';
 import 'create_wound_screen.dart';
 import 'wound_detail_screen.dart';
 
@@ -21,6 +22,7 @@ class PatientDetailScreen extends StatefulWidget {
 class _PatientDetailScreenState extends State<PatientDetailScreen> {
   final WoundController woundController = Get.put(WoundController());
   final SampleController sampleController = Get.put(SampleController());
+  final PatientController patientController = Get.find<PatientController>();
 
   @override
   void initState() {
@@ -38,6 +40,14 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Get.back(),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: () {
+              _showDeleteConfirmationDialog();
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -505,19 +515,40 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                             width: 8,
                             height: 8,
                             decoration: BoxDecoration(
-                              color: latestSample.effectiveClassification.color,
+                              color:
+                                  (latestSample.mlClassification != null ||
+                                          latestSample
+                                                  .professionalClassification !=
+                                              null)
+                                      ? latestSample
+                                          .effectiveClassification
+                                          .color
+                                      : Colors.grey.shade400,
                               shape: BoxShape.circle,
                             ),
                           ),
                           const SizedBox(width: 6),
                           Expanded(
                             child: Text(
-                              latestSample.effectiveClassification.displayName,
+                              (latestSample.mlClassification != null ||
+                                      latestSample.professionalClassification !=
+                                          null)
+                                  ? latestSample
+                                      .effectiveClassification
+                                      .displayName
+                                  : 'Pending assessment',
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
                                 color:
-                                    latestSample.effectiveClassification.color,
+                                    (latestSample.mlClassification != null ||
+                                            latestSample
+                                                    .professionalClassification !=
+                                                null)
+                                        ? latestSample
+                                            .effectiveClassification
+                                            .color
+                                        : Colors.grey.shade600,
                               ),
                             ),
                           ),
@@ -686,5 +717,112 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
 
   String _formatDateTime(DateTime dateTime) {
     return '${_formatDate(dateTime)} at ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+  }
+
+  void _showDeleteConfirmationDialog() {
+    Get.dialog(
+      AlertDialog(
+        title: const Text('Delete Patient'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Are you sure you want to delete this patient?'),
+            const SizedBox(height: 8),
+            Text(
+              widget.patient.name,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Colors.red.shade700,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Obx(() {
+              final woundsCount = woundController.wounds.length;
+              final samplesCount = woundController.wounds.fold<int>(
+                0,
+                (sum, wound) => sum + wound.samples.length,
+              );
+
+              return Text(
+                'This will also delete all $woundsCount wounds and $samplesCount samples.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.orange.shade700,
+                  fontWeight: FontWeight.w500,
+                ),
+              );
+            }),
+            const SizedBox(height: 8),
+            const Text(
+              'This action cannot be undone.',
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          Obx(
+            () => ElevatedButton(
+              onPressed:
+                  patientController.isLoading.value ? null : _deletePatient,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red.shade600,
+                foregroundColor: Colors.white,
+              ),
+              child:
+                  patientController.isLoading.value
+                      ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
+                        ),
+                      )
+                      : const Text('Delete'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _deletePatient() async {
+    try {
+      await patientController.deletePatient(widget.patient.id);
+
+      // Close confirmation dialog first
+      Get.back();
+
+      // Then navigate back to the previous screen
+      Get.back();
+
+      // Show success message after navigation
+      Get.snackbar(
+        'Success',
+        'Patient ${widget.patient.name} deleted successfully',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } catch (e) {
+      // Close confirmation dialog if still open
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+
+      // Show error message
+      Get.snackbar(
+        'Error',
+        'Failed to delete patient: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
   }
 }

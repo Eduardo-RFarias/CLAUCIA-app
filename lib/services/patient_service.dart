@@ -1,5 +1,6 @@
 // import 'package:dio/dio.dart'; // Commented out for mock implementation
 import '../models/patient_model.dart';
+import '../services/wound_service.dart';
 
 class PatientService {
   // Commented out for mock implementation - will be used in real API implementation
@@ -287,6 +288,43 @@ class PatientService {
       */
     } catch (e) {
       throw Exception('Error updating patient: $e');
+    }
+  }
+
+  // Delete patient and all associated wounds and samples
+  Future<void> deletePatient(int patientId) async {
+    try {
+      // Simulate network delay
+      await Future.delayed(const Duration(seconds: 1));
+
+      // In a real app, this would be a DELETE request to your API
+      /*
+      final response = await http.delete(
+        Uri.parse('$baseUrl/patients/$patientId'),
+        headers: {'Content-Type': 'application/json'},
+      );
+      
+      if (response.statusCode != 204) {
+        throw Exception('Failed to delete patient');
+      }
+      */
+
+      final patientIndex = _mockPatients.indexWhere(
+        (p) => p['id'] == patientId,
+      );
+      if (patientIndex == -1) {
+        throw Exception('Patient not found');
+      }
+
+      _mockPatients.removeAt(patientIndex);
+
+      // TODO: Remove cross-service calls when migrating to real API
+      // API will handle cascading deletes automatically
+      // Delete all wounds and samples associated with this patient
+      final woundService = WoundService();
+      await woundService.deleteWoundsByPatientId(patientId);
+    } catch (e) {
+      throw Exception('Error deleting patient: $e');
     }
   }
 }

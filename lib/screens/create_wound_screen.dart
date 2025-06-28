@@ -568,14 +568,12 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
         throw Exception('Failed to create wound');
       }
 
-      // Create the initial sample if photo or size provided
-      if (_croppedImagePath != null || size != null) {
-        await sampleController.createSample(
-          woundId: createdWound.id,
-          woundPhoto: _croppedImagePath,
-          size: size,
-        );
-      }
+      // Create the initial sample (always create one to document the wound's initial state)
+      await sampleController.createSample(
+        woundId: createdWound.id,
+        woundPhoto: _croppedImagePath,
+        size: size,
+      );
 
       // Navigate to wound detail screen
       Get.off(() => WoundDetailScreen(wound: createdWound));
