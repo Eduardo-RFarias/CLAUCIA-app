@@ -1,9 +1,10 @@
-import 'package:dio/dio.dart';
+// import 'package:dio/dio.dart'; // Commented out for mock implementation
 import '../models/patient_model.dart';
 
 class PatientService {
-  final Dio _dio = Dio();
-  final String _baseUrl = 'https://medical-api.example.com'; // Mock URL
+  // Commented out for mock implementation - will be used in real API implementation
+  // final Dio _dio = Dio();
+  // final String _baseUrl = 'https://medical-api.example.com'; // Mock URL
 
   // Mock patients data with company and assigned doctor associations
   final List<Map<String, dynamic>> _mockPatients = [

@@ -45,5 +45,10 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!-- Camera and Photo Library permissions for image_picker -->
+	<key>NSCameraUsageDescription</key>
+	<string>This app needs access to the camera to capture wound photos for medical analysis.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs access to the photo library to select wound photos for medical analysis.</string>
 </dict>
 </plist>
