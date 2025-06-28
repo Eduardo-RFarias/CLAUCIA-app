@@ -36,32 +36,13 @@ class SampleController extends GetxController {
     }
   }
 
-  // Load all samples
-  Future<void> loadAllSamples() async {
-    try {
-      error.value = '';
-      isLoading.value = true;
-
-      final fetchedSamples = await _sampleService.getAllSamples();
-      samples.value = fetchedSamples;
-    } catch (e) {
-      error.value = e.toString();
-      Get.snackbar(
-        'Error',
-        'Failed to load samples: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
   // Create a new sample
   Future<void> createSample({
     required int woundId,
     String? woundPhoto,
     WoundSize? size,
     WagnerClassification? professionalClassification,
+    bool showSnackbar = true,
   }) async {
     try {
       error.value = '';
@@ -78,11 +59,13 @@ class SampleController extends GetxController {
       samples.add(newSample);
       samples.sort((a, b) => b.date.compareTo(a.date));
 
-      Get.snackbar(
-        'Success',
-        'Sample created successfully',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      if (showSnackbar) {
+        Get.snackbar(
+          'Success',
+          'Sample created successfully',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
     } catch (e) {
       error.value = e.toString();
       Get.snackbar(
@@ -153,12 +136,6 @@ class SampleController extends GetxController {
 
     woundSamples.sort((a, b) => b.date.compareTo(a.date));
     return woundSamples.first;
-  }
-
-  // Clear samples
-  void clearSamples() {
-    samples.clear();
-    error.value = '';
   }
 
   // Refresh samples for current wound

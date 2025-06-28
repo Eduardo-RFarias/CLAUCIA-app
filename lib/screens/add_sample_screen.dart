@@ -3,45 +3,35 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
-import '../models/patient_model.dart';
 import '../models/wound_model.dart';
 import '../models/sample_model.dart';
-import '../controllers/wound_controller.dart';
 import '../controllers/sample_controller.dart';
 import '../controllers/auth_controller.dart';
 import '../utils/image_processor.dart';
-import 'wound_detail_screen.dart';
 
-class CreateWoundScreen extends StatefulWidget {
-  final Patient patient;
+class AddSampleScreen extends StatefulWidget {
+  final Wound wound;
 
-  const CreateWoundScreen({super.key, required this.patient});
+  const AddSampleScreen({super.key, required this.wound});
 
   @override
-  State<CreateWoundScreen> createState() => _CreateWoundScreenState();
+  State<AddSampleScreen> createState() => _AddSampleScreenState();
 }
 
-class _CreateWoundScreenState extends State<CreateWoundScreen> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final WoundController woundController = Get.find<WoundController>();
+class _AddSampleScreenState extends State<AddSampleScreen> {
   final SampleController sampleController = Get.find<SampleController>();
 
   // Form controllers
-  final TextEditingController _locationController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _heightController = TextEditingController();
   final TextEditingController _widthController = TextEditingController();
 
   // Form state
-  WoundOrigin? _selectedOrigin;
   String? _croppedImagePath;
   bool _isCreating = false;
   bool _hasOptionalSize = false;
 
   @override
   void dispose() {
-    _locationController.dispose();
-    _descriptionController.dispose();
     _heightController.dispose();
     _widthController.dispose();
     super.dispose();
@@ -51,164 +41,131 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create New Wound'),
+        title: const Text('Add Sample'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Get.back(),
         ),
       ),
-      body: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Patient info header
-              _buildPatientHeader(),
-              const SizedBox(height: 24),
-
-              // Wound Information Section
-              _buildWoundInformationSection(),
-              const SizedBox(height: 32),
-
-              // Sample Information Section
-              _buildSampleSection(),
-              const SizedBox(height: 32),
-
-              // Create button
-              _buildCreateButton(),
-              const SizedBox(height: 16),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPatientHeader() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CircleAvatar(
-              radius: 25,
-              backgroundColor: Colors.blue.shade100,
-              child: Text(
-                widget.patient.initials,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue.shade700,
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.patient.name,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  Text(
-                    '${widget.patient.ageString} • ${widget.patient.gender}',
-                    style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-                  ),
-                ],
-              ),
-            ),
+            // Wound info header
+            _buildWoundHeader(),
+            const SizedBox(height: 24),
+
+            // Sample Information Section
+            _buildSampleSection(),
+            const SizedBox(height: 32),
+
+            // Create button
+            _buildCreateButton(),
+            const SizedBox(height: 16),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildWoundInformationSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Wound Information',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
-          ),
+  Widget _buildWoundHeader() {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 12,
+                  height: 12,
+                  decoration: BoxDecoration(
+                    color: widget.wound.statusColor,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    widget.wound.location,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: widget.wound.statusColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: widget.wound.statusColor.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Text(
+                    widget.wound.statusText,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: widget.wound.statusColor,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              widget.wound.origin.displayName,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.blue.shade600,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            if (widget.wound.description != null &&
+                widget.wound.description!.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Text(
+                widget.wound.description!,
+                style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Icon(Icons.schedule, size: 16, color: Colors.grey.shade500),
+                const SizedBox(width: 4),
+                Text(
+                  'Created ${widget.wound.daysSinceCreation}',
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                ),
+                const SizedBox(width: 16),
+                Icon(
+                  Icons.photo_library,
+                  size: 16,
+                  color: Colors.grey.shade500,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  '${widget.wound.samples.length} sample${widget.wound.samples.length != 1 ? 's' : ''}',
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                ),
+              ],
+            ),
+          ],
         ),
-        const SizedBox(height: 16),
-
-        // Location field
-        TextFormField(
-          controller: _locationController,
-          decoration: InputDecoration(
-            labelText: 'Wound Location *',
-            hintText: 'e.g., Left foot (plantar surface)',
-            prefixIcon: const Icon(Icons.location_on),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-          ),
-          validator: (value) {
-            if (value == null || value.trim().isEmpty) {
-              return 'Please enter the wound location';
-            }
-            if (value.trim().length < 3) {
-              return 'Location must be at least 3 characters';
-            }
-            return null;
-          },
-        ),
-        const SizedBox(height: 16),
-
-        // Origin dropdown
-        DropdownButtonFormField<WoundOrigin>(
-          value: _selectedOrigin,
-          decoration: InputDecoration(
-            labelText: 'Wound Origin *',
-            prefixIcon: const Icon(Icons.medical_services),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-          ),
-          items:
-              WoundOrigin.values.map((origin) {
-                return DropdownMenuItem(
-                  value: origin,
-                  child: Text(origin.displayName),
-                );
-              }).toList(),
-          onChanged: (value) {
-            setState(() {
-              _selectedOrigin = value;
-            });
-          },
-          validator: (value) {
-            if (value == null) {
-              return 'Please select the wound origin';
-            }
-            return null;
-          },
-        ),
-        const SizedBox(height: 16),
-
-        // Description field
-        TextFormField(
-          controller: _descriptionController,
-          maxLines: 3,
-          decoration: InputDecoration(
-            labelText: 'Description (Optional)',
-            hintText: 'Additional details about the wound...',
-            prefixIcon: const Icon(Icons.description),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-            alignLabelWithHint: true,
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -217,7 +174,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Initial Sample',
+          'New Sample',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -226,7 +183,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
         ),
         const SizedBox(height: 8),
         Text(
-          'Capture the first sample for this wound',
+          'Capture a new sample to track wound progress',
           style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
         ),
         const SizedBox(height: 16),
@@ -395,71 +352,46 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
                 style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
               ),
               const SizedBox(height: 12),
+
               Row(
                 children: [
                   Expanded(
                     child: TextFormField(
                       controller: _heightController,
-                      keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
+                      keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         labelText: 'Height (cm)',
                         hintText: '0.0',
+                        prefixIcon: const Icon(Icons.height),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      validator:
-                          _hasOptionalSize
-                              ? (value) {
-                                if (value != null && value.isNotEmpty) {
-                                  final height = double.tryParse(value);
-                                  if (height == null || height <= 0) {
-                                    return 'Enter valid height';
-                                  }
-                                }
-                                return null;
-                              }
-                              : null,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: TextFormField(
                       controller: _widthController,
-                      keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
+                      keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         labelText: 'Width (cm)',
                         hintText: '0.0',
+                        prefixIcon: const Icon(Icons.width_wide),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      validator:
-                          _hasOptionalSize
-                              ? (value) {
-                                if (value != null && value.isNotEmpty) {
-                                  final width = double.tryParse(value);
-                                  if (width == null || width <= 0) {
-                                    return 'Enter valid width';
-                                  }
-                                }
-                                return null;
-                              }
-                              : null,
                     ),
                   ),
                 ],
               ),
             ] else ...[
               Text(
-                'Size measurements are optional. Enable to add measurements.',
+                'Toggle to add optional size measurements',
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.grey.shade600,
+                  color: Colors.grey.shade500,
                   fontStyle: FontStyle.italic,
                 ),
               ),
@@ -474,7 +406,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: _isCreating ? null : _createWound,
+        onPressed: _isCreating ? null : _createSample,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.blue.shade600,
           foregroundColor: Colors.white,
@@ -495,11 +427,11 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
                       ),
                     ),
                     SizedBox(width: 12),
-                    Text('Creating Wound...'),
+                    Text('Creating Sample...'),
                   ],
                 )
                 : const Text(
-                  'Create Wound',
+                  'Add Sample',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
       ),
@@ -509,7 +441,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
   Future<void> _pickImage(ImageSource source) async {
     final processedImagePath = await ImageProcessor.pickAndProcessImage(
       source: source,
-      filePrefix: 'wound',
+      filePrefix: 'sample',
     );
 
     if (processedImagePath != null) {
@@ -519,9 +451,39 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
     }
   }
 
-  Future<void> _createWound() async {
-    if (!_formKey.currentState!.validate()) {
+  Future<void> _createSample() async {
+    // Validate that at least photo or size is provided
+    if (_croppedImagePath == null && !_hasOptionalSize) {
+      Get.snackbar(
+        'Validation Error',
+        'Please provide either a photo or size measurements',
+        snackPosition: SnackPosition.BOTTOM,
+      );
       return;
+    }
+
+    // Validate size measurements if provided
+    if (_hasOptionalSize) {
+      if (_heightController.text.isEmpty || _widthController.text.isEmpty) {
+        Get.snackbar(
+          'Validation Error',
+          'Please fill in both height and width measurements',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        return;
+      }
+
+      final height = double.tryParse(_heightController.text);
+      final width = double.tryParse(_widthController.text);
+
+      if (height == null || width == null || height <= 0 || width <= 0) {
+        Get.snackbar(
+          'Validation Error',
+          'Please enter valid positive numbers for measurements',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        return;
+      }
     }
 
     setState(() {
@@ -545,53 +507,35 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
         size = WoundSize(height: height, width: width);
       }
 
-      // Create the wound first
-      final newWound = Wound(
-        id: 0, // Will be assigned by service
-        patientId: widget.patient.id,
-        location: _locationController.text.trim(),
-        origin: _selectedOrigin!,
-        description:
-            _descriptionController.text.trim().isEmpty
-                ? null
-                : _descriptionController.text.trim(),
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        isActive: true,
-        samples: [], // Will add sample after wound is created
+      // Create the sample without snackbar to avoid navigation conflicts
+      await sampleController.createSample(
+        woundId: widget.wound.id,
+        woundPhoto: _croppedImagePath,
+        size: size,
+        showSnackbar: false,
       );
 
-      // Create wound through controller
-      final createdWound = await woundController.createWound(newWound);
+      // Reset loading state and navigate immediately (no snackbar)
+      if (mounted) {
+        setState(() {
+          _isCreating = false;
+        });
 
-      if (createdWound == null) {
-        throw Exception('Failed to create wound');
+        // Direct GetX navigation without any snackbar interference
+        Get.back();
       }
-
-      // Create the initial sample if photo or size provided
-      if (_croppedImagePath != null || size != null) {
-        await sampleController.createSample(
-          woundId: createdWound.id,
-          woundPhoto: _croppedImagePath,
-          size: size,
-        );
-      }
-
-      // Navigate to wound detail screen
-      Get.off(() => WoundDetailScreen(wound: createdWound));
-
-      // Refresh the wounds list
-      woundController.loadWoundsByPatientId(widget.patient.id);
+      return; // Exit early to avoid further code execution
     } catch (e) {
       Get.snackbar(
         'Error',
-        'Failed to create wound: ${e.toString()}',
+        'Failed to create sample: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,
       );
-    } finally {
-      setState(() {
-        _isCreating = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isCreating = false;
+        });
+      }
     }
   }
 }

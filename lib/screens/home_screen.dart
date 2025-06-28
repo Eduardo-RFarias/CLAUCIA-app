@@ -282,17 +282,9 @@ class HomeScreen extends StatelessWidget {
             ],
           ],
         ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              _formatDate(patient.updatedAt),
-              style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
-            ),
-            const SizedBox(height: 4),
-            Icon(Icons.chevron_right, color: Colors.grey.shade400),
-          ],
+        trailing: Text(
+          _formatDate(patient.updatedAt),
+          style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
         ),
       ),
     );

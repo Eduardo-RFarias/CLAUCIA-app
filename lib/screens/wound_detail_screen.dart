@@ -6,6 +6,8 @@ import 'dart:io';
 import '../models/wound_model.dart';
 import '../models/sample_model.dart';
 import '../controllers/sample_controller.dart';
+import 'add_sample_screen.dart';
+import 'sample_detail_screen.dart';
 
 class WoundDetailScreen extends StatefulWidget {
   final Wound wound;
@@ -35,19 +37,6 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Get.back(),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () {
-              // TODO: Navigate to edit wound screen
-              Get.snackbar(
-                'Coming Soon',
-                'Edit wound functionality will be implemented later',
-                snackPosition: SnackPosition.BOTTOM,
-              );
-            },
-          ),
-        ],
       ),
       body: Column(
         children: [
@@ -59,13 +48,10 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // TODO: Navigate to add sample screen
-          Get.snackbar(
-            'Coming Soon',
-            'Add sample functionality will be implemented later',
-            snackPosition: SnackPosition.BOTTOM,
-          );
+        onPressed: () async {
+          await Get.to(() => AddSampleScreen(wound: widget.wound));
+          // Always refresh samples when returning from add sample screen
+          sampleController.loadSamplesByWoundId(widget.wound.id);
         },
         icon: const Icon(Icons.add_a_photo),
         label: const Text('Add Sample'),
@@ -352,13 +338,10 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
-            onPressed: () {
-              // TODO: Navigate to add sample screen
-              Get.snackbar(
-                'Coming Soon',
-                'Add sample functionality will be implemented later',
-                snackPosition: SnackPosition.BOTTOM,
-              );
+            onPressed: () async {
+              await Get.to(() => AddSampleScreen(wound: widget.wound));
+              // Always refresh samples when returning from add sample screen
+              sampleController.loadSamplesByWoundId(widget.wound.id);
             },
             icon: const Icon(Icons.add_a_photo, size: 18),
             label: const Text('Add First Sample'),
@@ -379,311 +362,327 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
   Widget _buildSampleCard(Sample sample, int index) {
     final isLatest = index == 0;
 
-    return Card(
-      elevation: isLatest ? 3 : 1,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side:
-            isLatest
-                ? BorderSide(color: Colors.blue.shade200, width: 1)
-                : BorderSide.none,
-      ),
-      child: Container(
-        decoration: BoxDecoration(
+    return InkWell(
+      onTap: () {
+        Get.to(() => SampleDetailScreen(sample: sample, wound: widget.wound));
+      },
+      borderRadius: BorderRadius.circular(12),
+      child: Card(
+        elevation: isLatest ? 3 : 1,
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          gradient:
+          side:
               isLatest
-                  ? LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [Colors.blue.shade50, Colors.white],
-                  )
-                  : null,
+                  ? BorderSide(color: Colors.blue.shade200, width: 1)
+                  : BorderSide.none,
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Sample header
-              Row(
-                children: [
-                  if (isLatest) ...[
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.shade600,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Text(
-                        'Latest',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            gradient:
+                isLatest
+                    ? LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Colors.blue.shade50, Colors.white],
+                    )
+                    : null,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Sample header
+                Row(
+                  children: [
+                    if (isLatest) ...[
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.shade600,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Text(
+                          'Latest',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
+                      const SizedBox(width: 8),
+                    ],
+                    Icon(
+                      Icons.analytics,
+                      size: 16,
+                      color: Colors.grey.shade600,
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Sample #${sample.id}',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      sample.formattedDate,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
                   ],
-                  Icon(Icons.analytics, size: 16, color: Colors.grey.shade600),
-                  const SizedBox(width: 6),
-                  Text(
-                    'Sample #${sample.id}',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    sample.formattedDate,
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
+                ),
+                const SizedBox(height: 12),
 
-              // Photo section
-              if (sample.woundPhoto != null) ...[
-                Container(
-                  width: double.infinity,
-                  height: 150,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey.shade300),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child:
-                        sample.woundPhoto!.startsWith('http')
-                            ? CachedNetworkImage(
-                              imageUrl: sample.woundPhoto!,
-                              fit: BoxFit.cover,
-                              placeholder:
-                                  (context, url) => Container(
-                                    color: Colors.grey.shade100,
-                                    child: const Center(
-                                      child: CircularProgressIndicator(),
+                // Photo section
+                if (sample.woundPhoto != null) ...[
+                  Container(
+                    width: double.infinity,
+                    height: 150,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.grey.shade300),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child:
+                          sample.woundPhoto!.startsWith('http')
+                              ? CachedNetworkImage(
+                                imageUrl: sample.woundPhoto!,
+                                fit: BoxFit.cover,
+                                placeholder:
+                                    (context, url) => Container(
+                                      color: Colors.grey.shade100,
+                                      child: const Center(
+                                        child: CircularProgressIndicator(),
+                                      ),
                                     ),
-                                  ),
-                              errorWidget:
-                                  (context, url, error) => Container(
+                                errorWidget:
+                                    (context, url, error) => Container(
+                                      color: Colors.grey.shade100,
+                                      child: Icon(
+                                        Icons.broken_image,
+                                        size: 40,
+                                        color: Colors.grey.shade400,
+                                      ),
+                                    ),
+                              )
+                              : Image.file(
+                                File(sample.woundPhoto!),
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
                                     color: Colors.grey.shade100,
                                     child: Icon(
                                       Icons.broken_image,
                                       size: 40,
                                       color: Colors.grey.shade400,
                                     ),
-                                  ),
-                            )
-                            : Image.file(
-                              File(sample.woundPhoto!),
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
-                                  color: Colors.grey.shade100,
-                                  child: Icon(
-                                    Icons.broken_image,
-                                    size: 40,
-                                    color: Colors.grey.shade400,
-                                  ),
-                                );
-                              },
-                            ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-              ] else ...[
-                Container(
-                  width: double.infinity,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey.shade300),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.photo_camera,
-                        size: 24,
-                        color: Colors.grey.shade400,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'No photo',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 12),
-              ],
-
-              // Wagner classification
-              Row(
-                children: [
-                  Container(
-                    width: 12,
-                    height: 12,
-                    decoration: BoxDecoration(
-                      color: sample.effectiveClassification.color,
-                      shape: BoxShape.circle,
+                                  );
+                                },
+                              ),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
+                  const SizedBox(height: 12),
+                ] else ...[
+                  Container(
+                    width: double.infinity,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.grey.shade300),
+                    ),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Icon(
+                          Icons.photo_camera,
+                          size: 24,
+                          color: Colors.grey.shade400,
+                        ),
+                        const SizedBox(height: 4),
                         Text(
-                          'Wagner Classification',
+                          'No photo',
                           style: TextStyle(
                             fontSize: 12,
-                            color: Colors.grey.shade600,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        Text(
-                          sample.effectiveClassification.displayName,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: sample.effectiveClassification.color,
+                            color: Colors.grey.shade500,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  if (sample.hasBeenReviewed) ...[
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.green.shade50,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.green.shade200),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.verified,
-                            size: 12,
-                            color: Colors.green.shade600,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Reviewed',
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: Colors.green.shade600,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ] else ...[
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.orange.shade50,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.orange.shade200),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.pending,
-                            size: 12,
-                            color: Colors.orange.shade600,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Pending Review',
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: Colors.orange.shade600,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                  const SizedBox(height: 12),
                 ],
-              ),
 
-              // Size information if available
-              if (sample.size != null) ...[
-                const SizedBox(height: 8),
+                // Wagner classification
                 Row(
                   children: [
-                    Icon(
-                      Icons.straighten,
-                      size: 16,
-                      color: Colors.grey.shade600,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Size: ${sample.size!.displayText}',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey.shade700,
-                        fontWeight: FontWeight.w500,
+                    Container(
+                      width: 12,
+                      height: 12,
+                      decoration: BoxDecoration(
+                        color: sample.effectiveClassification.color,
+                        shape: BoxShape.circle,
                       ),
                     ),
-                    const SizedBox(width: 16),
-                    Text(
-                      'Area: ${sample.size!.area.toStringAsFixed(1)} cm²',
-                      style: TextStyle(
-                        fontSize: 13,
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Wagner Classification',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade600,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          Text(
+                            sample.effectiveClassification.displayName,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: sample.effectiveClassification.color,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (sample.hasBeenReviewed) ...[
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.green.shade50,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.green.shade200),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.verified,
+                              size: 12,
+                              color: Colors.green.shade600,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Reviewed',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Colors.green.shade600,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ] else ...[
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.shade50,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.orange.shade200),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.pending,
+                              size: 12,
+                              color: Colors.orange.shade600,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Pending Review',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Colors.orange.shade600,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+
+                // Size information if available
+                if (sample.size != null) ...[
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.straighten,
+                        size: 16,
                         color: Colors.grey.shade600,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Size: ${sample.size!.displayText}',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey.shade700,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Text(
+                        'Area: ${sample.size!.area.toStringAsFixed(1)} cm²',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+
+                const SizedBox(height: 12),
+
+                // Responsible professional and timestamp
+                Row(
+                  children: [
+                    Icon(Icons.person, size: 14, color: Colors.grey.shade500),
+                    const SizedBox(width: 6),
+                    Text(
+                      sample.responsibleProfessionalName,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      sample.timeSinceCreation,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade500,
+                        fontStyle: FontStyle.italic,
                       ),
                     ),
                   ],
                 ),
               ],
-
-              const SizedBox(height: 12),
-
-              // Responsible professional and timestamp
-              Row(
-                children: [
-                  Icon(Icons.person, size: 14, color: Colors.grey.shade500),
-                  const SizedBox(width: 6),
-                  Text(
-                    sample.responsibleProfessionalName,
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                  ),
-                  const Spacer(),
-                  Text(
-                    sample.timeSinceCreation,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade500,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
         ),
       ),

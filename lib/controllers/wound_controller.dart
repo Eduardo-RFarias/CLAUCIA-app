@@ -99,32 +99,6 @@ class WoundController extends GetxController {
     }
   }
 
-  // Delete wound
-  Future<void> deleteWound(int woundId) async {
-    try {
-      isLoading.value = true;
-      error.value = '';
-
-      await _woundService.deleteWound(woundId);
-      wounds.removeWhere((wound) => wound.id == woundId);
-
-      Get.snackbar(
-        'Success',
-        'Wound deleted successfully',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-    } catch (e) {
-      error.value = 'Failed to delete wound: $e';
-      Get.snackbar(
-        'Error',
-        'Failed to delete wound: $e',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
   // Get wound by ID
   Future<Wound?> getWoundById(int id) async {
     try {
@@ -144,10 +118,4 @@ class WoundController extends GetxController {
   int get activeWoundsCount => activeWounds.length;
   int get healedWoundsCount => healedWounds.length;
   int get totalWoundsCount => wounds.length;
-
-  // Clear wounds (useful when switching patients)
-  void clearWounds() {
-    wounds.clear();
-    error.value = '';
-  }
 }

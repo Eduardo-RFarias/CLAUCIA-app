@@ -38,19 +38,6 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Get.back(),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () {
-              // TODO: Navigate to edit patient screen
-              Get.snackbar(
-                'Coming Soon',
-                'Edit patient functionality will be implemented later',
-                snackPosition: SnackPosition.BOTTOM,
-              );
-            },
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -383,178 +370,125 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
             ? wound.samples.reduce((a, b) => a.date.isAfter(b.date) ? a : b)
             : null;
 
-    return Card(
-      elevation: 1,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Wound header
-            Row(
-              children: [
-                // Status indicator
-                Container(
-                  width: 12,
-                  height: 12,
-                  decoration: BoxDecoration(
-                    color: wound.statusColor,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(width: 8),
-
-                // Location
-                Expanded(
-                  child: Text(
-                    wound.location,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ),
-
-                // Status badge
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: wound.statusColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: wound.statusColor.withValues(alpha: 0.3),
-                    ),
-                  ),
-                  child: Text(
-                    wound.statusText,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
+    return InkWell(
+      onTap: () {
+        Get.to(() => WoundDetailScreen(wound: wound));
+      },
+      borderRadius: BorderRadius.circular(8),
+      child: Card(
+        elevation: 1,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Wound header
+              Row(
+                children: [
+                  // Status indicator
+                  Container(
+                    width: 12,
+                    height: 12,
+                    decoration: BoxDecoration(
                       color: wound.statusColor,
+                      shape: BoxShape.circle,
                     ),
                   ),
+                  const SizedBox(width: 8),
+
+                  // Location
+                  Expanded(
+                    child: Text(
+                      wound.location,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ),
+
+                  // Status badge
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: wound.statusColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: wound.statusColor.withValues(alpha: 0.3),
+                      ),
+                    ),
+                    child: Text(
+                      wound.statusText,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: wound.statusColor,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+
+              // Origin
+              Text(
+                wound.origin.displayName,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.blue.shade600,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+
+              if (wound.description != null &&
+                  wound.description!.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Text(
+                  wound.description!,
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
-            ),
-            const SizedBox(height: 8),
 
-            // Origin
-            Text(
-              wound.origin.displayName,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.blue.shade600,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
+              const SizedBox(height: 12),
 
-            if (wound.description != null && wound.description!.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              Text(
-                wound.description!,
-                style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-
-            const SizedBox(height: 12),
-
-            // Sample information section
-            if (latestSample != null) ...[
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade50,
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: Colors.grey.shade200),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.analytics,
-                          size: 16,
-                          color: Colors.grey.shade600,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          'Latest Sample',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.grey.shade700,
-                          ),
-                        ),
-                        const Spacer(),
-                        Text(
-                          latestSample.timeSinceCreation,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.grey.shade600,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-
-                    // Wagner classification
-                    Row(
-                      children: [
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            color: latestSample.effectiveClassification.color,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            latestSample.effectiveClassification.displayName,
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                              color: latestSample.effectiveClassification.color,
-                            ),
-                          ),
-                        ),
-                        if (latestSample.hasBeenReviewed)
-                          Icon(
-                            Icons.verified,
-                            size: 14,
-                            color: Colors.green.shade600,
-                          )
-                        else
-                          Icon(
-                            Icons.pending,
-                            size: 14,
-                            color: Colors.orange.shade600,
-                          ),
-                      ],
-                    ),
-
-                    // Size information if available
-                    if (latestSample.size != null) ...[
-                      const SizedBox(height: 4),
+              // Sample information section
+              if (latestSample != null) ...[
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade50,
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: Colors.grey.shade200),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Row(
                         children: [
                           Icon(
-                            Icons.straighten,
-                            size: 14,
+                            Icons.analytics,
+                            size: 16,
                             color: Colors.grey.shade600,
                           ),
-                          const SizedBox(width: 6),
+                          const SizedBox(width: 4),
                           Text(
-                            'Size: ${latestSample.size!.displayText}',
+                            'Latest Sample',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey.shade700,
+                            ),
+                          ),
+                          const Spacer(),
+                          Text(
+                            latestSample.timeSinceCreation,
                             style: TextStyle(
                               fontSize: 11,
                               color: Colors.grey.shade600,
@@ -562,125 +496,152 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                           ),
                         ],
                       ),
+                      const SizedBox(height: 6),
+
+                      // Wagner classification
+                      Row(
+                        children: [
+                          Container(
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              color: latestSample.effectiveClassification.color,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              latestSample.effectiveClassification.displayName,
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                                color:
+                                    latestSample.effectiveClassification.color,
+                              ),
+                            ),
+                          ),
+                          if (latestSample.hasBeenReviewed)
+                            Icon(
+                              Icons.verified,
+                              size: 14,
+                              color: Colors.green.shade600,
+                            )
+                          else
+                            Icon(
+                              Icons.pending,
+                              size: 14,
+                              color: Colors.orange.shade600,
+                            ),
+                        ],
+                      ),
+
+                      // Size information if available
+                      if (latestSample.size != null) ...[
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.straighten,
+                              size: 14,
+                              color: Colors.grey.shade600,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              'Size: ${latestSample.size!.displayText}',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
-              ),
 
-              const SizedBox(height: 8),
+                const SizedBox(height: 8),
 
-              // Samples count
-              Row(
-                children: [
-                  Icon(
-                    Icons.photo_library,
-                    size: 14,
-                    color: Colors.grey.shade500,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    '${wound.samples.length} sample${wound.samples.length != 1 ? 's' : ''}',
-                    style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
-                  ),
-                  const SizedBox(width: 12),
-                  if (wound.samples.any((s) => !s.hasBeenReviewed)) ...[
+                // Samples count
+                Row(
+                  children: [
                     Icon(
-                      Icons.pending_actions,
+                      Icons.photo_library,
                       size: 14,
-                      color: Colors.orange.shade600,
+                      color: Colors.grey.shade500,
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      '${wound.samples.where((s) => !s.hasBeenReviewed).length} pending review',
+                      '${wound.samples.length} sample${wound.samples.length != 1 ? 's' : ''}',
                       style: TextStyle(
                         fontSize: 11,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    if (wound.samples.any((s) => !s.hasBeenReviewed)) ...[
+                      Icon(
+                        Icons.pending_actions,
+                        size: 14,
                         color: Colors.orange.shade600,
                       ),
-                    ),
-                  ],
-                ],
-              ),
-            ] else ...[
-              // No samples
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.orange.shade50,
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: Colors.orange.shade200),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.photo_camera,
-                      size: 16,
-                      color: Colors.orange.shade700,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      'No samples recorded',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.orange.shade700,
-                        fontWeight: FontWeight.w500,
+                      const SizedBox(width: 4),
+                      Text(
+                        '${wound.samples.where((s) => !s.hasBeenReviewed).length} pending review',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.orange.shade600,
+                        ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
-              ),
-            ],
-
-            const SizedBox(height: 8),
-
-            // Date and action row
-            Row(
-              children: [
-                Icon(Icons.schedule, size: 16, color: Colors.grey.shade500),
-                const SizedBox(width: 4),
-                Text(
-                  'Created ${wound.daysSinceCreation}',
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                ),
-                const Spacer(),
-
-                // Action button
-                InkWell(
-                  onTap: () {
-                    Get.to(() => WoundDetailScreen(wound: wound));
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.shade50,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.visibility,
-                          size: 16,
-                          color: Colors.blue.shade600,
+              ] else ...[
+                // No samples
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.shade50,
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: Colors.orange.shade200),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.photo_camera,
+                        size: 16,
+                        color: Colors.orange.shade700,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'No samples recorded',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.orange.shade700,
+                          fontWeight: FontWeight.w500,
                         ),
-                        const SizedBox(width: 4),
-                        Text(
-                          'View',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.blue.shade600,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ],
-            ),
-          ],
+
+              const SizedBox(height: 8),
+
+              // Date row
+              Row(
+                children: [
+                  Icon(Icons.schedule, size: 16, color: Colors.grey.shade500),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Created ${wound.daysSinceCreation}',
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

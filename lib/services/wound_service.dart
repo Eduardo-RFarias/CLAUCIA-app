@@ -268,25 +268,6 @@ class WoundService {
     }
   }
 
-  // Delete wound
-  Future<void> deleteWound(int id) async {
-    // Simulate API delay
-    await Future.delayed(const Duration(milliseconds: 400));
-
-    // In a real app, this would be a DELETE request to your API
-    /*
-    final response = await http.delete(
-      Uri.parse('$baseUrl/wounds/$id'),
-    );
-    
-    if (response.statusCode != 204) {
-      throw Exception('Failed to delete wound');
-    }
-    */
-
-    _mockWounds.removeWhere((wound) => wound.id == id);
-  }
-
   // Get wounds count for a patient
   Future<int> getWoundsCountByPatientId(int patientId) async {
     final wounds = await getWoundsByPatientId(patientId);

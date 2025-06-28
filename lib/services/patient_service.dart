@@ -289,29 +289,4 @@ class PatientService {
       throw Exception('Error updating patient: $e');
     }
   }
-
-  Future<void> deletePatient(int id) async {
-    try {
-      // Simulate network delay
-      await Future.delayed(const Duration(milliseconds: 800));
-
-      final index = _mockPatients.indexWhere((p) => p['id'] == id);
-      if (index == -1) {
-        throw Exception('Patient not found');
-      }
-
-      _mockPatients.removeAt(index);
-
-      // In real implementation, this would be:
-      /*
-      final response = await _dio.delete('$_baseUrl/patients/$id');
-      
-      if (response.statusCode != 200) {
-        throw Exception('Failed to delete patient');
-      }
-      */
-    } catch (e) {
-      throw Exception('Error deleting patient: $e');
-    }
-  }
 }

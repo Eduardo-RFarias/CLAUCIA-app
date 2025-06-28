@@ -201,49 +201,6 @@ class PatientController extends GetxController {
     }
   }
 
-  // Delete patient
-  Future<void> deletePatient(int id) async {
-    try {
-      isLoading(true);
-      hasError(false);
-      errorMessage('');
-
-      await _patientService.deletePatient(id);
-
-      // Remove from the list
-      patients.removeWhere((patient) => patient.id == id);
-
-      // Clear current patient if it was deleted
-      if (currentPatient.value?.id == id) {
-        currentPatient.value = null;
-      }
-
-      Get.snackbar(
-        'Success',
-        'Patient deleted successfully',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-    } catch (e) {
-      hasError(true);
-      errorMessage(e.toString().replaceAll('Exception: ', ''));
-      Get.snackbar(
-        'Error',
-        'Failed to delete patient: ${errorMessage.value}',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-    } finally {
-      isLoading(false);
-    }
-  }
-
-  // Clear error messages
-  void clearError() {
-    hasError(false);
-    errorMessage('');
-    hasPatientError(false);
-    patientErrorMessage('');
-  }
-
   // Search patients by name
   List<Patient> searchPatients(String query) {
     if (query.isEmpty) return patients;

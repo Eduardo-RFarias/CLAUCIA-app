@@ -109,11 +109,6 @@ class AuthController extends GetxController {
     }
   }
 
-  // Clear error message
-  void clearError() {
-    errorMessage('');
-  }
-
   // Update profile picture
   Future<void> updateProfilePicture(String imagePath) async {
     try {
