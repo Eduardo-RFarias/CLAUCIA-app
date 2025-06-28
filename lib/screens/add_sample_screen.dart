@@ -512,7 +512,6 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
         woundId: widget.wound.id,
         woundPhoto: _croppedImagePath,
         size: size,
-        showSnackbar: false,
       );
 
       // Reset loading state and navigate immediately (no snackbar)

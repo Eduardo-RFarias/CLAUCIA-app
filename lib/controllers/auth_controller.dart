@@ -67,7 +67,7 @@ class AuthController extends GetxController {
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (e) {
-      errorMessage(e.toString().replaceAll('Exception: ', ''));
+      errorMessage(_cleanErrorMessage(e.toString()));
       Get.snackbar(
         'Login Failed',
         errorMessage.value,
@@ -133,7 +133,7 @@ class AuthController extends GetxController {
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (e) {
-      errorMessage(e.toString().replaceAll('Exception: ', ''));
+      errorMessage(_cleanErrorMessage(e.toString()));
       Get.snackbar(
         'Error',
         errorMessage.value,
@@ -170,7 +170,7 @@ class AuthController extends GetxController {
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (e) {
-      errorMessage(e.toString().replaceAll('Exception: ', ''));
+      errorMessage(_cleanErrorMessage(e.toString()));
       Get.snackbar(
         'Error',
         errorMessage.value,
@@ -179,5 +179,10 @@ class AuthController extends GetxController {
     } finally {
       isLoading(false);
     }
+  }
+
+  // Helper method to clean error messages
+  String _cleanErrorMessage(String error) {
+    return error.replaceAll('Exception: ', '');
   }
 }

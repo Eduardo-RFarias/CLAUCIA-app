@@ -15,12 +15,6 @@ class PatientController extends GetxController {
   RxBool hasError = false.obs;
   RxString errorMessage = ''.obs;
 
-  // Single patient variables
-  Rx<Patient?> currentPatient = Rx<Patient?>(null);
-  RxBool isLoadingPatient = false.obs;
-  RxBool hasPatientError = false.obs;
-  RxString patientErrorMessage = ''.obs;
-
   @override
   void onInit() {
     fetchPatients();
@@ -55,7 +49,7 @@ class PatientController extends GetxController {
       patients.assignAll(fetchedPatients);
     } catch (e) {
       hasError(true);
-      errorMessage(e.toString().replaceAll('Exception: ', ''));
+      errorMessage(_cleanErrorMessage(e.toString()));
       Get.snackbar(
         'Error',
         'Failed to load patients: ${errorMessage.value}',
@@ -63,34 +57,6 @@ class PatientController extends GetxController {
       );
     } finally {
       isLoading(false);
-    }
-  }
-
-  // Fetch patient by ID
-  Future<void> fetchPatientById(int id) async {
-    try {
-      isLoadingPatient(true);
-      hasPatientError(false);
-      patientErrorMessage('');
-
-      final fetchedPatient = await _patientService.getPatientById(id);
-      currentPatient.value = fetchedPatient;
-
-      // Update patient in the list if it exists
-      final index = patients.indexWhere((patient) => patient.id == id);
-      if (index != -1) {
-        patients[index] = fetchedPatient;
-      }
-    } catch (e) {
-      hasPatientError(true);
-      patientErrorMessage(e.toString().replaceAll('Exception: ', ''));
-      Get.snackbar(
-        'Error',
-        'Failed to load patient: ${patientErrorMessage.value}',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-    } finally {
-      isLoadingPatient(false);
     }
   }
 
@@ -148,7 +114,7 @@ class PatientController extends GetxController {
       return newPatient;
     } catch (e) {
       hasError(true);
-      errorMessage(e.toString().replaceAll('Exception: ', ''));
+      errorMessage(_cleanErrorMessage(e.toString()));
       Get.snackbar(
         'Error',
         'Failed to create patient: ${errorMessage.value}',
@@ -160,46 +126,11 @@ class PatientController extends GetxController {
     }
   }
 
-  // Update patient
-  Future<void> updatePatient(Patient patient) async {
-    try {
-      isLoading(true);
-      hasError(false);
-      errorMessage('');
-
-      final updatedPatient = await _patientService.updatePatient(patient);
-
-      // Update in the list
-      final index = patients.indexWhere((p) => p.id == patient.id);
-      if (index != -1) {
-        patients[index] = updatedPatient;
-        // Move to top since it was updated
-        patients.removeAt(index);
-        patients.insert(0, updatedPatient);
-      }
-
-      // Update current patient if it's the same
-      if (currentPatient.value?.id == patient.id) {
-        currentPatient.value = updatedPatient;
-      }
-
-      Get.snackbar(
-        'Success',
-        'Patient ${updatedPatient.name} updated successfully',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-    } catch (e) {
-      hasError(true);
-      errorMessage(e.toString().replaceAll('Exception: ', ''));
-      Get.snackbar(
-        'Error',
-        'Failed to update patient: ${errorMessage.value}',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-    } finally {
-      isLoading(false);
-    }
+  // Helper method to clean error messages
+  String _cleanErrorMessage(String error) {
+    return error.replaceAll('Exception: ', '');
   }
+}
 
   // Search patients by name
   List<Patient> searchPatients(String query) {

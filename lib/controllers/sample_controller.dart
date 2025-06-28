@@ -25,10 +25,10 @@ class SampleController extends GetxController {
       final fetchedSamples = await _sampleService.getSamplesByWoundId(woundId);
       samples.value = fetchedSamples;
     } catch (e) {
-      error.value = e.toString();
+      error.value = _cleanErrorMessage(e.toString());
       Get.snackbar(
         'Error',
-        'Failed to load samples: ${e.toString()}',
+        'Failed to load samples: ${error.value}',
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
@@ -42,7 +42,6 @@ class SampleController extends GetxController {
     String? woundPhoto,
     WoundSize? size,
     WagnerClassification? professionalClassification,
-    bool showSnackbar = true,
   }) async {
     try {
       error.value = '';
@@ -59,18 +58,16 @@ class SampleController extends GetxController {
       samples.add(newSample);
       samples.sort((a, b) => b.date.compareTo(a.date));
 
-      if (showSnackbar) {
-        Get.snackbar(
-          'Success',
-          'Sample created successfully',
-          snackPosition: SnackPosition.BOTTOM,
-        );
-      }
+      Get.snackbar(
+        'Success',
+        'Sample created successfully',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } catch (e) {
-      error.value = e.toString();
+      error.value = _cleanErrorMessage(e.toString());
       Get.snackbar(
         'Error',
-        'Failed to create sample: ${e.toString()}',
+        'Failed to create sample: ${error.value}',
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
@@ -104,10 +101,10 @@ class SampleController extends GetxController {
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (e) {
-      error.value = e.toString();
+      error.value = _cleanErrorMessage(e.toString());
       Get.snackbar(
         'Error',
-        'Failed to update sample: ${e.toString()}',
+        'Failed to update sample: ${error.value}',
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
@@ -156,5 +153,10 @@ class SampleController extends GetxController {
   // Mock ML classification
   Future<WagnerClassification> classifyWoundWithML(String imagePath) async {
     return await _sampleService.classifyWoundWithML(imagePath);
+  }
+
+  // Helper method to clean error messages
+  String _cleanErrorMessage(String error) {
+    return error.replaceAll('Exception: ', '');
   }
 }

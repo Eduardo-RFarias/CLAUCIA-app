@@ -79,28 +79,10 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 16),
               _buildSettingsCard([
                 _buildSettingsTile(
-                  icon: Icons.notifications,
-                  title: 'Notifications',
-                  subtitle: 'Manage your notification preferences',
-                  onTap: () => _showNotificationSettings(context),
-                ),
-                _buildSettingsTile(
                   icon: Icons.security,
                   title: 'Security',
                   subtitle: 'Password and security settings',
                   onTap: () => _showChangePasswordDialog(context),
-                ),
-                _buildSettingsTile(
-                  icon: Icons.language,
-                  title: 'Language',
-                  subtitle: 'English (US)',
-                  onTap: () => _showLanguageSettings(context),
-                ),
-                _buildSettingsTile(
-                  icon: Icons.dark_mode,
-                  title: 'Theme',
-                  subtitle: 'Light mode',
-                  onTap: () => _showThemeSettings(context),
                 ),
               ]),
               const SizedBox(height: 32),
@@ -418,14 +400,6 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  void _showNotificationSettings(BuildContext context) {
-    Get.snackbar(
-      'Coming Soon',
-      'Notification settings will be available in the next update',
-      snackPosition: SnackPosition.BOTTOM,
-    );
-  }
-
   void _showChangePasswordDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -505,21 +479,5 @@ class ProfileScreen extends StatelessWidget {
 
   void _removeProfilePicture(AuthController authController) {
     authController.updateProfilePicture('');
-  }
-
-  void _showLanguageSettings(BuildContext context) {
-    Get.snackbar(
-      'Coming Soon',
-      'Language settings will be available in the next update',
-      snackPosition: SnackPosition.BOTTOM,
-    );
-  }
-
-  void _showThemeSettings(BuildContext context) {
-    Get.snackbar(
-      'Coming Soon',
-      'Theme settings will be available in the next update',
-      snackPosition: SnackPosition.BOTTOM,
-    );
   }
 }
