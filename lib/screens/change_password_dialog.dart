@@ -34,7 +34,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
         _currentPasswordController.text,
         _newPasswordController.text,
       );
-      Navigator.of(context).pop();
+      Get.back();
     }
   }
 
@@ -157,15 +157,12 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
         ),
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
-        ),
+        TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
         Obx(
           () => ElevatedButton(
             onPressed: _authController.isLoading.value ? null : _changePassword,
             style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).primaryColor,
+              backgroundColor: Get.theme.primaryColor,
               foregroundColor: Colors.white,
             ),
             child:

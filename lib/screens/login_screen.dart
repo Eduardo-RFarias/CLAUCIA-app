@@ -34,31 +34,26 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _showDemoCredentials() {
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Demo Credentials'),
-            content: const Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('You can use any of these demo accounts:'),
-                SizedBox(height: 16),
-                Text('📧 john@example.com\n🔑 password123'),
-                SizedBox(height: 8),
-                Text('📧 jane@example.com\n🔑 password456'),
-                SizedBox(height: 8),
-                Text('📧 test@test.com\n🔑 test123'),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
+    Get.dialog(
+      AlertDialog(
+        title: const Text('Demo Credentials'),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('You can use any of these demo accounts:'),
+            SizedBox(height: 16),
+            Text('📧 john@example.com\n🔑 password123'),
+            SizedBox(height: 8),
+            Text('📧 jane@example.com\n🔑 password456'),
+            SizedBox(height: 8),
+            Text('📧 test@test.com\n🔑 test123'),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Get.back(), child: const Text('OK')),
+        ],
+      ),
     );
   }
 
@@ -78,23 +73,23 @@ class _LoginScreenState extends State<LoginScreen> {
                 Icon(
                   Icons.account_circle,
                   size: 100,
-                  color: Theme.of(context).primaryColor,
+                  color: Get.theme.primaryColor,
                 ),
                 const SizedBox(height: 24),
                 Text(
                   'Welcome Back!',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  style: Get.theme.textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Theme.of(context).primaryColor,
+                    color: Get.theme.primaryColor,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Sign in to your account',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyLarge?.copyWith(color: Colors.grey[600]),
+                  style: Get.theme.textTheme.bodyLarge?.copyWith(
+                    color: Colors.grey[600],
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 48),
@@ -116,9 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                      ),
+                      borderSide: BorderSide(color: Get.theme.primaryColor),
                     ),
                   ),
                   validator: (value) {
@@ -162,9 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                      ),
+                      borderSide: BorderSide(color: Get.theme.primaryColor),
                     ),
                   ),
                   validator: (value) {
@@ -216,7 +207,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   () => ElevatedButton(
                     onPressed: _authController.isLoading.value ? null : _login,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor,
+                      backgroundColor: Get.theme.primaryColor,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(

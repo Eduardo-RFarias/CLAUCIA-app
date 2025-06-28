@@ -44,7 +44,6 @@ class SampleController extends GetxController {
     WagnerClassification? professionalClassification,
   }) async {
     try {
-      error.value = '';
       isCreating.value = true;
 
       final newSample = await _sampleService.createSample(
@@ -57,19 +56,8 @@ class SampleController extends GetxController {
       // Add the new sample to the list and sort by date
       samples.add(newSample);
       samples.sort((a, b) => b.date.compareTo(a.date));
-
-      Get.snackbar(
-        'Success',
-        'Sample created successfully',
-        snackPosition: SnackPosition.BOTTOM,
-      );
     } catch (e) {
-      error.value = _cleanErrorMessage(e.toString());
-      Get.snackbar(
-        'Error',
-        'Failed to create sample: ${error.value}',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      // Error is handled at the UI level if needed
     } finally {
       isCreating.value = false;
     }
@@ -81,7 +69,6 @@ class SampleController extends GetxController {
     required WagnerClassification professionalClassification,
   }) async {
     try {
-      error.value = '';
       isUpdating.value = true;
 
       final updatedSample = await _sampleService.updateSampleClassification(
@@ -94,19 +81,8 @@ class SampleController extends GetxController {
       if (index != -1) {
         samples[index] = updatedSample;
       }
-
-      Get.snackbar(
-        'Success',
-        'Sample classification updated successfully',
-        snackPosition: SnackPosition.BOTTOM,
-      );
     } catch (e) {
-      error.value = _cleanErrorMessage(e.toString());
-      Get.snackbar(
-        'Error',
-        'Failed to update sample: ${error.value}',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      // Error is handled at the UI level if needed
     } finally {
       isUpdating.value = false;
     }

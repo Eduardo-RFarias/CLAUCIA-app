@@ -373,38 +373,30 @@ class ProfileScreen extends StatelessWidget {
   }
 
   void _showLogoutDialog(BuildContext context, AuthController authController) {
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Sign Out'),
-            content: const Text('Are you sure you want to sign out?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  authController.logout();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
-                ),
-                child: const Text('Sign Out'),
-              ),
-            ],
+    Get.dialog(
+      AlertDialog(
+        title: const Text('Sign Out'),
+        content: const Text('Are you sure you want to sign out?'),
+        actions: [
+          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          ElevatedButton(
+            onPressed: () {
+              Get.back();
+              authController.logout();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Sign Out'),
           ),
+        ],
+      ),
     );
   }
 
   void _showChangePasswordDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => const ChangePasswordDialog(),
-    );
+    Get.dialog(const ChangePasswordDialog());
   }
 
   void _showImagePickerOptions(
@@ -412,43 +404,46 @@ class ProfileScreen extends StatelessWidget {
     AuthController authController,
     ImagePicker imagePicker,
   ) {
-    showModalBottomSheet(
-      context: context,
-      builder:
-          (context) => SafeArea(
-            child: Wrap(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.photo_library),
-                  title: const Text('Choose from Gallery'),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    _pickImage(
-                      ImageSource.gallery,
-                      authController,
-                      imagePicker,
-                    );
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.camera_alt),
-                  title: const Text('Take a Photo'),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    _pickImage(ImageSource.camera, authController, imagePicker);
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.delete),
-                  title: const Text('Remove Photo'),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    _removeProfilePicture(authController);
-                  },
-                ),
-              ],
-            ),
+    Get.bottomSheet(
+      Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(16),
+            topRight: Radius.circular(16),
           ),
+        ),
+        child: SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Choose from Gallery'),
+                onTap: () {
+                  Get.back();
+                  _pickImage(ImageSource.gallery, authController, imagePicker);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Take a Photo'),
+                onTap: () {
+                  Get.back();
+                  _pickImage(ImageSource.camera, authController, imagePicker);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.delete),
+                title: const Text('Remove Photo'),
+                onTap: () {
+                  Get.back();
+                  _removeProfilePicture(authController);
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

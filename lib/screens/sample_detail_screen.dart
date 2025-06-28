@@ -696,72 +696,68 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
     WagnerClassification? selectedClassification =
         currentSample.professionalClassification;
 
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: const Text('Update Classification'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'AI Classification: ${currentSample.mlClassification.displayName}',
-                    style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Professional Assessment:',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 8),
-                  ...WagnerClassification.values.map((classification) {
-                    return RadioListTile<WagnerClassification>(
-                      title: Text(
-                        classification.displayName,
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                      value: classification,
-                      groupValue: selectedClassification,
-                      onChanged: (WagnerClassification? value) {
-                        setState(() {
-                          selectedClassification = value;
-                        });
-                      },
-                      dense: true,
-                    );
-                  }),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Cancel'),
+    Get.dialog(
+      StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('Update Classification'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'AI Classification: ${currentSample.mlClassification.displayName}',
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                 ),
-                Obx(
-                  () => ElevatedButton(
-                    onPressed:
-                        sampleController.isUpdating.value
-                            ? null
-                            : () =>
-                                _updateClassification(selectedClassification),
-                    child:
-                        sampleController.isUpdating.value
-                            ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                            : const Text('Update'),
-                  ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Professional Assessment:',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
+                const SizedBox(height: 8),
+                ...WagnerClassification.values.map((classification) {
+                  return RadioListTile<WagnerClassification>(
+                    title: Text(
+                      classification.displayName,
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                    value: classification,
+                    groupValue: selectedClassification,
+                    onChanged: (WagnerClassification? value) {
+                      setState(() {
+                        selectedClassification = value;
+                      });
+                    },
+                    dense: true,
+                  );
+                }),
               ],
-            );
-          },
-        );
-      },
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Get.back(),
+                child: const Text('Cancel'),
+              ),
+              Obx(
+                () => ElevatedButton(
+                  onPressed:
+                      sampleController.isUpdating.value
+                          ? null
+                          : () => _updateClassification(selectedClassification),
+                  child:
+                      sampleController.isUpdating.value
+                          ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                          : const Text('Update'),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 
@@ -783,10 +779,11 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
           updatedAt: DateTime.now(),
         );
       });
-
-      Navigator.of(context).pop();
     } catch (e) {
       // Error handling is done in the controller
+    } finally {
+      // Always close the dialog, whether success or error
+      Get.back();
     }
   }
 }

@@ -170,74 +170,79 @@ class MainLayout extends StatelessWidget {
     BuildContext context,
     AppController appController,
   ) {
-    showModalBottomSheet(
-      context: context,
-      builder:
-          (context) => Container(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+    Get.bottomSheet(
+      Container(
+        padding: const EdgeInsets.all(16),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(16),
+            topRight: Radius.circular(16),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Row(
-                  children: [
-                    Icon(Icons.business, color: Colors.blue.shade600),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Select Company',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue.shade600,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                ...appController.companies.map(
-                  (company) => Obx(
-                    () => ListTile(
-                      leading: Icon(
-                        Icons.business_center,
-                        color:
-                            appController.selectedCompany.value == company
-                                ? Colors.blue.shade600
-                                : Colors.grey.shade600,
-                      ),
-                      title: Text(
-                        company,
-                        style: TextStyle(
-                          fontWeight:
-                              appController.selectedCompany.value == company
-                                  ? FontWeight.w600
-                                  : FontWeight.normal,
-                          color:
-                              appController.selectedCompany.value == company
-                                  ? Colors.blue.shade600
-                                  : Colors.black87,
-                        ),
-                      ),
-                      trailing:
-                          appController.selectedCompany.value == company
-                              ? Icon(Icons.check, color: Colors.blue.shade600)
-                              : null,
-                      onTap: () {
-                        appController.selectCompany(company);
-                        Navigator.of(context).pop();
-                        Get.snackbar(
-                          'Company Selected',
-                          'Now working with $company',
-                          snackPosition: SnackPosition.BOTTOM,
-                          duration: const Duration(seconds: 2),
-                        );
-                      },
-                    ),
+                Icon(Icons.business, color: Colors.blue.shade600),
+                const SizedBox(width: 8),
+                Text(
+                  'Select Company',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue.shade600,
                   ),
                 ),
-                const SizedBox(height: 16),
               ],
             ),
-          ),
+            const SizedBox(height: 16),
+            ...appController.companies.map(
+              (company) => Obx(
+                () => ListTile(
+                  leading: Icon(
+                    Icons.business_center,
+                    color:
+                        appController.selectedCompany.value == company
+                            ? Colors.blue.shade600
+                            : Colors.grey.shade600,
+                  ),
+                  title: Text(
+                    company,
+                    style: TextStyle(
+                      fontWeight:
+                          appController.selectedCompany.value == company
+                              ? FontWeight.w600
+                              : FontWeight.normal,
+                      color:
+                          appController.selectedCompany.value == company
+                              ? Colors.blue.shade600
+                              : Colors.black87,
+                    ),
+                  ),
+                  trailing:
+                      appController.selectedCompany.value == company
+                          ? Icon(Icons.check, color: Colors.blue.shade600)
+                          : null,
+                  onTap: () {
+                    appController.selectCompany(company);
+                    Get.back();
+                    Get.snackbar(
+                      'Company Selected',
+                      'Now working with $company',
+                      snackPosition: SnackPosition.BOTTOM,
+                      duration: const Duration(seconds: 2),
+                    );
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
     );
   }
 }

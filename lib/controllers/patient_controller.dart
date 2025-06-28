@@ -126,12 +126,6 @@ class PatientController extends GetxController {
     }
   }
 
-  // Helper method to clean error messages
-  String _cleanErrorMessage(String error) {
-    return error.replaceAll('Exception: ', '');
-  }
-}
-
   // Search patients by name
   List<Patient> searchPatients(String query) {
     if (query.isEmpty) return patients;
@@ -162,5 +156,10 @@ class PatientController extends GetxController {
               patient.medicalConditions!.isNotEmpty,
         )
         .toList();
+  }
+
+  // Helper method to clean error messages
+  String _cleanErrorMessage(String error) {
+    return error.replaceAll('Exception: ', '');
   }
 }

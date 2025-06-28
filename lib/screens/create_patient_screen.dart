@@ -18,6 +18,7 @@ class _CreatePatientScreenState extends State<CreatePatientScreen> {
 
   // Form controllers
   final _nameController = TextEditingController();
+  final _medicalConditionsController = TextEditingController();
 
   // Form state
   DateTime? _selectedDate;
@@ -30,6 +31,7 @@ class _CreatePatientScreenState extends State<CreatePatientScreen> {
   @override
   void dispose() {
     _nameController.dispose();
+    _medicalConditionsController.dispose();
     super.dispose();
   }
 
@@ -51,17 +53,23 @@ class _CreatePatientScreenState extends State<CreatePatientScreen> {
   }
 
   Future<void> _pickImage() async {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return SafeArea(
+    Get.bottomSheet(
+      Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(16),
+            topRight: Radius.circular(16),
+          ),
+        ),
+        child: SafeArea(
           child: Wrap(
             children: [
               ListTile(
                 leading: const Icon(Icons.photo_camera),
                 title: const Text('Take Photo'),
                 onTap: () async {
-                  Navigator.pop(context);
+                  Get.back();
                   await _getImageFromSource(ImageSource.camera);
                 },
               ),
@@ -69,7 +77,7 @@ class _CreatePatientScreenState extends State<CreatePatientScreen> {
                 leading: const Icon(Icons.photo_library),
                 title: const Text('Choose from Gallery'),
                 onTap: () async {
-                  Navigator.pop(context);
+                  Get.back();
                   await _getImageFromSource(ImageSource.gallery);
                 },
               ),
@@ -78,7 +86,7 @@ class _CreatePatientScreenState extends State<CreatePatientScreen> {
                   leading: const Icon(Icons.delete),
                   title: const Text('Remove Photo'),
                   onTap: () {
-                    Navigator.pop(context);
+                    Get.back();
                     setState(() {
                       _selectedImage = null;
                     });
@@ -86,8 +94,8 @@ class _CreatePatientScreenState extends State<CreatePatientScreen> {
                 ),
             ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
@@ -144,6 +152,10 @@ class _CreatePatientScreenState extends State<CreatePatientScreen> {
         dateOfBirth: _selectedDate!,
         gender: _selectedGender!,
         profilePicture: _selectedImage?.path,
+        medicalConditions:
+            _medicalConditionsController.text.trim().isNotEmpty
+                ? _medicalConditionsController.text.trim()
+                : null,
       );
 
       if (newPatient != null) {
@@ -309,6 +321,25 @@ class _CreatePatientScreenState extends State<CreatePatientScreen> {
                   return null;
                 },
               ),
+              const SizedBox(height: 16),
+
+              // Medical Conditions field
+              TextFormField(
+                controller: _medicalConditionsController,
+                decoration: const InputDecoration(
+                  labelText: 'Medical Conditions',
+                  hintText: 'Enter any relevant medical conditions (optional)',
+                  prefixIcon: Icon(Icons.medical_services),
+                  border: OutlineInputBorder(),
+                  helperText: 'Optional - e.g., diabetes, hypertension, etc.',
+                ),
+                maxLines: 3,
+                textCapitalization: TextCapitalization.sentences,
+                validator: (value) {
+                  // Optional field, so no validation required
+                  return null;
+                },
+              ),
               const SizedBox(height: 32),
 
               // Create button
@@ -317,7 +348,7 @@ class _CreatePatientScreenState extends State<CreatePatientScreen> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _createPatient,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).primaryColor,
+                    backgroundColor: Get.theme.primaryColor,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
