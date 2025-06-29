@@ -36,7 +36,8 @@ class SampleService {
     Sample(
       id: 2,
       woundId: 1,
-      woundPhoto: 'assets/images/sample_photo_2.jpg', // Mock photo path
+      woundPhoto:
+          'https://robohash.org/sample_photo_2?set=set5', // Mock photo path
       mlClassification:
           WagnerClassification
               .grade0, // Photo provided, ML classification available
@@ -51,7 +52,7 @@ class SampleService {
     Sample(
       id: 3,
       woundId: 2,
-      woundPhoto: 'assets/images/sample_photo_3.jpg',
+      woundPhoto: 'https://robohash.org/sample_photo_3?set=set5',
       mlClassification:
           WagnerClassification.grade0, // Mock ML always returns Grade 0
       professionalClassification:
@@ -80,7 +81,7 @@ class SampleService {
     Sample(
       id: 5,
       woundId: 3,
-      woundPhoto: 'assets/images/sample_photo_5.jpg',
+      woundPhoto: 'https://robohash.org/sample_photo_5?set=set5',
       mlClassification:
           WagnerClassification.grade0, // Mock ML always returns Grade 0
       professionalClassification: null, // Not reviewed yet

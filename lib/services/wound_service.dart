@@ -39,7 +39,7 @@ class WoundService {
         Sample(
           id: 2,
           woundId: 1,
-          woundPhoto: 'assets/images/sample_photo_2.jpg',
+          woundPhoto: 'https://robohash.org/wound_sample_2?set=set5',
           mlClassification: WagnerClassification.grade0,
           professionalClassification: null,
           size: WoundSize(height: 2.3, width: 1.6),
@@ -64,7 +64,7 @@ class WoundService {
         Sample(
           id: 3,
           woundId: 2,
-          woundPhoto: 'assets/images/sample_photo_3.jpg',
+          woundPhoto: 'https://robohash.org/wound_sample_3?set=set5',
           mlClassification: WagnerClassification.grade0,
           professionalClassification: WagnerClassification.grade2,
           size: null,
@@ -102,7 +102,7 @@ class WoundService {
         Sample(
           id: 5,
           woundId: 3,
-          woundPhoto: 'assets/images/sample_photo_5.jpg',
+          woundPhoto: 'https://robohash.org/wound_sample_5?set=set5',
           mlClassification: WagnerClassification.grade0,
           professionalClassification: null,
           size: WoundSize(height: 3.8, width: 2.9),
@@ -138,7 +138,7 @@ class WoundService {
         Sample(
           id: 6,
           woundId: 5,
-          woundPhoto: 'assets/images/sample_photo_6.jpg',
+          woundPhoto: 'https://robohash.org/wound_sample_6?set=set5',
           mlClassification: WagnerClassification.grade0,
           professionalClassification: WagnerClassification.grade1,
           size: WoundSize(height: 5.1, width: 4.3),

@@ -9,21 +9,21 @@ class AuthService {
       'name': 'John Doe',
       'email': 'john@example.com',
       'password': 'password123',
-      'profilePicture': null,
+      'profilePicture': "https://robohash.org/john_doe?set=set5",
     },
     {
       'id': 2,
       'name': 'Jane Smith',
       'email': 'jane@example.com',
       'password': 'password456',
-      'profilePicture': null,
+      'profilePicture': "https://robohash.org/jane_smith?set=set5",
     },
     {
       'id': 3,
       'name': 'Test User',
       'email': 'test@test.com',
       'password': 'test123',
-      'profilePicture': null,
+      'profilePicture': "https://robohash.org/test_user?set=set5",
     },
   ];
 
