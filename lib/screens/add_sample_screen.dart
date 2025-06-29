@@ -8,6 +8,7 @@ import '../models/sample_model.dart';
 import '../controllers/sample_controller.dart';
 import '../controllers/auth_controller.dart';
 import '../utils/image_processor.dart';
+import '../services/localization_service.dart';
 
 class AddSampleScreen extends StatefulWidget {
   final Wound wound;
@@ -41,7 +42,7 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Sample'),
+        title: Text(context.l10n.addSample),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Get.back(),
@@ -124,7 +125,7 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              widget.wound.origin.displayName,
+              widget.wound.origin.localizedDisplayName,
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.blue.shade600,
@@ -174,7 +175,7 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'New Sample',
+          context.l10n.newSample,
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -183,7 +184,7 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
         ),
         const SizedBox(height: 8),
         Text(
-          'Capture a new sample to track wound progress',
+          context.l10n.captureNewSample,
           style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
         ),
         const SizedBox(height: 16),
@@ -212,7 +213,7 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
                 Icon(Icons.photo_camera, color: Colors.blue.shade600, size: 20),
                 const SizedBox(width: 8),
                 Text(
-                  'Wound Photo',
+                  context.l10n.woundPhoto,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -250,7 +251,7 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    'Photo processed (224x224px)',
+                    context.l10n.photoProcessed,
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.green.shade600,
@@ -269,7 +270,7 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
                   child: OutlinedButton.icon(
                     onPressed: () => _pickImage(ImageSource.camera),
                     icon: const Icon(Icons.camera_alt),
-                    label: const Text('Take Photo'),
+                    label: Text(context.l10n.takePhoto),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
@@ -280,7 +281,7 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
                   child: OutlinedButton.icon(
                     onPressed: () => _pickImage(ImageSource.gallery),
                     icon: const Icon(Icons.photo_library),
-                    label: const Text('Gallery'),
+                    label: Text(context.l10n.gallery),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
@@ -295,7 +296,7 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
                 child: TextButton.icon(
                   onPressed: () => _pickImage(ImageSource.camera),
                   icon: const Icon(Icons.refresh, size: 16),
-                  label: const Text('Retake Photo'),
+                  label: Text(context.l10n.retakePhoto),
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.orange.shade600,
                   ),
@@ -322,7 +323,7 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
                 Icon(Icons.straighten, color: Colors.blue.shade600, size: 20),
                 const SizedBox(width: 8),
                 Text(
-                  'Size Measurements',
+                  context.l10n.sizeMeasurements,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -348,7 +349,7 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
 
             if (_hasOptionalSize) ...[
               Text(
-                'Enter wound dimensions in centimeters',
+                context.l10n.enterWoundDimensions,
                 style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
               ),
               const SizedBox(height: 12),
@@ -360,7 +361,7 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
                       controller: _heightController,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        labelText: 'Height (cm)',
+                        labelText: context.l10n.heightCm,
                         hintText: '0.0',
                         prefixIcon: const Icon(Icons.height),
                         border: OutlineInputBorder(
@@ -375,7 +376,7 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
                       controller: _widthController,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        labelText: 'Width (cm)',
+                        labelText: context.l10n.widthCm,
                         hintText: '0.0',
                         prefixIcon: const Icon(Icons.width_wide),
                         border: OutlineInputBorder(
@@ -388,7 +389,7 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
               ),
             ] else ...[
               Text(
-                'Toggle to add optional size measurements',
+                context.l10n.toggleSizeMeasurements,
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey.shade500,
@@ -415,10 +416,10 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
         ),
         child:
             _isCreating
-                ? const Row(
+                ? Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(
@@ -426,12 +427,12 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                       ),
                     ),
-                    SizedBox(width: 12),
-                    Text('Processing Sample...'),
+                    const SizedBox(width: 12),
+                    Text(context.l10n.processingSample),
                   ],
                 )
-                : const Text(
-                  'Add Sample',
+                : Text(
+                  context.l10n.addSample,
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
       ),
@@ -452,11 +453,14 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
   }
 
   Future<void> _createSample() async {
+    // Capture localized strings before async operations
+    final l10n = context.l10n;
+
     // Validate that at least photo or size is provided
     if (_croppedImagePath == null && !_hasOptionalSize) {
       Get.snackbar(
-        'Validation Error',
-        'Please provide either a photo or size measurements',
+        l10n.validationError,
+        l10n.providePhotoOrSize,
         snackPosition: SnackPosition.BOTTOM,
       );
       return;
@@ -466,8 +470,8 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
     if (_hasOptionalSize) {
       if (_heightController.text.isEmpty || _widthController.text.isEmpty) {
         Get.snackbar(
-          'Validation Error',
-          'Please fill in both height and width measurements',
+          l10n.validationError,
+          l10n.fillBothMeasurements,
           snackPosition: SnackPosition.BOTTOM,
         );
         return;
@@ -478,8 +482,8 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
 
       if (height == null || width == null || height <= 0 || width <= 0) {
         Get.snackbar(
-          'Validation Error',
-          'Please enter valid positive numbers for measurements',
+          l10n.validationError,
+          l10n.enterValidNumbers,
           snackPosition: SnackPosition.BOTTOM,
         );
         return;
@@ -526,8 +530,8 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
       return; // Exit early to avoid further code execution
     } catch (e) {
       Get.snackbar(
-        'Error',
-        'Failed to create sample: ${e.toString()}',
+        l10n.error,
+        '${l10n.failedToCreateSample}: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,
       );
       if (mounted) {

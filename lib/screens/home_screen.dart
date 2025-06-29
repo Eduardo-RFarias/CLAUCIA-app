@@ -6,6 +6,8 @@ import '../controllers/auth_controller.dart';
 import '../controllers/patient_controller.dart';
 import '../controllers/app_controller.dart';
 import '../models/patient_model.dart';
+import '../services/localization_service.dart';
+import '../services/date_service.dart';
 import 'create_patient_screen.dart';
 import 'patient_detail_screen.dart';
 
@@ -22,7 +24,7 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: Obx(
           () => Text(
-            'Patients - ${appController.selectedCompany.value}',
+            '${context.l10n.patients} - ${appController.selectedCompany.value}',
             style: const TextStyle(fontSize: 18),
           ),
         ),
@@ -62,7 +64,7 @@ class HomeScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Welcome back${user?.name != null ? ', Dr. ${user!.name.split(' ').last}' : ''}!',
+                              '${context.l10n.welcomeBack2}${user?.name != null ? ', ${context.l10n.drPrefix} ${user!.name.split(' ').last}' : ''}!',
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -72,7 +74,7 @@ class HomeScreen extends StatelessWidget {
                             const SizedBox(height: 4),
                             Obx(
                               () => Text(
-                                '${patientController.patientsCount} patients registered',
+                                '${patientController.patientsCount} ${context.l10n.patientsRegistered}',
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey.shade600,
@@ -87,7 +89,7 @@ class HomeScreen extends StatelessWidget {
                       onPressed:
                           () => Get.to(() => const CreatePatientScreen()),
                       icon: const Icon(Icons.person_add, size: 18),
-                      label: const Text('New Patient'),
+                      label: Text(context.l10n.newPatient),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue.shade600,
                         foregroundColor: Colors.white,
@@ -125,7 +127,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'Error loading patients',
+                        context.l10n.errorLoadingPatients,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -141,7 +143,7 @@ class HomeScreen extends StatelessWidget {
                       const SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: () => patientController.fetchPatients(),
-                        child: const Text('Try Again'),
+                        child: Text(context.l10n.tryAgain),
                       ),
                     ],
                   ),
@@ -159,8 +161,8 @@ class HomeScreen extends StatelessWidget {
                         color: Colors.grey.shade400,
                       ),
                       const SizedBox(height: 24),
-                      const Text(
-                        'No patients found',
+                      Text(
+                        context.l10n.noPatientsFound,
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w600,
@@ -169,7 +171,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Add your first patient to get started',
+                        context.l10n.addFirstPatientMessage,
                         style: TextStyle(
                           fontSize: 16,
                           color: Colors.grey.shade600,
@@ -180,7 +182,7 @@ class HomeScreen extends StatelessWidget {
                         onPressed:
                             () => Get.to(() => const CreatePatientScreen()),
                         icon: const Icon(Icons.person_add),
-                        label: const Text('Add First Patient'),
+                        label: Text(context.l10n.addFirstPatient),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue.shade600,
                           foregroundColor: Colors.white,
@@ -202,7 +204,7 @@ class HomeScreen extends StatelessWidget {
                   itemCount: patientController.patients.length,
                   itemBuilder: (context, index) {
                     final patient = patientController.patients[index];
-                    return _buildPatientCard(patient);
+                    return _buildPatientCard(context, patient);
                   },
                 ),
               );
@@ -213,7 +215,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPatientCard(Patient patient) {
+  Widget _buildPatientCard(BuildContext context, Patient patient) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
@@ -257,7 +259,7 @@ class HomeScreen extends StatelessWidget {
           children: [
             const SizedBox(height: 4),
             Text(
-              '${patient.ageString} • ${patient.gender}',
+              '${patient.ageString} • ${patient.localizedGender}',
               style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
             ),
             if (patient.medicalConditions != null &&
@@ -271,7 +273,7 @@ class HomeScreen extends StatelessWidget {
                   border: Border.all(color: Colors.orange.shade200),
                 ),
                 child: Text(
-                  'Has medical conditions',
+                  context.l10n.hasMedicalConditions,
                   style: TextStyle(
                     fontSize: 11,
                     color: Colors.orange.shade700,
@@ -283,25 +285,10 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
         trailing: Text(
-          _formatDate(patient.updatedAt),
+          patient.updatedAt.relativeDate,
           style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
         ),
       ),
     );
-  }
-
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final difference = now.difference(date);
-
-    if (difference.inDays == 0) {
-      return 'Today';
-    } else if (difference.inDays == 1) {
-      return 'Yesterday';
-    } else if (difference.inDays < 7) {
-      return '${difference.inDays} days ago';
-    } else {
-      return '${date.day}/${date.month}/${date.year}';
-    }
   }
 }

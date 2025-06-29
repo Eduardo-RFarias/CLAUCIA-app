@@ -7,6 +7,8 @@ import '../models/wound_model.dart';
 import '../models/sample_model.dart';
 import '../controllers/sample_controller.dart';
 import '../controllers/wound_controller.dart';
+import '../services/localization_service.dart';
+import '../services/date_service.dart';
 import 'add_sample_screen.dart';
 import 'sample_detail_screen.dart';
 
@@ -34,7 +36,7 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Wound Details'),
+        title: Text(context.l10n.woundDetails),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Get.back(),
@@ -64,7 +66,7 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
           sampleController.loadSamplesByWoundId(widget.wound.id);
         },
         icon: const Icon(Icons.add_a_photo),
-        label: const Text('Add Sample'),
+        label: Text(context.l10n.addSample),
         backgroundColor: Colors.blue.shade600,
         foregroundColor: Colors.white,
       ),
@@ -96,7 +98,7 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      widget.wound.origin.displayName,
+                      widget.wound.origin.localizedDisplayName,
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.blue.shade700,
@@ -175,15 +177,15 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
               Expanded(
                 child: _buildMetadataItem(
                   icon: Icons.calendar_today,
-                  label: 'Created',
-                  value: _formatDate(widget.wound.createdAt),
+                  label: context.l10n.created,
+                  value: widget.wound.createdAt.formattedDateTimeWithTimezone,
                 ),
               ),
               const SizedBox(width: 16),
               Expanded(
                 child: _buildMetadataItem(
                   icon: Icons.update,
-                  label: 'Last Updated',
+                  label: context.l10n.lastUpdated,
                   value: widget.wound.daysSinceCreation,
                 ),
               ),
@@ -248,7 +250,7 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
                 Icon(Icons.analytics, color: Colors.blue.shade600, size: 20),
                 const SizedBox(width: 8),
                 Text(
-                  'Sample History',
+                  context.l10n.sampleHistory,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -268,7 +270,7 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      '$samplesCount sample${samplesCount != 1 ? 's' : ''}',
+                      '$samplesCount ${context.l10n.sample}${samplesCount != 1 ? 's' : ''}',
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.blue.shade700,
@@ -329,7 +331,7 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'No samples yet',
+            context.l10n.noSamplesYet,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -338,7 +340,7 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Start documenting this wound\'s\nhealing progress by adding samples',
+            context.l10n.startDocumentingWound,
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey.shade500,
@@ -354,7 +356,7 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
               sampleController.loadSamplesByWoundId(widget.wound.id);
             },
             icon: const Icon(Icons.add_a_photo, size: 18),
-            label: const Text('Add First Sample'),
+            label: Text(context.l10n.addFirstSample),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue.shade600,
               foregroundColor: Colors.white,
@@ -416,8 +418,8 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
                           color: Colors.blue.shade600,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Text(
-                          'Latest',
+                        child: Text(
+                          context.l10n.latest,
                           style: TextStyle(
                             fontSize: 11,
                             color: Colors.white,
@@ -434,7 +436,7 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      'Sample #${sample.id}',
+                      '${context.l10n.sample} #${sample.id}',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -522,7 +524,7 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'No photo',
+                          context.l10n.noPhoto,
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey.shade500,
@@ -555,7 +557,7 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Wagner Classification',
+                            context.l10n.wagnerClassification,
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey.shade600,
@@ -565,8 +567,10 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
                           Text(
                             (sample.mlClassification != null ||
                                     sample.professionalClassification != null)
-                                ? sample.effectiveClassification.displayName
-                                : 'Pending assessment',
+                                ? sample
+                                    .effectiveClassification
+                                    .localizedDisplayName
+                                : context.l10n.pendingAssessment,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -602,7 +606,7 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              'Reviewed',
+                              context.l10n.reviewed,
                               style: TextStyle(
                                 fontSize: 11,
                                 color: Colors.green.shade600,
@@ -633,7 +637,7 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              'Pending Review',
+                              context.l10n.pendingReview,
                               style: TextStyle(
                                 fontSize: 11,
                                 color: Colors.orange.shade600,
@@ -659,7 +663,7 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'Size: ${sample.size!.displayText}',
+                        '${context.l10n.size}: ${sample.size!.displayText}',
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.grey.shade700,
@@ -668,7 +672,7 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
                       ),
                       const SizedBox(width: 16),
                       Text(
-                        'Area: ${sample.size!.area.toStringAsFixed(1)} cm²',
+                        '${context.l10n.area}: ${sample.size!.area.toStringAsFixed(1)} ${context.l10n.cm2Unit}',
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.grey.shade600,
@@ -711,19 +715,15 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
     );
   }
 
-  String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year}';
-  }
-
   void _showDeleteConfirmationDialog() {
     Get.dialog(
       AlertDialog(
-        title: const Text('Delete Wound'),
+        title: Text(context.l10n.deleteWound),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Are you sure you want to delete this wound?'),
+            Text(context.l10n.deleteWoundConfirm),
             const SizedBox(height: 8),
             Text(
               widget.wound.location,
@@ -743,8 +743,8 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'This action cannot be undone.',
+            Text(
+              context.l10n.actionCannotBeUndone,
               style: TextStyle(
                 fontSize: 12,
                 color: Colors.grey,
@@ -754,7 +754,10 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text(context.l10n.cancel),
+          ),
           Obx(
             () => ElevatedButton(
               onPressed: woundController.isLoading.value ? null : _deleteWound,
@@ -774,7 +777,7 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
                           ),
                         ),
                       )
-                      : const Text('Delete'),
+                      : Text(context.l10n.delete),
             ),
           ),
         ],
@@ -783,6 +786,12 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
   }
 
   Future<void> _deleteWound() async {
+    // Extract localized strings before async gap
+    final successTitle = context.l10n.success;
+    final successMessage = context.l10n.woundDeletedSuccessfully;
+    final errorTitle = context.l10n.error;
+    final errorMessage = context.l10n.failedToDeleteWound;
+
     try {
       await woundController.deleteWound(widget.wound.id);
 
@@ -794,8 +803,8 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
 
       // Show success message after navigation
       Get.snackbar(
-        'Success',
-        'Wound deleted successfully',
+        successTitle,
+        successMessage,
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (e) {
@@ -806,8 +815,8 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
 
       // Show error message
       Get.snackbar(
-        'Error',
-        'Failed to delete wound: ${e.toString()}',
+        errorTitle,
+        '$errorMessage: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,
       );
     }

@@ -6,6 +6,8 @@ import 'dart:io';
 import '../models/sample_model.dart';
 import '../models/wound_model.dart';
 import '../controllers/sample_controller.dart';
+import '../services/localization_service.dart';
+import '../services/date_service.dart';
 
 class SampleDetailScreen extends StatefulWidget {
   final Sample sample;
@@ -31,7 +33,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sample Details'),
+        title: Text(context.l10n.sampleDetails),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Get.back(),
@@ -93,7 +95,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Sample #${currentSample.id}',
+                      '${context.l10n.sample} #${currentSample.id}',
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -149,8 +151,8 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
                     const SizedBox(width: 6),
                     Text(
                       currentSample.hasBeenReviewed
-                          ? 'Reviewed'
-                          : 'Pending Review',
+                          ? context.l10n.reviewed
+                          : context.l10n.pendingReview,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -173,7 +175,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
               Expanded(
                 child: _buildMetadataItem(
                   icon: Icons.calendar_today,
-                  label: 'Sample Date',
+                  label: context.l10n.sampleDate,
                   value: currentSample.formattedDate,
                 ),
               ),
@@ -181,7 +183,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
               Expanded(
                 child: _buildMetadataItem(
                   icon: Icons.access_time,
-                  label: 'Time Since',
+                  label: context.l10n.timeSince,
                   value: currentSample.timeSinceCreation,
                 ),
               ),
@@ -204,7 +206,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Wound Photo',
+                context.l10n.woundPhoto,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
@@ -265,7 +267,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
               Row(
                 children: [
                   Text(
-                    'Wagner Classification',
+                    context.l10n.wagnerClassification,
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
@@ -277,7 +279,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
                     TextButton.icon(
                       onPressed: _showUpdateClassificationDialog,
                       icon: const Icon(Icons.edit, size: 16),
-                      label: const Text('Review'),
+                      label: Text(context.l10n.review),
                       style: TextButton.styleFrom(
                         foregroundColor: Colors.blue.shade600,
                       ),
@@ -289,9 +291,9 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
               // ML Classification (only show if available)
               if (currentSample.mlClassification != null)
                 _buildClassificationCard(
-                  title: 'AI Classification',
+                  title: context.l10n.aiClassification,
                   classification: currentSample.mlClassification!,
-                  subtitle: 'Automatic analysis',
+                  subtitle: context.l10n.automaticAnalysis,
                   icon: Icons.smart_toy,
                 )
               else
@@ -312,7 +314,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'No AI Classification',
+                        context.l10n.noAiClassification,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -321,7 +323,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Photo required for AI analysis',
+                        context.l10n.photoRequiredForAnalysis,
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey.shade600,
@@ -336,9 +338,9 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
               // Professional Classification
               if (currentSample.professionalClassification != null)
                 _buildClassificationCard(
-                  title: 'Professional Review',
+                  title: context.l10n.professionalReview,
                   classification: currentSample.professionalClassification!,
-                  subtitle: 'Clinical assessment',
+                  subtitle: context.l10n.clinicalAssessment,
                   icon: Icons.verified_user,
                   isEffective: true,
                 )
@@ -360,7 +362,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Awaiting Professional Review',
+                        context.l10n.awaitingProfessionalReview,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -369,7 +371,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Click review to add clinical assessment',
+                        context.l10n.clickReviewToAdd,
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.orange.shade600,
@@ -427,7 +429,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  classification.displayName,
+                  classification.localizedDisplayName,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -448,8 +450,8 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
                 color: Colors.green.shade600,
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: const Text(
-                'ACTIVE',
+              child: Text(
+                context.l10n.active,
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
@@ -474,7 +476,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Wound Measurements',
+                context.l10n.woundMeasurements,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
@@ -487,7 +489,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
                   Expanded(
                     child: _buildSizeCard(
                       icon: Icons.straighten,
-                      label: 'Dimensions',
+                      label: context.l10n.dimensions,
                       value: currentSample.size!.displayText,
                       color: Colors.blue,
                     ),
@@ -496,9 +498,9 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
                   Expanded(
                     child: _buildSizeCard(
                       icon: Icons.crop_free,
-                      label: 'Area',
+                      label: context.l10n.area,
                       value:
-                          '${currentSample.size!.area.toStringAsFixed(1)} cm²',
+                          '${currentSample.size!.area.toStringAsFixed(1)} ${context.l10n.cm2Unit}',
                       color: Colors.green,
                     ),
                   ),
@@ -557,7 +559,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Responsible Professional',
+                context.l10n.responsibleProfessional,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
@@ -593,7 +595,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
                           ),
                         ),
                         Text(
-                          'ID: ${currentSample.responsibleProfessionalId}',
+                          '${context.l10n.idLabel}: ${currentSample.responsibleProfessionalId}',
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey.shade600,
@@ -623,7 +625,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Sample Information',
+                context.l10n.sampleInformation,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
@@ -634,29 +636,29 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
 
               _buildInfoRow(
                 Icons.fingerprint,
-                'Sample ID',
+                context.l10n.sampleId,
                 currentSample.id.toString(),
               ),
               const SizedBox(height: 12),
 
               _buildInfoRow(
                 Icons.medical_services,
-                'Wound ID',
+                context.l10n.woundId,
                 currentSample.woundId.toString(),
               ),
               const SizedBox(height: 12),
 
               _buildInfoRow(
                 Icons.add_circle,
-                'Created',
-                _formatDateTime(currentSample.createdAt),
+                context.l10n.created,
+                currentSample.createdAt.formattedDateTimeWithTimezone,
               ),
               const SizedBox(height: 12),
 
               _buildInfoRow(
                 Icons.update,
-                'Last Updated',
-                _formatDateTime(currentSample.updatedAt),
+                context.l10n.lastUpdated,
+                currentSample.updatedAt.formattedDateTimeWithTimezone,
               ),
             ],
           ),
@@ -731,10 +733,6 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
     );
   }
 
-  String _formatDateTime(DateTime dateTime) {
-    return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
-  }
-
   void _showUpdateClassificationDialog() {
     WagnerClassification? selectedClassification =
         currentSample.professionalClassification;
@@ -743,25 +741,25 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
       StatefulBuilder(
         builder: (context, setState) {
           return AlertDialog(
-            title: const Text('Update Classification'),
+            title: Text(context.l10n.updateClassification),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'AI Classification: ${currentSample.mlClassification?.displayName ?? 'Not available (no photo provided)'}',
+                  '${context.l10n.aiClassificationColon} ${currentSample.mlClassification?.localizedDisplayName ?? context.l10n.notAvailableNoPhoto}',
                   style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                  'Professional Assessment:',
+                Text(
+                  '${context.l10n.professionalAssessment}:',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 8),
                 ...WagnerClassification.values.map((classification) {
                   return RadioListTile<WagnerClassification>(
                     title: Text(
-                      classification.displayName,
+                      classification.localizedDisplayName,
                       style: const TextStyle(fontSize: 14),
                     ),
                     value: classification,
@@ -779,7 +777,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
             actions: [
               TextButton(
                 onPressed: () => Get.back(),
-                child: const Text('Cancel'),
+                child: Text(context.l10n.cancel),
               ),
               Obx(
                 () => ElevatedButton(
@@ -794,7 +792,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
                             height: 20,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
-                          : const Text('Update'),
+                          : Text(context.l10n.update),
                 ),
               ),
             ],
@@ -833,15 +831,15 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
   void _showDeleteConfirmationDialog() {
     Get.dialog(
       AlertDialog(
-        title: const Text('Delete Sample'),
+        title: Text(context.l10n.deleteSampleConfirm),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Are you sure you want to delete this sample?'),
+            Text(context.l10n.deleteSampleConfirm),
             const SizedBox(height: 8),
             Text(
-              'Sample #${currentSample.id}',
+              '${context.l10n.sampleNumber} #${currentSample.id}',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -849,8 +847,8 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'This action cannot be undone.',
+            Text(
+              context.l10n.actionCannotBeUndone,
               style: TextStyle(
                 fontSize: 12,
                 color: Colors.grey,
@@ -860,7 +858,10 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text(context.l10n.cancel),
+          ),
           Obx(
             () => ElevatedButton(
               onPressed:
@@ -881,7 +882,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
                           ),
                         ),
                       )
-                      : const Text('Delete'),
+                      : Text(context.l10n.delete),
             ),
           ),
         ],
@@ -890,6 +891,12 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
   }
 
   Future<void> _deleteSample() async {
+    // Extract localized strings before async gap
+    final successTitle = context.l10n.success;
+    final successMessage = context.l10n.sampleDeletedSuccessfully;
+    final errorTitle = context.l10n.error;
+    final errorMessage = context.l10n.failedToDeleteSample;
+
     try {
       await sampleController.deleteSample(currentSample.id);
 
@@ -901,8 +908,8 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
 
       // Show success message
       Get.snackbar(
-        'Success',
-        'Sample deleted successfully',
+        successTitle,
+        successMessage,
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (e) {
@@ -913,8 +920,8 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
 
       // Show error message
       Get.snackbar(
-        'Error',
-        'Failed to delete sample: ${e.toString()}',
+        errorTitle,
+        '$errorMessage: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,
       );
     }

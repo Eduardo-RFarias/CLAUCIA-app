@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../controllers/patient_controller.dart';
+import '../services/localization_service.dart';
+import '../services/date_service.dart';
 import 'patient_detail_screen.dart';
 
 class CreatePatientScreen extends StatefulWidget {
@@ -26,7 +28,7 @@ class _CreatePatientScreenState extends State<CreatePatientScreen> {
   File? _selectedImage;
   bool _isLoading = false;
 
-  final List<String> _genderOptions = ['Male', 'Female'];
+  // Gender options will be initialized in build method
 
   @override
   void dispose() {
@@ -43,7 +45,7 @@ class _CreatePatientScreenState extends State<CreatePatientScreen> {
       ), // 30 years ago
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
-      helpText: 'Select Date of Birth',
+      helpText: context.l10n.selectDateOfBirth,
     );
     if (picked != null && picked != _selectedDate) {
       setState(() {
@@ -67,7 +69,7 @@ class _CreatePatientScreenState extends State<CreatePatientScreen> {
             children: [
               ListTile(
                 leading: const Icon(Icons.photo_camera),
-                title: const Text('Take Photo'),
+                title: Text(context.l10n.takePhoto),
                 onTap: () async {
                   Get.back();
                   await _getImageFromSource(ImageSource.camera);
@@ -75,7 +77,7 @@ class _CreatePatientScreenState extends State<CreatePatientScreen> {
               ),
               ListTile(
                 leading: const Icon(Icons.photo_library),
-                title: const Text('Choose from Gallery'),
+                title: Text(context.l10n.chooseFromGallery),
                 onTap: () async {
                   Get.back();
                   await _getImageFromSource(ImageSource.gallery);
@@ -84,7 +86,7 @@ class _CreatePatientScreenState extends State<CreatePatientScreen> {
               if (_selectedImage != null)
                 ListTile(
                   leading: const Icon(Icons.delete),
-                  title: const Text('Remove Photo'),
+                  title: Text(context.l10n.removePhoto),
                   onTap: () {
                     Get.back();
                     setState(() {
@@ -122,8 +124,8 @@ class _CreatePatientScreenState extends State<CreatePatientScreen> {
 
     if (_selectedDate == null) {
       Get.snackbar(
-        'Error',
-        'Please select a date of birth',
+        context.l10n.error,
+        context.l10n.pleaseSelectDateOfBirth,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red[100],
         colorText: Colors.red[800],
@@ -133,8 +135,8 @@ class _CreatePatientScreenState extends State<CreatePatientScreen> {
 
     if (_selectedGender == null) {
       Get.snackbar(
-        'Error',
-        'Please select biologic sex',
+        context.l10n.error,
+        context.l10n.pleaseSelectBiologicSex,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red[100],
         colorText: Colors.red[800],
@@ -145,6 +147,9 @@ class _CreatePatientScreenState extends State<CreatePatientScreen> {
     setState(() {
       _isLoading = true;
     });
+
+    // Extract localized strings before async operations
+    final errorTitle = context.l10n.error;
 
     try {
       final newPatient = await patientController.createPatient(
@@ -166,7 +171,7 @@ class _CreatePatientScreenState extends State<CreatePatientScreen> {
       }
     } catch (e) {
       Get.snackbar(
-        'Error',
+        errorTitle,
         'Failed to create patient: $e',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red[100],
@@ -179,15 +184,11 @@ class _CreatePatientScreenState extends State<CreatePatientScreen> {
     }
   }
 
-  String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year}';
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create New Patient'),
+        title: Text(context.l10n.createNewPatient),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Get.back(),
@@ -232,7 +233,7 @@ class _CreatePatientScreenState extends State<CreatePatientScreen> {
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
-                                  'Add Photo\n(Optional)',
+                                  context.l10n.addPhotoOptional,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     color: Colors.grey[600],
@@ -249,18 +250,18 @@ class _CreatePatientScreenState extends State<CreatePatientScreen> {
               // Name field
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Full Name *',
-                  hintText: 'Enter patient\'s full name',
+                decoration: InputDecoration(
+                  labelText: context.l10n.fullNameRequired,
+                  hintText: context.l10n.enterPatientFullName,
                   prefixIcon: Icon(Icons.person),
                   border: OutlineInputBorder(),
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Name is required';
+                    return context.l10n.nameRequired;
                   }
                   if (value.trim().length < 2) {
-                    return 'Name must be at least 2 characters';
+                    return context.l10n.nameMinLength;
                   }
                   return null;
                 },
@@ -272,16 +273,16 @@ class _CreatePatientScreenState extends State<CreatePatientScreen> {
               InkWell(
                 onTap: _selectDate,
                 child: InputDecorator(
-                  decoration: const InputDecoration(
-                    labelText: 'Date of Birth *',
-                    hintText: 'Select date of birth',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.dateOfBirthRequired,
+                    hintText: context.l10n.selectDateOfBirth,
                     prefixIcon: Icon(Icons.cake),
                     border: OutlineInputBorder(),
                   ),
                   child: Text(
                     _selectedDate != null
-                        ? _formatDate(_selectedDate!)
-                        : 'Select date of birth',
+                        ? _selectedDate!.formattedDate
+                        : context.l10n.selectDateOfBirth,
                     style: TextStyle(
                       color:
                           _selectedDate != null
@@ -294,31 +295,39 @@ class _CreatePatientScreenState extends State<CreatePatientScreen> {
               const SizedBox(height: 16),
 
               // Biologic Sex field
-              DropdownButtonFormField<String>(
-                decoration: const InputDecoration(
-                  labelText: 'Biologic Sex *',
-                  hintText: 'Select biologic sex',
-                  prefixIcon: Icon(Icons.wc),
-                  border: OutlineInputBorder(),
-                ),
-                value: _selectedGender,
-                items:
-                    _genderOptions.map((String gender) {
-                      return DropdownMenuItem<String>(
-                        value: gender,
-                        child: Text(gender),
-                      );
-                    }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedGender = newValue;
-                  });
-                },
-                validator: (value) {
-                  if (value == null) {
-                    return 'Biologic sex is required';
-                  }
-                  return null;
+              Builder(
+                builder: (context) {
+                  final genderOptions = [
+                    context.l10n.male,
+                    context.l10n.female,
+                  ];
+                  return DropdownButtonFormField<String>(
+                    decoration: InputDecoration(
+                      labelText: context.l10n.biologicSexRequired,
+                      hintText: context.l10n.selectBiologicSex,
+                      prefixIcon: Icon(Icons.wc),
+                      border: OutlineInputBorder(),
+                    ),
+                    value: _selectedGender,
+                    items:
+                        genderOptions.map((String gender) {
+                          return DropdownMenuItem<String>(
+                            value: gender,
+                            child: Text(gender),
+                          );
+                        }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _selectedGender = newValue;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return context.l10n.biologicSexRequired2;
+                      }
+                      return null;
+                    },
+                  );
                 },
               ),
               const SizedBox(height: 16),
@@ -326,12 +335,12 @@ class _CreatePatientScreenState extends State<CreatePatientScreen> {
               // Medical Conditions field
               TextFormField(
                 controller: _medicalConditionsController,
-                decoration: const InputDecoration(
-                  labelText: 'Medical Conditions',
-                  hintText: 'Enter any relevant medical conditions (optional)',
+                decoration: InputDecoration(
+                  labelText: context.l10n.medicalConditions,
+                  hintText: context.l10n.enterMedicalConditions,
                   prefixIcon: Icon(Icons.medical_services),
                   border: OutlineInputBorder(),
-                  helperText: 'Optional - e.g., diabetes, hypertension, etc.',
+                  helperText: context.l10n.medicalConditionsHelper,
                 ),
                 maxLines: 3,
                 textCapitalization: TextCapitalization.sentences,
@@ -364,8 +373,8 @@ class _CreatePatientScreenState extends State<CreatePatientScreen> {
                               color: Colors.white,
                             ),
                           )
-                          : const Text(
-                            'Create Patient',
+                          : Text(
+                            context.l10n.createPatient,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -377,7 +386,7 @@ class _CreatePatientScreenState extends State<CreatePatientScreen> {
 
               // Required fields note
               Text(
-                '* Required fields',
+                context.l10n.requiredFields,
                 style: TextStyle(color: Colors.grey[600], fontSize: 12),
                 textAlign: TextAlign.center,
               ),

@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import '../services/localization_service.dart';
 
 class AppController extends GetxController {
   final GetStorage _storage = GetStorage();
@@ -50,7 +51,7 @@ class AppController extends GetxController {
 
   // Get company display name (shortened if too long)
   String get displayCompanyName {
-    if (selectedCompany.value.isEmpty) return 'Select Company';
+    if (selectedCompany.value.isEmpty) return l10n.selectCompany;
     if (selectedCompany.value.length > 15) {
       return '${selectedCompany.value.substring(0, 12)}...';
     }

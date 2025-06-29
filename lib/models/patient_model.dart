@@ -1,3 +1,5 @@
+import '../services/localization_service.dart';
+
 class Patient {
   final int id;
   final String name;
@@ -80,7 +82,21 @@ class Patient {
   }
 
   // Get formatted age string
-  String get ageString => '$age years old';
+  String get ageString => l10n.yearsOld(age);
+
+  // Get localized gender string
+  String get localizedGender {
+    switch (gender.toLowerCase()) {
+      case 'male':
+      case 'masculino':
+        return l10n.male;
+      case 'female':
+      case 'feminino':
+        return l10n.female;
+      default:
+        return gender; // fallback to original if not recognized
+    }
+  }
 
   // Get initials for avatar
   String get initials {

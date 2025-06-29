@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import '../models/wound_model.dart';
 import '../services/wound_service.dart';
+import '../services/localization_service.dart';
 
 class WoundController extends GetxController {
   final WoundService _woundService = WoundService();
@@ -21,8 +22,8 @@ class WoundController extends GetxController {
     } catch (e) {
       error.value = _cleanErrorMessage(e.toString());
       Get.snackbar(
-        'Error',
-        'Failed to load wounds: ${error.value}',
+        l10n.error,
+        l10n.failedToLoadWounds(error.value),
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
@@ -41,8 +42,8 @@ class WoundController extends GetxController {
       wounds.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
 
       Get.snackbar(
-        'Success',
-        'Wound created successfully',
+        l10n.success,
+        l10n.woundCreatedSuccessfully,
         snackPosition: SnackPosition.BOTTOM,
       );
 
@@ -50,8 +51,8 @@ class WoundController extends GetxController {
     } catch (e) {
       error.value = _cleanErrorMessage(e.toString());
       Get.snackbar(
-        'Error',
-        'Failed to create wound: ${error.value}',
+        l10n.error,
+        l10n.failedToCreateWound(error.value),
         snackPosition: SnackPosition.BOTTOM,
       );
       return null;

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../services/localization_service.dart';
+import '../services/date_service.dart';
 
 enum WagnerClassification {
   grade0(0, 'No open Lesion'),
@@ -13,6 +15,27 @@ enum WagnerClassification {
   final String description;
 
   String get displayName => 'Grade $grade: $description';
+
+  // Get localized description
+  String get localizedDescription {
+    switch (this) {
+      case WagnerClassification.grade0:
+        return l10n.wagnerGrade0;
+      case WagnerClassification.grade1:
+        return l10n.wagnerGrade1;
+      case WagnerClassification.grade2:
+        return l10n.wagnerGrade2;
+      case WagnerClassification.grade3:
+        return l10n.wagnerGrade3;
+      case WagnerClassification.grade4:
+        return l10n.wagnerGrade4;
+      case WagnerClassification.grade5:
+        return l10n.wagnerGrade5;
+    }
+  }
+
+  String get localizedDisplayName =>
+      '${l10n.grade} $grade: $localizedDescription';
 
   // Get color based on grade severity
   Color get color {
@@ -51,7 +74,7 @@ class WoundSize {
   }
 
   String get displayText =>
-      '${height.toStringAsFixed(1)} x ${width.toStringAsFixed(1)} cm';
+      '${height.toStringAsFixed(1)} x ${width.toStringAsFixed(1)} ${l10n.cmUnit}';
   double get area => height * width;
 }
 
@@ -171,22 +194,11 @@ class Sample {
 
   // Get formatted date
   String get formattedDate {
-    return '${date.day}/${date.month}/${date.year}';
+    return date.formattedDate;
   }
 
   // Get time since sample
   String get timeSinceCreation {
-    final now = DateTime.now();
-    final difference = now.difference(date);
-
-    if (difference.inDays > 0) {
-      return '${difference.inDays} day${difference.inDays > 1 ? 's' : ''} ago';
-    } else if (difference.inHours > 0) {
-      return '${difference.inHours} hour${difference.inHours > 1 ? 's' : ''} ago';
-    } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes} minute${difference.inMinutes > 1 ? 's' : ''} ago';
-    } else {
-      return 'Just now';
-    }
+    return date.relativeTime;
   }
 }

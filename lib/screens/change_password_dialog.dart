@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/auth_controller.dart';
+import '../services/localization_service.dart';
 
 class ChangePasswordDialog extends StatefulWidget {
   const ChangePasswordDialog({super.key});
@@ -41,7 +42,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Change Password'),
+      title: Text(context.l10n.changePassword),
       content: Form(
         key: _formKey,
         child: Column(
@@ -52,8 +53,8 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
               controller: _currentPasswordController,
               obscureText: !_isCurrentPasswordVisible,
               decoration: InputDecoration(
-                labelText: 'Current Password',
-                hintText: 'Enter your current password',
+                labelText: context.l10n.currentPassword,
+                hintText: context.l10n.enterCurrentPassword,
                 prefixIcon: const Icon(Icons.lock_outlined),
                 suffixIcon: IconButton(
                   icon: Icon(
@@ -73,7 +74,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter your current password';
+                  return context.l10n.pleaseEnterCurrentPassword;
                 }
                 return null;
               },
@@ -85,8 +86,8 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
               controller: _newPasswordController,
               obscureText: !_isNewPasswordVisible,
               decoration: InputDecoration(
-                labelText: 'New Password',
-                hintText: 'Enter your new password',
+                labelText: context.l10n.newPassword,
+                hintText: context.l10n.enterNewPassword,
                 prefixIcon: const Icon(Icons.lock),
                 suffixIcon: IconButton(
                   icon: Icon(
@@ -106,13 +107,13 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter a new password';
+                  return context.l10n.pleaseEnterNewPassword;
                 }
                 if (value.length < 6) {
-                  return 'Password must be at least 6 characters';
+                  return context.l10n.passwordMinLength;
                 }
                 if (value == _currentPasswordController.text) {
-                  return 'New password must be different from current password';
+                  return context.l10n.newPasswordDifferent;
                 }
                 return null;
               },
@@ -124,8 +125,8 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
               controller: _confirmPasswordController,
               obscureText: !_isConfirmPasswordVisible,
               decoration: InputDecoration(
-                labelText: 'Confirm New Password',
-                hintText: 'Confirm your new password',
+                labelText: context.l10n.confirmNewPassword,
+                hintText: context.l10n.confirmNewPasswordHint,
                 prefixIcon: const Icon(Icons.lock_reset),
                 suffixIcon: IconButton(
                   icon: Icon(
@@ -145,10 +146,10 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please confirm your new password';
+                  return context.l10n.pleaseConfirmPassword;
                 }
                 if (value != _newPasswordController.text) {
-                  return 'Passwords do not match';
+                  return context.l10n.passwordsDoNotMatch;
                 }
                 return null;
               },
@@ -157,7 +158,10 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
         ),
       ),
       actions: [
-        TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+        TextButton(
+          onPressed: () => Get.back(),
+          child: Text(context.l10n.cancel),
+        ),
         Obx(
           () => ElevatedButton(
             onPressed: _authController.isLoading.value ? null : _changePassword,
@@ -175,7 +179,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                       ),
                     )
-                    : const Text('Change Password'),
+                    : Text(context.l10n.changePassword),
           ),
         ),
       ],

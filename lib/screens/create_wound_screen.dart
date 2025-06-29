@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'dart:io';
 
 import '../models/patient_model.dart';
@@ -10,6 +11,7 @@ import '../controllers/wound_controller.dart';
 import '../controllers/sample_controller.dart';
 import '../controllers/auth_controller.dart';
 import '../utils/image_processor.dart';
+import '../services/localization_service.dart';
 import 'wound_detail_screen.dart';
 
 class CreateWoundScreen extends StatefulWidget {
@@ -51,7 +53,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create New Wound'),
+        title: Text(context.l10n.createNewWound),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Get.back(),
@@ -97,14 +99,28 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
             CircleAvatar(
               radius: 25,
               backgroundColor: Colors.blue.shade100,
-              child: Text(
-                widget.patient.initials,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue.shade700,
-                ),
-              ),
+              backgroundImage:
+                  widget.patient.profilePicture != null &&
+                          widget.patient.profilePicture!.isNotEmpty
+                      ? (widget.patient.profilePicture!.startsWith('http')
+                              ? CachedNetworkImageProvider(
+                                widget.patient.profilePicture!,
+                              )
+                              : FileImage(File(widget.patient.profilePicture!)))
+                          as ImageProvider
+                      : null,
+              child:
+                  widget.patient.profilePicture == null ||
+                          widget.patient.profilePicture!.isEmpty
+                      ? Text(
+                        widget.patient.initials,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue.shade700,
+                        ),
+                      )
+                      : null,
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -120,7 +136,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
                     ),
                   ),
                   Text(
-                    '${widget.patient.ageString} • ${widget.patient.gender}',
+                    '${widget.patient.ageString} • ${widget.patient.localizedGender}',
                     style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                   ),
                 ],
@@ -137,7 +153,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Wound Information',
+          context.l10n.woundInformation,
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -150,17 +166,17 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
         TextFormField(
           controller: _locationController,
           decoration: InputDecoration(
-            labelText: 'Wound Location *',
-            hintText: 'e.g., Left foot (plantar surface)',
+            labelText: context.l10n.woundLocationRequired,
+            hintText: context.l10n.woundLocationHint,
             prefixIcon: const Icon(Icons.location_on),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
           ),
           validator: (value) {
             if (value == null || value.trim().isEmpty) {
-              return 'Please enter the wound location';
+              return context.l10n.pleaseEnterWoundLocation;
             }
             if (value.trim().length < 3) {
-              return 'Location must be at least 3 characters';
+              return context.l10n.locationMinLength;
             }
             return null;
           },
@@ -171,7 +187,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
         DropdownButtonFormField<WoundOrigin>(
           value: _selectedOrigin,
           decoration: InputDecoration(
-            labelText: 'Wound Origin *',
+            labelText: context.l10n.woundOriginRequired,
             prefixIcon: const Icon(Icons.medical_services),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
           ),
@@ -179,7 +195,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
               WoundOrigin.values.map((origin) {
                 return DropdownMenuItem(
                   value: origin,
-                  child: Text(origin.displayName),
+                  child: Text(origin.localizedDisplayName),
                 );
               }).toList(),
           onChanged: (value) {
@@ -189,7 +205,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
           },
           validator: (value) {
             if (value == null) {
-              return 'Please select the wound origin';
+              return context.l10n.pleaseSelectWoundOrigin;
             }
             return null;
           },
@@ -201,8 +217,8 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
           controller: _descriptionController,
           maxLines: 3,
           decoration: InputDecoration(
-            labelText: 'Description (Optional)',
-            hintText: 'Additional details about the wound...',
+            labelText: context.l10n.descriptionOptional,
+            hintText: context.l10n.additionalWoundDetails,
             prefixIcon: const Icon(Icons.description),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
             alignLabelWithHint: true,
@@ -217,7 +233,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Initial Sample',
+          context.l10n.initialSample,
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -226,7 +242,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
         ),
         const SizedBox(height: 8),
         Text(
-          'Capture the first sample for this wound',
+          context.l10n.captureFirstSample,
           style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
         ),
         const SizedBox(height: 16),
@@ -255,7 +271,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
                 Icon(Icons.photo_camera, color: Colors.blue.shade600, size: 20),
                 const SizedBox(width: 8),
                 Text(
-                  'Wound Photo',
+                  context.l10n.woundPhoto,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -293,7 +309,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    'Photo processed (224x224px)',
+                    context.l10n.photoProcessed,
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.green.shade600,
@@ -312,7 +328,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
                   child: OutlinedButton.icon(
                     onPressed: () => _pickImage(ImageSource.camera),
                     icon: const Icon(Icons.camera_alt),
-                    label: const Text('Take Photo'),
+                    label: Text(context.l10n.takePhoto),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
@@ -323,7 +339,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
                   child: OutlinedButton.icon(
                     onPressed: () => _pickImage(ImageSource.gallery),
                     icon: const Icon(Icons.photo_library),
-                    label: const Text('Gallery'),
+                    label: Text(context.l10n.gallery),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
@@ -338,7 +354,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
                 child: TextButton.icon(
                   onPressed: () => _pickImage(ImageSource.camera),
                   icon: const Icon(Icons.refresh, size: 16),
-                  label: const Text('Retake Photo'),
+                  label: Text(context.l10n.retakePhoto),
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.orange.shade600,
                   ),
@@ -365,7 +381,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
                 Icon(Icons.straighten, color: Colors.blue.shade600, size: 20),
                 const SizedBox(width: 8),
                 Text(
-                  'Size Measurements',
+                  context.l10n.sizeMeasurements,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -391,7 +407,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
 
             if (_hasOptionalSize) ...[
               Text(
-                'Enter wound dimensions in centimeters',
+                context.l10n.enterWoundDimensions,
                 style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
               ),
               const SizedBox(height: 12),
@@ -404,7 +420,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
                         decimal: true,
                       ),
                       decoration: InputDecoration(
-                        labelText: 'Height (cm)',
+                        labelText: context.l10n.heightCm,
                         hintText: '0.0',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -416,7 +432,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
                                 if (value != null && value.isNotEmpty) {
                                   final height = double.tryParse(value);
                                   if (height == null || height <= 0) {
-                                    return 'Enter valid height';
+                                    return context.l10n.enterValidHeight;
                                   }
                                 }
                                 return null;
@@ -432,7 +448,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
                         decimal: true,
                       ),
                       decoration: InputDecoration(
-                        labelText: 'Width (cm)',
+                        labelText: context.l10n.widthCm,
                         hintText: '0.0',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -444,7 +460,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
                                 if (value != null && value.isNotEmpty) {
                                   final width = double.tryParse(value);
                                   if (width == null || width <= 0) {
-                                    return 'Enter valid width';
+                                    return context.l10n.enterValidWidth;
                                   }
                                 }
                                 return null;
@@ -456,7 +472,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
               ),
             ] else ...[
               Text(
-                'Size measurements are optional. Enable to add measurements.',
+                context.l10n.sizeMeasurementsOptional,
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey.shade600,
@@ -483,7 +499,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
         ),
         child:
             _isCreating
-                ? const Row(
+                ? Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(
@@ -495,11 +511,11 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
                       ),
                     ),
                     SizedBox(width: 12),
-                    Text('Creating Wound...'),
+                    Text(context.l10n.creatingWound),
                   ],
                 )
-                : const Text(
-                  'Create Wound',
+                : Text(
+                  context.l10n.createWound,
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
       ),
@@ -527,6 +543,9 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
     setState(() {
       _isCreating = true;
     });
+
+    // Extract localized strings before async operations
+    final errorTitle = context.l10n.error;
 
     try {
       final authController = Get.find<AuthController>();
@@ -582,7 +601,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
       woundController.loadWoundsByPatientId(widget.patient.id);
     } catch (e) {
       Get.snackbar(
-        'Error',
+        errorTitle,
         'Failed to create wound: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,
       );

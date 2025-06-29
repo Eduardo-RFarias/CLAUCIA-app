@@ -4,6 +4,7 @@ import '../models/user_model.dart';
 import '../services/auth_service.dart';
 import '../screens/main_layout.dart';
 import '../screens/login_screen.dart';
+import '../services/localization_service.dart';
 
 class AuthController extends GetxController {
   final AuthService _authService = AuthService();
@@ -62,14 +63,14 @@ class AuthController extends GetxController {
       Get.offAll(() => const MainLayout());
 
       Get.snackbar(
-        'Success',
-        'Welcome back, ${user.name}!',
+        l10n.success,
+        l10n.welcomeBackUser(user.name),
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (e) {
       errorMessage(_cleanErrorMessage(e.toString()));
       Get.snackbar(
-        'Login Failed',
+        l10n.loginFailed,
         errorMessage.value,
         snackPosition: SnackPosition.BOTTOM,
       );
@@ -94,14 +95,14 @@ class AuthController extends GetxController {
       Get.offAll(() => const LoginScreen());
 
       Get.snackbar(
-        'Logged Out',
-        'You have been logged out successfully',
+        l10n.loggedOut,
+        l10n.youHaveBeenLoggedOutSuccessfully,
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (e) {
       Get.snackbar(
-        'Error',
-        'Logout failed: ${e.toString()}',
+        l10n.error,
+        l10n.logoutFailed(e.toString()),
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
@@ -128,14 +129,14 @@ class AuthController extends GetxController {
       currentUser.value = updatedUser;
 
       Get.snackbar(
-        'Success',
-        'Profile picture updated successfully',
+        l10n.success,
+        l10n.profilePictureUpdatedSuccessfully,
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (e) {
       errorMessage(_cleanErrorMessage(e.toString()));
       Get.snackbar(
-        'Error',
+        l10n.error,
         errorMessage.value,
         snackPosition: SnackPosition.BOTTOM,
       );
@@ -165,14 +166,14 @@ class AuthController extends GetxController {
       );
 
       Get.snackbar(
-        'Success',
-        'Password changed successfully',
+        l10n.success,
+        l10n.passwordChangedSuccessfully,
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (e) {
       errorMessage(_cleanErrorMessage(e.toString()));
       Get.snackbar(
-        'Error',
+        l10n.error,
         errorMessage.value,
         snackPosition: SnackPosition.BOTTOM,
       );

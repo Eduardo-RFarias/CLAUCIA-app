@@ -7,6 +7,8 @@ import '../models/wound_model.dart';
 import '../controllers/wound_controller.dart';
 import '../controllers/sample_controller.dart';
 import '../controllers/patient_controller.dart';
+import '../services/localization_service.dart';
+import '../services/date_service.dart';
 import 'create_wound_screen.dart';
 import 'wound_detail_screen.dart';
 
@@ -105,7 +107,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
 
                   // Age and Gender
                   Text(
-                    '${widget.patient.ageString} • ${widget.patient.gender}',
+                    '${widget.patient.ageString} • ${widget.patient.localizedGender}',
                     style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
                   ),
                 ],
@@ -130,7 +132,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Basic Information',
+                            context.l10n.basicInformation,
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
@@ -141,21 +143,21 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
 
                           _buildInfoRow(
                             Icons.cake,
-                            'Date of Birth',
-                            _formatDate(widget.patient.dateOfBirth),
+                            context.l10n.dateOfBirth,
+                            widget.patient.dateOfBirth.formattedDate,
                           ),
                           const SizedBox(height: 12),
 
                           _buildInfoRow(
                             Icons.wc,
-                            'Biologic Sex',
-                            widget.patient.gender,
+                            context.l10n.biologicSex,
+                            widget.patient.localizedGender,
                           ),
                           const SizedBox(height: 12),
 
                           _buildInfoRow(
                             Icons.calendar_today,
-                            'Age',
+                            context.l10n.age,
                             widget.patient.ageString,
                           ),
                         ],
@@ -176,7 +178,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Medical Conditions',
+                            context.l10n.medicalConditions,
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
@@ -207,7 +209,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                             )
                           else
                             Text(
-                              'No medical conditions recorded',
+                              context.l10n.noMedicalConditionsRecorded,
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.grey.shade600,
@@ -235,7 +237,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Wounds',
+                                context.l10n.wounds,
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w600,
@@ -251,7 +253,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                                   );
                                 },
                                 icon: const Icon(Icons.add, size: 16),
-                                label: const Text('Add Wound'),
+                                label: Text(context.l10n.addWound),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.green.shade600,
                                   foregroundColor: Colors.white,
@@ -287,7 +289,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                                     ),
                                     const SizedBox(height: 16),
                                     Text(
-                                      'No wounds recorded',
+                                      context.l10n.noWoundsRecorded,
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500,
@@ -296,7 +298,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
-                                      'Wounds and their treatment progress will appear here',
+                                      context.l10n.woundsProgressMessage,
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: Colors.grey.shade500,
@@ -339,7 +341,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Patient History',
+                            context.l10n.patientHistory,
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
@@ -350,15 +352,21 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
 
                           _buildInfoRow(
                             Icons.person_add,
-                            'Created',
-                            _formatDateTime(widget.patient.createdAt),
+                            context.l10n.created,
+                            widget
+                                .patient
+                                .createdAt
+                                .formattedDateTimeWithTimezone,
                           ),
                           const SizedBox(height: 12),
 
                           _buildInfoRow(
                             Icons.update,
-                            'Last Updated',
-                            _formatDateTime(widget.patient.updatedAt),
+                            context.l10n.lastUpdated,
+                            widget
+                                .patient
+                                .updatedAt
+                                .formattedDateTimeWithTimezone,
                           ),
                         ],
                       ),
@@ -447,7 +455,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
 
               // Origin
               Text(
-                wound.origin.displayName,
+                wound.origin.localizedDisplayName,
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.blue.shade600,
@@ -489,7 +497,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            'Latest Sample',
+                            context.l10n.latestSample,
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
@@ -535,8 +543,8 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                                           null)
                                   ? latestSample
                                       .effectiveClassification
-                                      .displayName
-                                  : 'Pending assessment',
+                                      .localizedDisplayName
+                                  : context.l10n.pendingAssessment,
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
@@ -579,7 +587,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                             ),
                             const SizedBox(width: 6),
                             Text(
-                              'Size: ${latestSample.size!.displayText}',
+                              '${context.l10n.size}: ${latestSample.size!.displayText}',
                               style: TextStyle(
                                 fontSize: 11,
                                 color: Colors.grey.shade600,
@@ -604,7 +612,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      '${wound.samples.length} sample${wound.samples.length != 1 ? 's' : ''}',
+                      '${wound.samples.length} ${context.l10n.sample}${wound.samples.length != 1 ? 's' : ''}',
                       style: TextStyle(
                         fontSize: 11,
                         color: Colors.grey.shade600,
@@ -619,7 +627,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        '${wound.samples.where((s) => !s.hasBeenReviewed).length} pending review',
+                        '${wound.samples.where((s) => !s.hasBeenReviewed).length} ${context.l10n.pendingReview}',
                         style: TextStyle(
                           fontSize: 11,
                           color: Colors.orange.shade600,
@@ -646,7 +654,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        'No samples recorded',
+                        context.l10n.noSamplesRecorded,
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.orange.shade700,
@@ -666,7 +674,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                   Icon(Icons.schedule, size: 16, color: Colors.grey.shade500),
                   const SizedBox(width: 4),
                   Text(
-                    'Created ${wound.daysSinceCreation}',
+                    '${context.l10n.createdTime} ${wound.daysSinceCreation}',
                     style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                   ),
                 ],
@@ -711,23 +719,15 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
     );
   }
 
-  String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year}';
-  }
-
-  String _formatDateTime(DateTime dateTime) {
-    return '${_formatDate(dateTime)} at ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
-  }
-
   void _showDeleteConfirmationDialog() {
     Get.dialog(
       AlertDialog(
-        title: const Text('Delete Patient'),
+        title: Text(context.l10n.deletePatient),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Are you sure you want to delete this patient?'),
+            Text(context.l10n.areYouSureDeletePatient),
             const SizedBox(height: 8),
             Text(
               widget.patient.name,
@@ -746,7 +746,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
               );
 
               return Text(
-                'This will also delete all $woundsCount wounds and $samplesCount samples.',
+                context.l10n.deleteWoundsAndSamples(woundsCount, samplesCount),
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.orange.shade700,
@@ -755,8 +755,8 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
               );
             }),
             const SizedBox(height: 8),
-            const Text(
-              'This action cannot be undone.',
+            Text(
+              context.l10n.actionCannotBeUndone,
               style: TextStyle(
                 fontSize: 12,
                 color: Colors.grey,
@@ -766,7 +766,10 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text(context.l10n.cancel),
+          ),
           Obx(
             () => ElevatedButton(
               onPressed:
@@ -787,7 +790,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                           ),
                         ),
                       )
-                      : const Text('Delete'),
+                      : Text(context.l10n.delete),
             ),
           ),
         ],
@@ -796,6 +799,14 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
   }
 
   Future<void> _deletePatient() async {
+    // Extract localized strings before async gap
+    final successTitle = context.l10n.success;
+    final successMessage = context.l10n.patientDeletedSuccessfully(
+      widget.patient.name,
+    );
+    final errorTitle = context.l10n.error;
+    final errorMessage = context.l10n.failedToDeletePatient;
+
     try {
       await patientController.deletePatient(widget.patient.id);
 
@@ -807,8 +818,8 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
 
       // Show success message after navigation
       Get.snackbar(
-        'Success',
-        'Patient ${widget.patient.name} deleted successfully',
+        successTitle,
+        successMessage,
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (e) {
@@ -819,8 +830,8 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
 
       // Show error message
       Get.snackbar(
-        'Error',
-        'Failed to delete patient: ${e.toString()}',
+        errorTitle,
+        '$errorMessage: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,
       );
     }

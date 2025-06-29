@@ -4,10 +4,18 @@ import 'package:get_storage/get_storage.dart';
 import 'controllers/auth_controller.dart';
 import 'screens/login_screen.dart';
 import 'screens/main_layout.dart';
+import 'services/localization_service.dart';
+
+// Generated localization files
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
+
+  // Initialize LocalizationService
+  Get.put(LocalizationService());
+
   runApp(const MyApp());
 }
 
@@ -16,15 +24,26 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      title: 'Claucia App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: true,
-        appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
+    final LocalizationService localizationService =
+        Get.find<LocalizationService>();
+
+    return Obx(
+      () => GetMaterialApp(
+        title: 'Claucia App',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          useMaterial3: true,
+          appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
+        ),
+        // Internationalization configuration
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: localizationService.currentLocale.value,
+        fallbackLocale:
+            LocalizationService.defaultLocale, // Now defaults to Portuguese
+        home: const AuthWrapper(),
+        debugShowCheckedModeBanner: false,
       ),
-      home: const AuthWrapper(),
-      debugShowCheckedModeBanner: false,
     );
   }
 }

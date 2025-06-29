@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import '../models/patient_model.dart';
 import '../services/patient_service.dart';
+import '../services/localization_service.dart';
 import 'auth_controller.dart';
 import 'app_controller.dart';
 
@@ -51,8 +52,8 @@ class PatientController extends GetxController {
       hasError(true);
       errorMessage(_cleanErrorMessage(e.toString()));
       Get.snackbar(
-        'Error',
-        'Failed to load patients: ${errorMessage.value}',
+        l10n.error,
+        l10n.failedToLoadPatients(errorMessage.value),
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
@@ -106,8 +107,8 @@ class PatientController extends GetxController {
       patients.insert(0, newPatient);
 
       Get.snackbar(
-        'Success',
-        'Patient ${newPatient.name} created successfully',
+        l10n.success,
+        l10n.patientCreatedSuccessfully(newPatient.name),
         snackPosition: SnackPosition.BOTTOM,
       );
 
@@ -116,8 +117,8 @@ class PatientController extends GetxController {
       hasError(true);
       errorMessage(_cleanErrorMessage(e.toString()));
       Get.snackbar(
-        'Error',
-        'Failed to create patient: ${errorMessage.value}',
+        l10n.error,
+        l10n.failedToCreatePatient(errorMessage.value),
         snackPosition: SnackPosition.BOTTOM,
       );
       return null;

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'sample_model.dart';
+import '../services/localization_service.dart';
+import '../services/date_service.dart';
 
 enum WoundOrigin {
   diabeticUlcers('Diabetic Ulcers'),
@@ -9,6 +11,20 @@ enum WoundOrigin {
 
   const WoundOrigin(this.displayName);
   final String displayName;
+
+  // Get localized display name
+  String get localizedDisplayName {
+    switch (this) {
+      case WoundOrigin.diabeticUlcers:
+        return l10n.diabeticUlcers;
+      case WoundOrigin.nonDiabeticUlcers:
+        return l10n.nonDiabeticUlcers;
+      case WoundOrigin.neuropathicUlcers:
+        return l10n.neuropathicUlcers;
+      case WoundOrigin.venousUlcers:
+        return l10n.venousUlcers;
+    }
+  }
 }
 
 class Wound {
@@ -97,12 +113,7 @@ class Wound {
 
   // Get formatted days since creation
   String get daysSinceCreation {
-    final now = DateTime.now();
-    final difference = now.difference(createdAt).inDays;
-
-    if (difference == 0) return 'Today';
-    if (difference == 1) return 'Yesterday';
-    return '$difference days ago';
+    return createdAt.relativeDate;
   }
 
   // Get status color based on activity
@@ -112,6 +123,6 @@ class Wound {
 
   // Get status text
   String get statusText {
-    return isActive ? 'Active' : 'Healed';
+    return isActive ? l10n.statusActive : l10n.statusHealed;
   }
 }

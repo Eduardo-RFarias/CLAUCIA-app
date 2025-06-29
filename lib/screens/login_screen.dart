@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/auth_controller.dart';
+import '../services/localization_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -36,22 +37,22 @@ class _LoginScreenState extends State<LoginScreen> {
   void _showDemoCredentials() {
     Get.dialog(
       AlertDialog(
-        title: const Text('Demo Credentials'),
-        content: const Column(
+        title: Text(context.l10n.demoCredentials),
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('You can use any of these demo accounts:'),
-            SizedBox(height: 16),
-            Text('📧 john@example.com\n🔑 password123'),
-            SizedBox(height: 8),
-            Text('📧 jane@example.com\n🔑 password456'),
-            SizedBox(height: 8),
-            Text('📧 test@test.com\n🔑 test123'),
+            Text(context.l10n.demoCredentialsInfo),
+            const SizedBox(height: 16),
+            const Text('📧 john@example.com\n🔑 password123'),
+            const SizedBox(height: 8),
+            const Text('📧 jane@example.com\n🔑 password456'),
+            const SizedBox(height: 8),
+            const Text('📧 test@test.com\n🔑 test123'),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('OK')),
+          TextButton(onPressed: () => Get.back(), child: Text(context.l10n.ok)),
         ],
       ),
     );
@@ -77,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'Welcome Back!',
+                  context.l10n.welcomeBack,
                   style: Get.theme.textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Get.theme.primaryColor,
@@ -86,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Sign in to your account',
+                  context.l10n.signInToAccount,
                   style: Get.theme.textTheme.bodyLarge?.copyWith(
                     color: Colors.grey[600],
                   ),
@@ -99,8 +100,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
-                    labelText: 'Email',
-                    hintText: 'Enter your email',
+                    labelText: context.l10n.email,
+                    hintText: context.l10n.enterEmail,
                     prefixIcon: const Icon(Icons.email_outlined),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -116,10 +117,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
+                      return context.l10n.pleaseEnterEmail;
                     }
                     if (!GetUtils.isEmail(value)) {
-                      return 'Please enter a valid email';
+                      return context.l10n.pleaseEnterValidEmail;
                     }
                     return null;
                   },
@@ -131,8 +132,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   controller: _passwordController,
                   obscureText: !_isPasswordVisible,
                   decoration: InputDecoration(
-                    labelText: 'Password',
-                    hintText: 'Enter your password',
+                    labelText: context.l10n.password,
+                    hintText: context.l10n.enterPassword,
                     prefixIcon: const Icon(Icons.lock_outlined),
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -160,10 +161,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
+                      return context.l10n.pleaseEnterPassword;
                     }
                     if (value.length < 6) {
-                      return 'Password must be at least 6 characters';
+                      return context.l10n.passwordMinLength;
                     }
                     return null;
                   },
@@ -227,9 +228,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                             )
-                            : const Text(
-                              'Sign In',
-                              style: TextStyle(
+                            : Text(
+                              context.l10n.signIn,
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -242,7 +243,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 TextButton.icon(
                   onPressed: _showDemoCredentials,
                   icon: const Icon(Icons.info_outline),
-                  label: const Text('View Demo Credentials'),
+                  label: Text(context.l10n.viewDemoCredentials),
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.grey[600],
                   ),

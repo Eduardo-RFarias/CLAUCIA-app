@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/app_controller.dart';
+import '../services/localization_service.dart';
 import 'home_screen.dart';
 import 'profile_screen.dart';
 
@@ -46,7 +47,7 @@ class MainLayout extends StatelessWidget {
                   () => _buildNavButton(
                     context: context,
                     icon: Icons.home,
-                    label: 'Home',
+                    label: context.l10n.home,
                     isSelected: appController.currentIndex.value == 0,
                     onTap: () => appController.changeIndex(0),
                   ),
@@ -65,7 +66,7 @@ class MainLayout extends StatelessWidget {
                   () => _buildNavButton(
                     context: context,
                     icon: Icons.person,
-                    label: 'Profile',
+                    label: context.l10n.profile,
                     isSelected: appController.currentIndex.value == 1,
                     onTap: () => appController.changeIndex(1),
                   ),
@@ -189,7 +190,7 @@ class MainLayout extends StatelessWidget {
                 Icon(Icons.business, color: Colors.blue.shade600),
                 const SizedBox(width: 8),
                 Text(
-                  'Select Company',
+                  context.l10n.selectCompany,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -230,8 +231,8 @@ class MainLayout extends StatelessWidget {
                     appController.selectCompany(company);
                     Get.back();
                     Get.snackbar(
-                      'Company Selected',
-                      'Now working with $company',
+                      context.l10n.companySelected,
+                      '${context.l10n.nowWorkingWith} $company',
                       snackPosition: SnackPosition.BOTTOM,
                       duration: const Duration(seconds: 2),
                     );

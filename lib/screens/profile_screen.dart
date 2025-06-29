@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../controllers/auth_controller.dart';
+import '../services/localization_service.dart';
 import 'change_password_dialog.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -16,18 +17,19 @@ class ProfileScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: Text(context.l10n.profile),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () => _showLogoutDialog(context, authController),
+            tooltip: context.l10n.logout,
           ),
         ],
       ),
       body: Obx(() {
         final user = authController.currentUser.value;
         if (user == null) {
-          return const Center(child: Text('No user data available'));
+          return Center(child: Text(context.l10n.noUserDataAvailable));
         }
 
         return SingleChildScrollView(
@@ -47,50 +49,58 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 32),
 
               // User Information Section
-              _buildSectionTitle('User Information'),
+              _buildSectionTitle(
+                context.l10n.userInformation,
+              ), // This string is not in ARB files
               const SizedBox(height: 16),
               _buildInfoCard([
                 _buildInfoTile(
                   icon: Icons.person,
-                  title: 'Full Name',
+                  title: context.l10n.fullName,
                   subtitle: user.name,
                 ),
                 _buildInfoTile(
                   icon: Icons.email,
-                  title: 'Email Address',
+                  title: context.l10n.emailAddress,
                   subtitle: user.email,
                 ),
                 _buildInfoTile(
                   icon: Icons.badge,
-                  title: 'User ID',
+                  title: context.l10n.userId,
                   subtitle: '#${user.id.toString().padLeft(6, '0')}',
                 ),
                 _buildInfoTile(
                   icon: Icons.verified_user,
-                  title: 'Account Status',
-                  subtitle: 'Active',
+                  title: context.l10n.accountStatus,
+                  subtitle: context.l10n.active,
                   subtitleColor: Colors.green,
                 ),
               ]),
               const SizedBox(height: 32),
 
               // Settings Section
-              _buildSectionTitle('Settings'),
+              _buildSectionTitle(context.l10n.settings),
               const SizedBox(height: 16),
               _buildSettingsCard([
                 _buildSettingsTile(
                   icon: Icons.security,
-                  title: 'Security',
-                  subtitle: 'Password and security settings',
+                  title: context.l10n.security,
+                  subtitle: context.l10n.passwordAndSecuritySettings,
                   onTap: () => _showChangePasswordDialog(context),
+                ),
+                _buildSettingsTile(
+                  icon: Icons.language,
+                  title: context.l10n.language,
+                  subtitle: _getCurrentLanguageName(context),
+                  onTap: () => _showLanguageSelectionDialog(context),
                 ),
               ]),
               const SizedBox(height: 32),
 
               // About Section
-              _buildSectionTitle('About'),
+              _buildSectionTitle(context.l10n.about),
               const SizedBox(height: 16),
-              _buildAboutCard(),
+              _buildAboutCard(context),
               const SizedBox(height: 32),
 
               // Logout Button
@@ -294,7 +304,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAboutCard() {
+  Widget _buildAboutCard(BuildContext context) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -307,23 +317,23 @@ class ProfileScreen extends StatelessWidget {
               children: [
                 Icon(Icons.info_outline, color: Colors.blue.shade600),
                 const SizedBox(width: 8),
-                const Text(
-                  'About This App',
+                Text(
+                  context.l10n.aboutThisApp,
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ],
             ),
             const SizedBox(height: 12),
-            const Text(
-              'Claucia is a modern Flutter application built with GetX for state management. This app demonstrates authentication, profile management, and clean architecture patterns.',
+            Text(
+              context.l10n.appDescription,
               style: TextStyle(fontSize: 14, color: Colors.grey, height: 1.5),
             ),
             const SizedBox(height: 16),
             Row(
               children: [
-                _buildInfoChip('Version', '1.0.0'),
+                _buildInfoChip(context.l10n.version, '1.0.0'),
                 const SizedBox(width: 8),
-                _buildInfoChip('Build', '1'),
+                _buildInfoChip(context.l10n.build, '1'),
               ],
             ),
           ],
@@ -359,7 +369,7 @@ class ProfileScreen extends StatelessWidget {
       child: ElevatedButton.icon(
         onPressed: () => _showLogoutDialog(context, authController),
         icon: const Icon(Icons.logout),
-        label: const Text('Sign Out'),
+        label: Text(context.l10n.signOut),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.red,
           foregroundColor: Colors.white,
@@ -375,10 +385,13 @@ class ProfileScreen extends StatelessWidget {
   void _showLogoutDialog(BuildContext context, AuthController authController) {
     Get.dialog(
       AlertDialog(
-        title: const Text('Sign Out'),
-        content: const Text('Are you sure you want to sign out?'),
+        title: Text(context.l10n.signOut),
+        content: Text(context.l10n.areYouSureSignOut),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text(context.l10n.cancel),
+          ),
           ElevatedButton(
             onPressed: () {
               Get.back();
@@ -388,7 +401,7 @@ class ProfileScreen extends StatelessWidget {
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Sign Out'),
+            child: Text(context.l10n.signOut),
           ),
         ],
       ),
@@ -418,23 +431,33 @@ class ProfileScreen extends StatelessWidget {
             children: [
               ListTile(
                 leading: const Icon(Icons.photo_library),
-                title: const Text('Choose from Gallery'),
+                title: Text(context.l10n.chooseFromGallery),
                 onTap: () {
                   Get.back();
-                  _pickImage(ImageSource.gallery, authController, imagePicker);
+                  _pickImage(
+                    context,
+                    ImageSource.gallery,
+                    authController,
+                    imagePicker,
+                  );
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.camera_alt),
-                title: const Text('Take a Photo'),
+                title: Text(context.l10n.takeAPhoto),
                 onTap: () {
                   Get.back();
-                  _pickImage(ImageSource.camera, authController, imagePicker);
+                  _pickImage(
+                    context,
+                    ImageSource.camera,
+                    authController,
+                    imagePicker,
+                  );
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.delete),
-                title: const Text('Remove Photo'),
+                title: Text(context.l10n.removePhoto),
                 onTap: () {
                   Get.back();
                   _removeProfilePicture(authController);
@@ -448,10 +471,15 @@ class ProfileScreen extends StatelessWidget {
   }
 
   void _pickImage(
+    BuildContext context,
     ImageSource source,
     AuthController authController,
     ImagePicker imagePicker,
   ) async {
+    // Extract localized strings before async gap
+    final errorTitle = context.l10n.error;
+    final errorMessage = context.l10n.failedToPickImage;
+
     try {
       final XFile? pickedFile = await imagePicker.pickImage(
         source: source,
@@ -465,8 +493,8 @@ class ProfileScreen extends StatelessWidget {
       }
     } catch (e) {
       Get.snackbar(
-        'Error',
-        'Failed to pick image: $e',
+        errorTitle,
+        '$errorMessage: $e',
         snackPosition: SnackPosition.BOTTOM,
       );
     }
@@ -474,5 +502,52 @@ class ProfileScreen extends StatelessWidget {
 
   void _removeProfilePicture(AuthController authController) {
     authController.updateProfilePicture('');
+  }
+
+  String _getCurrentLanguageName(BuildContext context) {
+    final LocalizationService localizationService =
+        Get.find<LocalizationService>();
+    return localizationService.getLanguageName(
+      localizationService.currentLocale.value,
+    );
+  }
+
+  void _showLanguageSelectionDialog(BuildContext context) {
+    final LocalizationService localizationService =
+        Get.find<LocalizationService>();
+
+    Get.dialog(
+      AlertDialog(
+        title: Text(context.l10n.selectLanguage),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children:
+              LocalizationService.supportedLocales.map((locale) {
+                final isSelected = localizationService.isCurrentLocale(locale);
+                return ListTile(
+                  leading: Text(
+                    localizationService.getLanguageFlag(locale),
+                    style: const TextStyle(fontSize: 24),
+                  ),
+                  title: Text(localizationService.getLanguageName(locale)),
+                  trailing:
+                      isSelected
+                          ? const Icon(Icons.check, color: Colors.blue)
+                          : null,
+                  onTap: () {
+                    localizationService.changeLanguage(locale);
+                    Get.back();
+                  },
+                );
+              }).toList(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text(context.l10n.cancel),
+          ),
+        ],
+      ),
+    );
   }
 }

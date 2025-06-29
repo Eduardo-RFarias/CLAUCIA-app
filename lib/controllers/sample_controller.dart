@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import '../models/sample_model.dart';
 import '../services/sample_service.dart';
+import '../services/localization_service.dart';
 
 class SampleController extends GetxController {
   final SampleService _sampleService = SampleService();
@@ -27,8 +28,8 @@ class SampleController extends GetxController {
     } catch (e) {
       error.value = _cleanErrorMessage(e.toString());
       Get.snackbar(
-        'Error',
-        'Failed to load samples: ${error.value}',
+        l10n.error,
+        l10n.failedToLoadSamples(error.value),
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
