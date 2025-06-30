@@ -1,890 +1,589 @@
 {
   "@@locale": "en",
-  "appTitle": "Claucia App",
-  "@appTitle": {
-    "description": "The title of the application"
-  },
-  
   "welcomeBack": "Welcome Back!",
   "@welcomeBack": {
     "description": "Welcome message on login screen"
   },
-  
   "signInToAccount": "Sign in to your account",
   "@signInToAccount": {
     "description": "Subtitle on login screen"
   },
-  
   "email": "Email",
   "@email": {
     "description": "Email field label"
   },
-  
   "enterEmail": "Enter your email",
   "@enterEmail": {
     "description": "Email field hint text"
   },
-  
   "password": "Password",
   "@password": {
     "description": "Password field label"
   },
-  
   "enterPassword": "Enter your password",
   "@enterPassword": {
     "description": "Password field hint text"
   },
-  
   "signIn": "Sign In",
   "@signIn": {
     "description": "Sign in button text"
   },
-  
   "pleaseEnterEmail": "Please enter your email",
   "@pleaseEnterEmail": {
     "description": "Email validation message"
   },
-  
   "pleaseEnterValidEmail": "Please enter a valid email",
   "@pleaseEnterValidEmail": {
     "description": "Email format validation message"
   },
-  
   "pleaseEnterPassword": "Please enter your password",
   "@pleaseEnterPassword": {
     "description": "Password validation message"
   },
-  
   "passwordMinLength": "Password must be at least 6 characters",
   "@passwordMinLength": {
     "description": "Password length validation message"
   },
-  
   "demoCredentials": "Demo Credentials",
   "@demoCredentials": {
     "description": "Demo credentials dialog title"
   },
-  
   "demoCredentialsInfo": "You can use any of these demo accounts:",
   "@demoCredentialsInfo": {
     "description": "Demo credentials dialog information"
   },
-  
   "viewDemoCredentials": "View Demo Credentials",
   "@viewDemoCredentials": {
     "description": "View demo credentials button text"
   },
-  
   "ok": "OK",
   "@ok": {
     "description": "OK button text"
   },
-  
   "home": "Home",
   "@home": {
     "description": "Home navigation tab"
   },
-  
   "profile": "Profile",
   "@profile": {
-    "description": "Profile navigation tab"  
+    "description": "Profile navigation tab"
   },
-  
   "selectCompany": "Select Company",
   "@selectCompany": {
-    "description": "Company selection dialog title"
+    "description": "Select company dialog title"
   },
-  
   "patients": "Patients",
   "@patients": {
     "description": "Patients section title"
   },
-  
-  "addPatient": "Add Patient",
-  "@addPatient": {
-    "description": "Add patient button text"
-  },
-  
-  "patientName": "Patient Name",
-  "@patientName": {
-    "description": "Patient name field label"
-  },
-  
   "age": "Age",
   "@age": {
     "description": "Age field label"
   },
-  
   "medicalConditions": "Medical Conditions",
   "@medicalConditions": {
     "description": "Medical conditions field label"
   },
-  
   "wounds": "Wounds",
   "@wounds": {
     "description": "Wounds section title"
   },
-  
   "addWound": "Add Wound",
   "@addWound": {
     "description": "Add wound button text"
   },
-  
-  "woundLocation": "Wound Location",
-  "@woundLocation": {
-    "description": "Wound location field label"
-  },
-  
-  "samples": "Samples",
-  "@samples": {
-    "description": "Samples section title"
-  },
-  
-  "addSample": "Add Sample",
-  "@addSample": {
-    "description": "Add sample button text"
-  },
-  
-  "sampleDetails": "Sample Details",
-  "@sampleDetails": {
-    "description": "Sample details screen title"
-  },
-  
-  "photo": "Photo",
-  "@photo": {
-    "description": "Photo section title"
-  },
-  
-  "noPhotoAvailable": "No photo available",
-  "@noPhotoAvailable": {
-    "description": "No photo placeholder text"
-  },
-  
-  "wagnerClassification": "Wagner Classification",
-  "@wagnerClassification": {
-    "description": "Wagner classification section title"
-  },
-  
-  "aiClassification": "AI Classification",
-  "@aiClassification": {
-    "description": "AI classification label"
-  },
-  
-  "professionalClassification": "Professional Classification",
-  "@professionalClassification": {
-    "description": "Professional classification label"
-  },
-  
-  "sizeMeasurements": "Size Measurements",
-  "@sizeMeasurements": {
-    "description": "Size measurements section title"
-  },
-  
-  "length": "Length",
-  "@length": {
-    "description": "Length field label"
-  },
-  
-  "width": "Width",
-  "@width": {
-    "description": "Width field label"
-  },
-  
-  "depth": "Depth",
-  "@depth": {
-    "description": "Depth field label"
-  },
-  
-  "professionalInfo": "Professional Information",
-  "@professionalInfo": {
-    "description": "Professional information section title"
-  },
-  
-  "metadata": "Metadata",
-  "@metadata": {
-    "description": "Metadata section title"
-  },
-  
-  "createdDate": "Created Date",
-  "@createdDate": {
-    "description": "Created date label"
-  },
-  
-  "edit": "Edit",
-  "@edit": {
-    "description": "Edit button text"
-  },
-  
-  "save": "Save",
-  "@save": {
-    "description": "Save button text"
-  },
-  
-  "cancel": "Cancel",
-  "@cancel": {
-    "description": "Cancel button text"
-  },
-  
-  "delete": "Delete",
-  "@delete": {
-    "description": "Delete button text"
-  },
-  
-  "loading": "Loading...",
-  "@loading": {
-    "description": "Loading text"
-  },
-  
-  "noDataAvailable": "No data available",
-  "@noDataAvailable": {
-    "description": "No data available message"
-  },
-  
-  "error": "Error",
-  "@error": {
-    "description": "Error text"
-  },
-  
-  "success": "Success",
-  "@success": {
-    "description": "Success text"
-  },
-  
-  "confirm": "Confirm",
-  "@confirm": {
-    "description": "Confirm button text"
-  },
-  
-  "grade0NoOpenLesion": "Grade 0: No open Lesion",
-  "@grade0NoOpenLesion": {
-    "description": "Wagner classification Grade 0"
-  },
-  
-  "grade1SuperficialUlcer": "Grade 1: Superficial Ulcer",
-  "@grade1SuperficialUlcer": {
-    "description": "Wagner classification Grade 1"
-  },
-  
-  "grade2DeepUlcer": "Grade 2: Deep Ulcer",
-  "@grade2DeepUlcer": {
-    "description": "Wagner classification Grade 2"
-  },
-  
-  "grade3DeepUlcerWithAbscess": "Grade 3: Deep Ulcer with Abscess",
-  "@grade3DeepUlcerWithAbscess": {
-    "description": "Wagner classification Grade 3"
-  },
-  
-  "grade4ForeFootGangrene": "Grade 4: Fore-foot Gangrene",
-  "@grade4ForeFootGangrene": {
-    "description": "Wagner classification Grade 4"
-  },
-  
-  "grade5WholeFootGangrene": "Grade 5: Whole-foot Gangrene",
-  "@grade5WholeFootGangrene": {
-    "description": "Wagner classification Grade 5"
-  },
-  
-  "noAiClassificationPhotoRequired": "No AI Classification - Photo required",
-  "@noAiClassificationPhotoRequired": {
-    "description": "No AI classification message when photo is required"
-  },
-  
-  "pendingAssessment": "Pending assessment",
-  "@pendingAssessment": {
-    "description": "Pending assessment text for classifications"
-  },
-  
-  "updateClassification": "Update Classification",
-  "@updateClassification": {
-    "description": "Update classification dialog title"
-  },
-  
-  "selectProfessionalClassification": "Select Professional Classification:",
-  "@selectProfessionalClassification": {
-    "description": "Professional classification selection label"
-  },
-  
-  "logout": "Logout",
-  "@logout": {
-    "description": "Logout button text"
-  },
-  
-  "changePassword": "Change Password",
-  "@changePassword": {
-    "description": "Change password button text"
-  },
-  
-  "userProfile": "User Profile",
-  "@userProfile": {
-    "description": "User profile section title"
-  },
-  
-  "confirmDeletion": "Confirm Deletion",
-  "@confirmDeletion": {
-    "description": "Deletion confirmation dialog title"
-  },
-  
-  "deleteSampleConfirm": "Are you sure you want to delete this sample?",
-  "@deleteSampleConfirm": {
-    "description": "Sample deletion confirmation message"
-  },
-  
-  "deleteWoundConfirm": "Are you sure you want to delete this wound and all its samples?",
-  "@deleteWoundConfirm": {
-    "description": "Wound deletion confirmation message"
-  },
-  
-  "deletePatientConfirm": "Are you sure you want to delete this patient and all associated data?",
-  "@deletePatientConfirm": {
-    "description": "Patient deletion confirmation message"
-  },
-  
-  "selectLanguage": "Select Language",
-  "@selectLanguage": {
-    "description": "Language selection dialog title"
-  },
-  
-  "language": "Language",
-  "@language": {
-    "description": "Language setting title"
-  },
-  
-  "security": "Security",
-  "@security": {
-    "description": "Security settings title"
-  },
-  
-  "passwordAndSecuritySettings": "Password and security settings",
-  "@passwordAndSecuritySettings": {
-    "description": "Security settings subtitle"
-  },
-  
-  "settings": "Settings",
-  "@settings": {
-    "description": "Settings section title"
-  },
-  
-  "signOut": "Sign Out",
-  "@signOut": {
-    "description": "Sign out button text"
-  },
-  
-  "areYouSureSignOut": "Are you sure you want to sign out?",
-  "@areYouSureSignOut": {
-    "description": "Sign out confirmation message"
-  },
-
-  "addSample": "Add Sample",
-  "@addSample": {
-    "description": "Add sample button and screen title"
-  },
-
-  "newSample": "New Sample",
-  "@newSample": {
-    "description": "New sample section title"
-  },
-
-  "captureNewSample": "Capture a new sample to track wound progress",
-  "@captureNewSample": {
-    "description": "New sample description"
-  },
-
-  "woundPhoto": "Wound Photo",
-  "@woundPhoto": {
-    "description": "Wound photo section title"
-  },
-
-  "takePhoto": "Take Photo",
-  "@takePhoto": {
-    "description": "Take photo button text"
-  },
-
-  "gallery": "Gallery",
-  "@gallery": {
-    "description": "Gallery button text"
-  },
-
-  "retakePhoto": "Retake Photo",
-  "@retakePhoto": {
-    "description": "Retake photo button text"
-  },
-
-  "sizeMeasurements": "Size Measurements",
-  "@sizeMeasurements": {
-    "description": "Size measurements section title"
-  },
-
-  "enterWoundDimensions": "Enter wound dimensions in centimeters",
-  "@enterWoundDimensions": {
-    "description": "Size measurements instruction"
-  },
-
-  "heightCm": "Height (cm)",
-  "@heightCm": {
-    "description": "Height field label"
-  },
-
-  "widthCm": "Width (cm)",
-  "@widthCm": {
-    "description": "Width field label"
-  },
-
-  "toggleSizeMeasurements": "Toggle to add optional size measurements",
-  "@toggleSizeMeasurements": {
-    "description": "Size measurements toggle description"
-  },
-
-  "processingSample": "Processing Sample...",
-  "@processingSample": {
-    "description": "Processing sample loading text"
-  },
-
-  "validationError": "Validation Error",
-  "@validationError": {
-    "description": "Validation error title"
-  },
-
-  "providePhotoOrSize": "Please provide either a photo or size measurements",
-  "@providePhotoOrSize": {
-    "description": "Validation message for sample creation"
-  },
-
-  "fillBothMeasurements": "Please fill in both height and width measurements",
-  "@fillBothMeasurements": {
-    "description": "Validation message for measurements"
-  },
-
-  "enterValidNumbers": "Please enter valid positive numbers for measurements",
-  "@enterValidNumbers": {
-    "description": "Validation message for number format"
-  },
-
-  "photoProcessed": "Photo processed (224x224px)",
-  "@photoProcessed": {
-    "description": "Photo processing success message"
-  },
-
-  "changePassword": "Change Password",
-  "@changePassword": {
-    "description": "Change password dialog title"
-  },
-
-  "currentPassword": "Current Password",
-  "@currentPassword": {
-    "description": "Current password field label"
-  },
-
-  "enterCurrentPassword": "Enter your current password",
-  "@enterCurrentPassword": {
-    "description": "Current password hint text"
-  },
-
-  "newPassword": "New Password",
-  "@newPassword": {
-    "description": "New password field label"
-  },
-
-  "enterNewPassword": "Enter your new password",
-  "@enterNewPassword": {
-    "description": "New password hint text"
-  },
-
-  "confirmNewPassword": "Confirm New Password",
-  "@confirmNewPassword": {
-    "description": "Confirm password field label"
-  },
-
-  "confirmNewPasswordHint": "Confirm your new password",
-  "@confirmNewPasswordHint": {
-    "description": "Confirm password hint text"
-  },
-
-  "pleaseEnterCurrentPassword": "Please enter your current password",
-  "@pleaseEnterCurrentPassword": {
-    "description": "Current password validation message"
-  },
-
-  "pleaseEnterNewPassword": "Please enter a new password",
-  "@pleaseEnterNewPassword": {
-    "description": "New password validation message"
-  },
-
-  "newPasswordDifferent": "New password must be different from current password",
-  "@newPasswordDifferent": {
-    "description": "Password difference validation message"
-  },
-
-  "pleaseConfirmPassword": "Please confirm your new password",
-  "@pleaseConfirmPassword": {
-    "description": "Confirm password validation message"
-  },
-
-  "passwordsDoNotMatch": "Passwords do not match",
-  "@passwordsDoNotMatch": {
-    "description": "Password match validation message"
-  },
-
-  "createNewPatient": "Create New Patient",
-  "@createNewPatient": {
-    "description": "Create patient screen title"
-  },
-
-  "addPhotoOptional": "Add Photo\n(Optional)",
-  "@addPhotoOptional": {
-    "description": "Add photo placeholder text"
-  },
-
-  "chooseFromGallery": "Choose from Gallery",
-  "@chooseFromGallery": {
-    "description": "Gallery option text"
-  },
-
-  "removePhoto": "Remove Photo",
-  "@removePhoto": {
-    "description": "Remove photo option text"
-  },
-
-  "fullNameRequired": "Full Name *",
-  "@fullNameRequired": {
-    "description": "Full name field label"
-  },
-
-  "enterPatientFullName": "Enter patient's full name",
-  "@enterPatientFullName": {
-    "description": "Patient name hint text"
-  },
-
-  "dateOfBirthRequired": "Date of Birth *",
-  "@dateOfBirthRequired": {
-    "description": "Date of birth field label"
-  },
-
-  "selectDateOfBirth": "Select date of birth",
-  "@selectDateOfBirth": {
-    "description": "Date picker placeholder and help text"
-  },
-
-  "biologicSexRequired": "Biologic Sex *",
-  "@biologicSexRequired": {
-    "description": "Biologic sex field label"
-  },
-
-  "selectBiologicSex": "Select biologic sex",
-  "@selectBiologicSex": {
-    "description": "Biologic sex hint text"
-  },
-
-  "male": "Male",
-  "@male": {
-    "description": "Male gender option"
-  },
-
-  "female": "Female",
-  "@female": {
-    "description": "Female gender option"
-  },
-
-  "medicalConditions": "Medical Conditions",
-  "@medicalConditions": {
-    "description": "Medical conditions field label"
-  },
-
-  "enterMedicalConditions": "Enter any relevant medical conditions (optional)",
-  "@enterMedicalConditions": {
-    "description": "Medical conditions hint text"
-  },
-
-  "medicalConditionsHelper": "Optional - e.g., diabetes, hypertension, etc.",
-  "@medicalConditionsHelper": {
-    "description": "Medical conditions helper text"
-  },
-
-  "createPatient": "Create Patient",
-  "@createPatient": {
-    "description": "Create patient button text"
-  },
-
-  "requiredFields": "* Required fields",
-  "@requiredFields": {
-    "description": "Required fields note"
-  },
-
-  "nameRequired": "Name is required",
-  "@nameRequired": {
-    "description": "Name validation message"
-  },
-
-  "nameMinLength": "Name must be at least 2 characters",
-  "@nameMinLength": {
-    "description": "Name length validation message"
-  },
-
-  "pleaseSelectDateOfBirth": "Please select a date of birth",
-  "@pleaseSelectDateOfBirth": {
-    "description": "Date of birth validation message"
-  },
-
-  "pleaseSelectBiologicSex": "Please select biologic sex",
-  "@pleaseSelectBiologicSex": {
-    "description": "Biologic sex validation message"
-  },
-
-  "biologicSexRequired2": "Biologic sex is required",
-  "@biologicSexRequired2": {
-    "description": "Biologic sex required validation message"
-  },
-
-  "createNewWound": "Create New Wound",
-  "@createNewWound": {
-    "description": "Create wound screen title"
-  },
-
-  "woundInformation": "Wound Information",
-  "@woundInformation": {
-    "description": "Wound information section title"
-  },
-
-  "woundLocationRequired": "Wound Location *",
-  "@woundLocationRequired": {
-    "description": "Wound location field label"
-  },
-
-  "woundLocationHint": "e.g., Left foot (plantar surface)",
-  "@woundLocationHint": {
-    "description": "Wound location hint text"
-  },
-
-  "woundOriginRequired": "Wound Origin *",
-  "@woundOriginRequired": {
-    "description": "Wound origin field label"
-  },
-
-  "descriptionOptional": "Description (Optional)",
-  "@descriptionOptional": {
-    "description": "Description field label"
-  },
-
-  "additionalWoundDetails": "Additional details about the wound...",
-  "@additionalWoundDetails": {
-    "description": "Description hint text"
-  },
-
-  "initialSample": "Initial Sample",
-  "@initialSample": {
-    "description": "Initial sample section title"
-  },
-
-  "captureFirstSample": "Capture the first sample for this wound",
-  "@captureFirstSample": {
-    "description": "Initial sample description"
-  },
-
-  "creatingWound": "Creating Wound...",
-  "@creatingWound": {
-    "description": "Creating wound loading text"
-  },
-
-  "createWound": "Create Wound",
-  "@createWound": {
-    "description": "Create wound button text"
-  },
-
-  "pleaseEnterWoundLocation": "Please enter the wound location",
-  "@pleaseEnterWoundLocation": {
-    "description": "Wound location validation message"
-  },
-
-  "locationMinLength": "Location must be at least 3 characters",
-  "@locationMinLength": {
-    "description": "Location length validation message"
-  },
-
-  "pleaseSelectWoundOrigin": "Please select the wound origin",
-  "@pleaseSelectWoundOrigin": {
-    "description": "Wound origin validation message"
-  },
-
-  "enterValidHeight": "Enter valid height",
-  "@enterValidHeight": {
-    "description": "Height validation message"
-  },
-
-  "enterValidWidth": "Enter valid width",
-  "@enterValidWidth": {
-    "description": "Width validation message"
-  },
-
-  "sizeMeasurementsOptional": "Size measurements are optional. Enable to add measurements.",
-  "@sizeMeasurementsOptional": {
-    "description": "Size measurements optional description"
-  },
-
-  "welcomeBack2": "Welcome back",
-  "@welcomeBack2": {
-    "description": "Welcome back message without punctuation"
-  },
-
-  "drPrefix": "Dr.",
-  "@drPrefix": {
-    "description": "Doctor title prefix"
-  },
-
-  "patientsRegistered": "patients registered",
-  "@patientsRegistered": {
-    "description": "Patients count text"
-  },
-
-  "newPatient": "New Patient",
-  "@newPatient": {
-    "description": "New patient button text"
-  },
-
-  "errorLoadingPatients": "Error loading patients",
-  "@errorLoadingPatients": {
-    "description": "Error loading patients message"
-  },
-
-  "tryAgain": "Try Again",
-  "@tryAgain": {
-    "description": "Try again button text"
-  },
-
-  "noPatientsFound": "No patients found",
-  "@noPatientsFound": {
-    "description": "No patients found message"
-  },
-
-  "addFirstPatientMessage": "Add your first patient to get started",
-  "@addFirstPatientMessage": {
-    "description": "Add first patient instruction"
-  },
-
-  "addFirstPatient": "Add First Patient",
-  "@addFirstPatient": {
-    "description": "Add first patient button text"
-  },
-
-  "hasMedicalConditions": "Has medical conditions",
-  "@hasMedicalConditions": {
-    "description": "Medical conditions indicator"
-  },
-
-  "today": "Today",
-  "@today": {
-    "description": "Today date indicator"
-  },
-
-  "yesterday": "Yesterday",
-  "@yesterday": {
-    "description": "Yesterday date indicator"
-  },
-
-  "daysAgo": "days ago",
-  "@daysAgo": {
-    "description": "Days ago text for relative dates"
-  },
-
-  "companySelected": "Company Selected",
-  "@companySelected": {
-    "description": "Company selection notification title"
-  },
-
-  "nowWorkingWith": "Now working with",
-  "@nowWorkingWith": {
-    "description": "Company selection notification message"
-  },
-
-  "basicInformation": "Basic Information",
-  "@basicInformation": {
-    "description": "Basic information section title"
-  },
-
-  "dateOfBirth": "Date of Birth",
-  "@dateOfBirth": {
-    "description": "Date of birth label"
-  },
-
-  "biologicSex": "Biologic Sex",
-  "@biologicSex": {
-    "description": "Biologic sex label"
-  },
-
-  "noMedicalConditionsRecorded": "No medical conditions recorded",
-  "@noMedicalConditionsRecorded": {
-    "description": "No medical conditions message"
-  },
-
-  "addWound": "Add Wound",
-  "@addWound": {
-    "description": "Add wound button text"
-  },
-
-  "noWoundsRecorded": "No wounds recorded",
-  "@noWoundsRecorded": {
-    "description": "No wounds message"
-  },
-
-  "woundsProgressMessage": "Wounds and their treatment progress will appear here",
-  "@woundsProgressMessage": {
-    "description": "Wounds section empty state message"
-  },
-
-  "patientHistory": "Patient History",
-  "@patientHistory": {
-    "description": "Patient history section title"
-  },
-
-  "created": "Created",
-  "@created": {
-    "description": "Created date label"
-  },
-
-  "lastUpdated": "Last Updated",
-  "@lastUpdated": {
-    "description": "Last updated label"
-  },
-
-  "latestSample": "Latest Sample",
-  "@latestSample": {
-    "description": "Latest sample label"
-  },
-
-  "pendingAssessment": "Pending assessment",
-  "@pendingAssessment": {
-    "description": "Pending assessment text for classifications"
-  },
-
-  "size": "Size",
-  "@size": {
-    "description": "Size label"
-  },
-
-  "sample": "sample",
-  "@sample": {
-    "description": "Sample singular"
-  },
-
   "samples": "samples",
   "@samples": {
     "description": "Sample plural"
   },
-
+  "addSample": "Add Sample",
+  "@addSample": {
+    "description": "Add sample button and screen title"
+  },
+  "sampleDetails": "Sample Details",
+  "@sampleDetails": {
+    "description": "Sample details screen title"
+  },
+  "wagnerClassification": "Wagner Classification",
+  "@wagnerClassification": {
+    "description": "Wagner classification section title"
+  },
+  "aiClassification": "AI Classification",
+  "@aiClassification": {
+    "description": "AI classification label"
+  },
+  "professionalClassification": "Professional Classification",
+  "@professionalClassification": {
+    "description": "Professional classification label"
+  },
+  "sizeMeasurements": "Size Measurements",
+  "@sizeMeasurements": {
+    "description": "Size measurements section title"
+  },
+  "length": "Length",
+  "@length": {
+    "description": "Length field label"
+  },
+  "width": "Width",
+  "@width": {
+    "description": "Width field label"
+  },
+  "edit": "Edit",
+  "@edit": {
+    "description": "Edit button text"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button text"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Delete button text"
+  },
+  "error": "Error",
+  "@error": {
+    "description": "Error text"
+  },
+  "success": "Success",
+  "@success": {
+    "description": "Success text"
+  },
+  "pendingAssessment": "Pending assessment",
+  "@pendingAssessment": {
+    "description": "Pending assessment text for classifications"
+  },
+  "updateClassification": "Update Classification",
+  "@updateClassification": {
+    "description": "Update classification dialog title"
+  },
+  "logout": "Logout",
+  "@logout": {
+    "description": "Logout button text"
+  },
+  "changePassword": "Change Password",
+  "@changePassword": {
+    "description": "Change password dialog title"
+  },
+  "deleteSampleConfirm": "Are you sure you want to delete this sample?",
+  "@deleteSampleConfirm": {
+    "description": "Sample deletion confirmation message"
+  },
+  "deleteWoundConfirm": "Are you sure you want to delete this wound and all its samples?",
+  "@deleteWoundConfirm": {
+    "description": "Wound deletion confirmation message"
+  },
+  "selectLanguage": "Select Language",
+  "@selectLanguage": {
+    "description": "Language selection dialog title"
+  },
+  "language": "Language",
+  "@language": {
+    "description": "Language setting title"
+  },
+  "security": "Security",
+  "@security": {
+    "description": "Security settings title"
+  },
+  "passwordAndSecuritySettings": "Password and security settings",
+  "@passwordAndSecuritySettings": {
+    "description": "Security settings subtitle"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings section title"
+  },
+  "signOut": "Sign Out",
+  "@signOut": {
+    "description": "Sign out button text"
+  },
+  "areYouSureSignOut": "Are you sure you want to sign out?",
+  "@areYouSureSignOut": {
+    "description": "Sign out confirmation message"
+  },
+  "newSample": "New Sample",
+  "@newSample": {
+    "description": "New sample section title"
+  },
+  "captureNewSample": "Capture a new sample to track wound progress",
+  "@captureNewSample": {
+    "description": "New sample description"
+  },
+  "woundPhoto": "Wound Photo",
+  "@woundPhoto": {
+    "description": "Wound photo section title"
+  },
+  "takePhoto": "Take Photo",
+  "@takePhoto": {
+    "description": "Take photo button text"
+  },
+  "gallery": "Gallery",
+  "@gallery": {
+    "description": "Gallery button text"
+  },
+  "retakePhoto": "Retake Photo",
+  "@retakePhoto": {
+    "description": "Retake photo button text"
+  },
+  "enterWoundDimensions": "Enter wound dimensions in centimeters",
+  "@enterWoundDimensions": {
+    "description": "Size measurements instruction"
+  },
+  "heightCm": "Height (cm)",
+  "@heightCm": {
+    "description": "Height field label"
+  },
+  "widthCm": "Width (cm)",
+  "@widthCm": {
+    "description": "Width field label"
+  },
+  "toggleSizeMeasurements": "Toggle to add optional size measurements",
+  "@toggleSizeMeasurements": {
+    "description": "Size measurements toggle description"
+  },
+  "processingSample": "Processing Sample...",
+  "@processingSample": {
+    "description": "Processing sample loading text"
+  },
+  "validationError": "Validation Error",
+  "@validationError": {
+    "description": "Validation error title"
+  },
+  "providePhotoOrSize": "Please provide either a photo or size measurements",
+  "@providePhotoOrSize": {
+    "description": "Validation message for sample creation"
+  },
+  "fillBothMeasurements": "Please fill in both height and width measurements",
+  "@fillBothMeasurements": {
+    "description": "Validation message for measurements"
+  },
+  "enterValidNumbers": "Please enter valid positive numbers for measurements",
+  "@enterValidNumbers": {
+    "description": "Validation message for number format"
+  },
+  "photoProcessed": "Photo processed (224x224px)",
+  "@photoProcessed": {
+    "description": "Photo processing success message"
+  },
+  "currentPassword": "Current Password",
+  "@currentPassword": {
+    "description": "Current password field label"
+  },
+  "enterCurrentPassword": "Enter your current password",
+  "@enterCurrentPassword": {
+    "description": "Current password hint text"
+  },
+  "newPassword": "New Password",
+  "@newPassword": {
+    "description": "New password field label"
+  },
+  "enterNewPassword": "Enter your new password",
+  "@enterNewPassword": {
+    "description": "New password hint text"
+  },
+  "confirmNewPassword": "Confirm New Password",
+  "@confirmNewPassword": {
+    "description": "Confirm password field label"
+  },
+  "confirmNewPasswordHint": "Confirm your new password",
+  "@confirmNewPasswordHint": {
+    "description": "Confirm password hint text"
+  },
+  "pleaseEnterCurrentPassword": "Please enter your current password",
+  "@pleaseEnterCurrentPassword": {
+    "description": "Current password validation message"
+  },
+  "pleaseEnterNewPassword": "Please enter a new password",
+  "@pleaseEnterNewPassword": {
+    "description": "New password validation message"
+  },
+  "newPasswordDifferent": "New password must be different from current password",
+  "@newPasswordDifferent": {
+    "description": "Password difference validation message"
+  },
+  "pleaseConfirmPassword": "Please confirm your new password",
+  "@pleaseConfirmPassword": {
+    "description": "Confirm password validation message"
+  },
+  "passwordsDoNotMatch": "Passwords do not match",
+  "@passwordsDoNotMatch": {
+    "description": "Password match validation message"
+  },
+  "createNewPatient": "Create New Patient",
+  "@createNewPatient": {
+    "description": "Create patient screen title"
+  },
+  "addPhotoOptional": "Add Photo\n(Optional)",
+  "@addPhotoOptional": {
+    "description": "Add photo placeholder text"
+  },
+  "chooseFromGallery": "Choose from Gallery",
+  "@chooseFromGallery": {
+    "description": "Gallery option text"
+  },
+  "removePhoto": "Remove Photo",
+  "@removePhoto": {
+    "description": "Remove photo option text"
+  },
+  "fullNameRequired": "Full Name *",
+  "@fullNameRequired": {
+    "description": "Full name field label"
+  },
+  "enterPatientFullName": "Enter patient's full name",
+  "@enterPatientFullName": {
+    "description": "Patient name hint text"
+  },
+  "dateOfBirthRequired": "Date of Birth *",
+  "@dateOfBirthRequired": {
+    "description": "Date of birth field label"
+  },
+  "selectDateOfBirth": "Select date of birth",
+  "@selectDateOfBirth": {
+    "description": "Date picker placeholder and help text"
+  },
+  "biologicSexRequired": "Biologic Sex *",
+  "@biologicSexRequired": {
+    "description": "Biologic sex field label"
+  },
+  "selectBiologicSex": "Select biologic sex",
+  "@selectBiologicSex": {
+    "description": "Biologic sex hint text"
+  },
+  "male": "Male",
+  "@male": {
+    "description": "Male gender option"
+  },
+  "female": "Female",
+  "@female": {
+    "description": "Female gender option"
+  },
+  "enterMedicalConditions": "Enter any relevant medical conditions (optional)",
+  "@enterMedicalConditions": {
+    "description": "Medical conditions hint text"
+  },
+  "medicalConditionsHelper": "Optional - e.g., diabetes, hypertension, etc.",
+  "@medicalConditionsHelper": {
+    "description": "Medical conditions helper text"
+  },
+  "createPatient": "Create Patient",
+  "@createPatient": {
+    "description": "Create patient button text"
+  },
+  "requiredFields": "* Required fields",
+  "@requiredFields": {
+    "description": "Required fields note"
+  },
+  "nameRequired": "Name is required",
+  "@nameRequired": {
+    "description": "Name validation message"
+  },
+  "nameMinLength": "Name must be at least 2 characters",
+  "@nameMinLength": {
+    "description": "Name length validation message"
+  },
+  "pleaseSelectDateOfBirth": "Please select a date of birth",
+  "@pleaseSelectDateOfBirth": {
+    "description": "Date of birth validation message"
+  },
+  "pleaseSelectBiologicSex": "Please select biologic sex",
+  "@pleaseSelectBiologicSex": {
+    "description": "Biologic sex validation message"
+  },
+  "biologicSexRequired2": "Biologic sex is required",
+  "@biologicSexRequired2": {
+    "description": "Biologic sex required validation message"
+  },
+  "createNewWound": "Create New Wound",
+  "@createNewWound": {
+    "description": "Create wound screen title"
+  },
+  "woundInformation": "Wound Information",
+  "@woundInformation": {
+    "description": "Wound information section title"
+  },
+  "woundLocationRequired": "Wound Location *",
+  "@woundLocationRequired": {
+    "description": "Wound location field label"
+  },
+  "woundLocationHint": "e.g., Left foot (plantar surface)",
+  "@woundLocationHint": {
+    "description": "Wound location hint text"
+  },
+  "woundOriginRequired": "Wound Origin *",
+  "@woundOriginRequired": {
+    "description": "Wound origin field label"
+  },
+  "descriptionOptional": "Description (Optional)",
+  "@descriptionOptional": {
+    "description": "Description field label"
+  },
+  "additionalWoundDetails": "Additional details about the wound...",
+  "@additionalWoundDetails": {
+    "description": "Description hint text"
+  },
+  "initialSample": "Initial Sample",
+  "@initialSample": {
+    "description": "Initial sample section title"
+  },
+  "captureFirstSample": "Capture the first sample for this wound",
+  "@captureFirstSample": {
+    "description": "Initial sample description"
+  },
+  "creatingWound": "Creating Wound...",
+  "@creatingWound": {
+    "description": "Creating wound loading text"
+  },
+  "createWound": "Create Wound",
+  "@createWound": {
+    "description": "Create wound button text"
+  },
+  "pleaseEnterWoundLocation": "Please enter the wound location",
+  "@pleaseEnterWoundLocation": {
+    "description": "Wound location validation message"
+  },
+  "locationMinLength": "Location must be at least 3 characters",
+  "@locationMinLength": {
+    "description": "Location length validation message"
+  },
+  "pleaseSelectWoundOrigin": "Please select the wound origin",
+  "@pleaseSelectWoundOrigin": {
+    "description": "Wound origin validation message"
+  },
+  "enterValidHeight": "Enter valid height",
+  "@enterValidHeight": {
+    "description": "Height validation message"
+  },
+  "enterValidWidth": "Enter valid width",
+  "@enterValidWidth": {
+    "description": "Width validation message"
+  },
+  "sizeMeasurementsOptional": "Size measurements are optional. Enable to add measurements.",
+  "@sizeMeasurementsOptional": {
+    "description": "Size measurements optional description"
+  },
+  "welcomeBack2": "Welcome back",
+  "@welcomeBack2": {
+    "description": "Welcome back message without punctuation"
+  },
+  "drPrefix": "Dr.",
+  "@drPrefix": {
+    "description": "Doctor title prefix"
+  },
+  "patientsRegistered": "patients registered",
+  "@patientsRegistered": {
+    "description": "Patients count text"
+  },
+  "newPatient": "New Patient",
+  "@newPatient": {
+    "description": "New patient button text"
+  },
+  "errorLoadingPatients": "Error loading patients",
+  "@errorLoadingPatients": {
+    "description": "Error loading patients message"
+  },
+  "tryAgain": "Try Again",
+  "@tryAgain": {
+    "description": "Try again button text"
+  },
+  "noPatientsFound": "No patients found",
+  "@noPatientsFound": {
+    "description": "No patients found message"
+  },
+  "addFirstPatientMessage": "Add your first patient to get started",
+  "@addFirstPatientMessage": {
+    "description": "Add first patient instruction"
+  },
+  "addFirstPatient": "Add First Patient",
+  "@addFirstPatient": {
+    "description": "Add first patient button text"
+  },
+  "hasMedicalConditions": "Has medical conditions",
+  "@hasMedicalConditions": {
+    "description": "Medical conditions indicator"
+  },
+  "today": "Today",
+  "@today": {
+    "description": "Today date indicator"
+  },
+  "yesterday": "Yesterday",
+  "@yesterday": {
+    "description": "Yesterday date indicator"
+  },
+  "daysAgo": "{count} days ago",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "companySelected": "Company Selected",
+  "@companySelected": {
+    "description": "Company selection notification title"
+  },
+  "nowWorkingWith": "Now working with",
+  "@nowWorkingWith": {
+    "description": "Company selection notification message"
+  },
+  "basicInformation": "Basic Information",
+  "@basicInformation": {
+    "description": "Basic information section title"
+  },
+  "dateOfBirth": "Date of Birth",
+  "@dateOfBirth": {
+    "description": "Date of birth label"
+  },
+  "biologicSex": "Biologic Sex",
+  "@biologicSex": {
+    "description": "Biologic sex label"
+  },
+  "noMedicalConditionsRecorded": "No medical conditions recorded",
+  "@noMedicalConditionsRecorded": {
+    "description": "No medical conditions message"
+  },
+  "noWoundsRecorded": "No wounds recorded",
+  "@noWoundsRecorded": {
+    "description": "No wounds message"
+  },
+  "woundsProgressMessage": "Wounds and their treatment progress will appear here",
+  "@woundsProgressMessage": {
+    "description": "Wounds section empty state message"
+  },
+  "patientHistory": "Patient History",
+  "@patientHistory": {
+    "description": "Patient history section title"
+  },
+  "created": "Created",
+  "@created": {
+    "description": "Created date label"
+  },
+  "lastUpdated": "Last Updated",
+  "@lastUpdated": {
+    "description": "Last updated label"
+  },
+  "latestSample": "Latest Sample",
+  "@latestSample": {
+    "description": "Latest sample label"
+  },
+  "size": "Size",
+  "@size": {
+    "description": "Size label"
+  },
+  "sample": "sample",
+  "@sample": {
+    "description": "Sample singular"
+  },
   "noSamplesRecorded": "No samples recorded",
   "@noSamplesRecorded": {
     "description": "No samples message"
   },
-
   "deletePatient": "Delete Patient",
   "@deletePatient": {
     "description": "Delete patient dialog title"
   },
-
   "areYouSureDeletePatient": "Are you sure you want to delete this patient?",
   "@areYouSureDeletePatient": {
     "description": "Delete patient confirmation message"
   },
-
   "deleteWoundsAndSamples": "This will also delete all {woundsCount} wounds and {samplesCount} samples.",
   "@deleteWoundsAndSamples": {
     "description": "Delete cascade information",
@@ -897,12 +596,10 @@
       }
     }
   },
-
   "actionCannotBeUndone": "This action cannot be undone.",
   "@actionCannotBeUndone": {
     "description": "Irreversible action warning"
   },
-
   "patientDeletedSuccessfully": "Patient {patientName} deleted successfully",
   "@patientDeletedSuccessfully": {
     "description": "Patient deletion success message",
@@ -912,312 +609,214 @@
       }
     }
   },
-
   "failedToDeletePatient": "Failed to delete patient",
   "@failedToDeletePatient": {
     "description": "Patient deletion error message"
   },
-
-  "sampleDetails": "Sample Details",
-  "@sampleDetails": {
-    "description": "Sample details screen title"
-  },
-
   "reviewed": "Reviewed",
   "@reviewed": {
     "description": "Reviewed status"
   },
-
   "pendingReview": "Pending Review",
   "@pendingReview": {
     "description": "Pending review status"
   },
-
   "sampleDate": "Sample Date",
   "@sampleDate": {
     "description": "Sample date label"
   },
-
   "timeSince": "Time Since",
   "@timeSince": {
     "description": "Time since label"
   },
-
-  "wagnerClassification": "Wagner Classification",
-  "@wagnerClassification": {
-    "description": "Wagner classification section title"
-  },
-
   "review": "Review",
   "@review": {
     "description": "Review button text"
   },
-
-  "aiClassification": "AI Classification",
-  "@aiClassification": {
-    "description": "AI classification label"
-  },
-
   "automaticAnalysis": "Automatic analysis",
   "@automaticAnalysis": {
     "description": "AI classification subtitle"
   },
-
   "noAiClassification": "No AI Classification",
   "@noAiClassification": {
     "description": "No AI classification title"
   },
-
   "photoRequiredForAnalysis": "Photo required for AI analysis",
   "@photoRequiredForAnalysis": {
     "description": "Photo required message"
   },
-
   "professionalReview": "Professional Review",
   "@professionalReview": {
     "description": "Professional review title"
   },
-
   "clinicalAssessment": "Clinical assessment",
   "@clinicalAssessment": {
     "description": "Clinical assessment subtitle"
   },
-
   "awaitingProfessionalReview": "Awaiting Professional Review",
   "@awaitingProfessionalReview": {
     "description": "Awaiting review title"
   },
-
   "clickReviewToAdd": "Click review to add clinical assessment",
   "@clickReviewToAdd": {
     "description": "Review instruction"
   },
-
   "active": "ACTIVE",
   "@active": {
     "description": "Active status badge"
   },
-
   "woundMeasurements": "Wound Measurements",
   "@woundMeasurements": {
     "description": "Wound measurements section title"
   },
-
   "dimensions": "Dimensions",
   "@dimensions": {
     "description": "Dimensions label"
   },
-
   "area": "Area",
   "@area": {
     "description": "Area label"
   },
-
   "responsibleProfessional": "Responsible Professional",
   "@responsibleProfessional": {
     "description": "Responsible professional section title"
   },
-
   "sampleInformation": "Sample Information",
   "@sampleInformation": {
     "description": "Sample information section title"
   },
-
   "sampleId": "Sample ID",
   "@sampleId": {
     "description": "Sample ID label"
   },
-
   "woundId": "Wound ID",
   "@woundId": {
     "description": "Wound ID label"
   },
-
-  "updateClassification": "Update Classification",
-  "@updateClassification": {
-    "description": "Update classification dialog title"
-  },
-
   "aiClassificationColon": "AI Classification:",
   "@aiClassificationColon": {
     "description": "AI classification label with colon"
   },
-
   "notAvailableNoPhoto": "Not available (no photo provided)",
   "@notAvailableNoPhoto": {
     "description": "No AI classification explanation"
   },
-
   "professionalAssessment": "Professional Assessment:",
   "@professionalAssessment": {
     "description": "Professional assessment label"
   },
-
   "update": "Update",
   "@update": {
     "description": "Update button text"
   },
-
   "deleteSample": "Delete Sample",
   "@deleteSample": {
     "description": "Delete sample dialog title"
   },
-
-  "areYouSureDeleteSample": "Are you sure you want to delete this sample?",
-  "@areYouSureDeleteSample": {
-    "description": "Delete sample confirmation message"
-  },
-
   "sampleDeletedSuccessfully": "Sample deleted successfully",
   "@sampleDeletedSuccessfully": {
     "description": "Sample deletion success message"
   },
-
   "failedToDeleteSample": "Failed to delete sample",
   "@failedToDeleteSample": {
     "description": "Sample deletion error message"
   },
-
   "woundDetails": "Wound Details",
   "@woundDetails": {
     "description": "Wound details screen title"
   },
-
   "sampleHistory": "Sample History",
   "@sampleHistory": {
     "description": "Sample history section title"
   },
-
   "noSamplesYet": "No samples yet",
   "@noSamplesYet": {
     "description": "No samples message"
   },
-
   "startDocumentingWound": "Start documenting this wound's\nhealing progress by adding samples",
   "@startDocumentingWound": {
     "description": "Empty samples instruction"
   },
-
   "addFirstSample": "Add First Sample",
   "@addFirstSample": {
     "description": "Add first sample button text"
   },
-
   "latest": "Latest",
   "@latest": {
     "description": "Latest badge text"
   },
-
   "noPhoto": "No photo",
   "@noPhoto": {
     "description": "No photo indicator"
   },
-
   "deleteWound": "Delete Wound",
   "@deleteWound": {
     "description": "Delete wound dialog title"
   },
-
-  "areYouSureDeleteWound": "Are you sure you want to delete this wound?",
-  "@areYouSureDeleteWound": {
-    "description": "Delete wound confirmation message"
-  },
-
-  "deleteAssociatedSamples": "This will also delete all {samplesCount} associated samples.",
-  "@deleteAssociatedSamples": {
-    "description": "Delete wound cascade information",
-    "placeholders": {
-      "samplesCount": {
-        "type": "int"
-      }
-    }
-  },
-
   "woundDeletedSuccessfully": "Wound deleted successfully",
   "@woundDeletedSuccessfully": {
     "description": "Wound deletion success message"
   },
-
   "failedToDeleteWound": "Failed to delete wound",
   "@failedToDeleteWound": {
     "description": "Wound deletion error message"
   },
-
   "noUserDataAvailable": "No user data available",
   "@noUserDataAvailable": {
     "description": "No user data message"
   },
-
   "userInformation": "User Information",
   "@userInformation": {
     "description": "User information section title"
   },
-
   "fullName": "Full Name",
   "@fullName": {
     "description": "Full name label"
   },
-
   "emailAddress": "Email Address",
   "@emailAddress": {
     "description": "Email address label"
   },
-
   "userId": "User ID",
   "@userId": {
     "description": "User ID label"
   },
-
   "accountStatus": "Account Status",
   "@accountStatus": {
     "description": "Account status label"
   },
-
-  "activeStatus": "Active",
-  "@activeStatus": {
-    "description": "Active account status"
-  },
-
   "about": "About",
   "@about": {
     "description": "About section title"
   },
-
   "aboutThisApp": "About This App",
   "@aboutThisApp": {
     "description": "About this app title"
   },
-
   "appDescription": "Claucia is a modern Flutter application built with GetX for state management. This app demonstrates authentication, profile management, and clean architecture patterns.",
   "@appDescription": {
     "description": "App description text"
   },
-
   "version": "Version",
   "@version": {
     "description": "Version label"
   },
-
   "build": "Build",
   "@build": {
     "description": "Build label"
   },
-
   "takeAPhoto": "Take a Photo",
   "@takeAPhoto": {
     "description": "Take a photo option"
   },
-
   "failedToPickImage": "Failed to pick image",
   "@failedToPickImage": {
     "description": "Image picker error message"
   },
-
   "failedToCreateSample": "Failed to create sample",
   "@failedToCreateSample": {
     "description": "Sample creation error message"
   },
-
   "welcomeBackUser": "Welcome back, {userName}!",
   "@welcomeBackUser": {
     "description": "Welcome back message with user name",
@@ -1227,22 +826,18 @@
       }
     }
   },
-
   "loginFailed": "Login Failed",
   "@loginFailed": {
     "description": "Login failure message"
   },
-
   "loggedOut": "Logged Out",
   "@loggedOut": {
     "description": "Logged out title"
   },
-
   "youHaveBeenLoggedOutSuccessfully": "You have been logged out successfully",
   "@youHaveBeenLoggedOutSuccessfully": {
     "description": "Logout success message"
   },
-
   "logoutFailed": "Logout failed: {error}",
   "@logoutFailed": {
     "description": "Logout failure message",
@@ -1252,17 +847,14 @@
       }
     }
   },
-
   "profilePictureUpdatedSuccessfully": "Profile picture updated successfully",
   "@profilePictureUpdatedSuccessfully": {
     "description": "Profile picture update success message"
   },
-
   "passwordChangedSuccessfully": "Password changed successfully",
   "@passwordChangedSuccessfully": {
     "description": "Password change success message"
   },
-
   "failedToLoadPatients": "Failed to load patients: {error}",
   "@failedToLoadPatients": {
     "description": "Patient loading error message",
@@ -1272,7 +864,6 @@
       }
     }
   },
-
   "patientCreatedSuccessfully": "Patient {patientName} created successfully",
   "@patientCreatedSuccessfully": {
     "description": "Patient creation success message",
@@ -1282,7 +873,6 @@
       }
     }
   },
-
   "failedToCreatePatient": "Failed to create patient: {error}",
   "@failedToCreatePatient": {
     "description": "Patient creation error message",
@@ -1292,7 +882,6 @@
       }
     }
   },
-
   "failedToLoadWounds": "Failed to load wounds: {error}",
   "@failedToLoadWounds": {
     "description": "Wound loading error message",
@@ -1302,12 +891,10 @@
       }
     }
   },
-
   "woundCreatedSuccessfully": "Wound created successfully",
   "@woundCreatedSuccessfully": {
     "description": "Wound creation success message"
   },
-
   "failedToCreateWound": "Failed to create wound: {error}",
   "@failedToCreateWound": {
     "description": "Wound creation error message",
@@ -1317,7 +904,6 @@
       }
     }
   },
-
   "failedToLoadSamples": "Failed to load samples: {error}",
   "@failedToLoadSamples": {
     "description": "Sample loading error message",
@@ -1327,265 +913,137 @@
       }
     }
   },
-
-  "selectCompany": "Select Company",
-  "@selectCompany": {
-    "description": "Select company dialog title"
-  },
-
-  "yearsOld": "{age} years old",
+  "yearsOld": "{count} years old",
   "@yearsOld": {
-    "description": "Age display format",
     "placeholders": {
-      "age": {
+      "count": {
         "type": "int"
       }
     }
   },
-
   "statusActive": "Active",
   "@statusActive": {
     "description": "Active status label"
   },
-
   "statusHealed": "Healed",
   "@statusHealed": {
     "description": "Healed status label"
   },
-
   "day": "day",
   "@day": {
     "description": "Day singular time unit"
   },
-
-  "days": "days",
-  "@days": {
-    "description": "Days plural time unit"
-  },
-
-  "hour": "hour",
-  "@hour": {
-    "description": "Hour singular time unit"
-  },
-
-  "hours": "hours",
-  "@hours": {
-    "description": "Hours plural time unit"
-  },
-
-  "minute": "minute",
-  "@minute": {
-    "description": "Minute singular time unit"
-  },
-
-  "minutes": "minutes",
-  "@minutes": {
-    "description": "Minutes plural time unit"
-  },
-
-  "ago": "ago",
-  "@ago": {
-    "description": "Time ago suffix"
-  },
-
-  "justNow": "Just now",
-  "@justNow": {
-    "description": "Just now time indicator"
-  },
-
-  "diabeticUlcers": "Diabetic Ulcers",
-  "@diabeticUlcers": {
-    "description": "Diabetic ulcers wound origin"
-  },
-
-  "nonDiabeticUlcers": "Non-Diabetic Ulcers",
-  "@nonDiabeticUlcers": {
-    "description": "Non-diabetic ulcers wound origin"
-  },
-
-  "neuropathicUlcers": "Neuropathic Ulcers",
-  "@neuropathicUlcers": {
-    "description": "Neuropathic ulcers wound origin"
-  },
-
-  "venousUlcers": "Venous Ulcers",
-  "@venousUlcers": {
-    "description": "Venous ulcers wound origin"
-  },
-
-  "wagnerGrade0": "No open Lesion",
-  "@wagnerGrade0": {
-    "description": "Wagner classification grade 0"
-  },
-
-  "wagnerGrade1": "Superficial Lesion",
-  "@wagnerGrade1": {
-    "description": "Wagner classification grade 1"
-  },
-
-  "wagnerGrade2": "Deep Ulcer",
-  "@wagnerGrade2": {
-    "description": "Wagner classification grade 2"
-  },
-
-  "wagnerGrade3": "Abscess/Osteomyelitis",
-  "@wagnerGrade3": {
-    "description": "Wagner classification grade 3"
-  },
-
-  "wagnerGrade4": "Partial Foot Gangrene",
-  "@wagnerGrade4": {
-    "description": "Wagner classification grade 4"
-  },
-
-  "wagnerGrade5": "Whole Foot Gangrene",
-  "@wagnerGrade5": {
-    "description": "Wagner classification grade 5"
-  },
-
-  "pendingReview": "pending review",
-  "@pendingReview": {
-    "description": "Pending review status"
-  },
-
-  "createdTime": "Created",
-  "@createdTime": {
-    "description": "Created time prefix"
-  },
-
-  "grade": "Grade",
-  "@grade": {
-    "description": "Grade label for medical classifications"
-  },
-
-  "cmUnit": "cm",
-  "@cmUnit": {
-    "description": "Centimeter unit abbreviation"
-  },
-
-  "cm2Unit": "cm²",
-  "@cm2Unit": {
-    "description": "Square centimeter unit abbreviation"
-  },
-
-  "idLabel": "ID",
-  "@idLabel": {
-    "description": "ID label for identifiers"
-  },
-
-  "sampleNumber": "Sample",
-  "@sampleNumber": {
-    "description": "Sample number prefix"
-  },
-
-  "yearsOld": "{count} years old",
-  "@yearsOld": {
-    "placeholders": {
-      "count": {"type": "int"}
-    }
-  },
-
-  "day": "day",
-  "@day": {
-    "description": "Day singular time unit"
-  },
-
-  "days": "days",
-  "@days": {
-    "description": "Days plural time unit"
-  },
-
-  "hour": "hour",
-  "@hour": {
-    "description": "Hour singular time unit"
-  },
-
-  "hours": "hours",
-  "@hours": {
-    "description": "Hours plural time unit"
-  },
-
-  "minute": "minute",
-  "@minute": {
-    "description": "Minute singular time unit"
-  },
-
-  "minutes": "minutes",
-  "@minutes": {
-    "description": "Minutes plural time unit"
-  },
-
-  "ago": "ago",
-  "@ago": {
-    "description": "Time ago suffix"
-  },
-
   "justNow": "just now",
   "@justNow": {
     "description": "Just now time indicator"
   },
-
-  "today": "Today",
-  "@today": {
-    "description": "Today date indicator"
+  "diabeticUlcers": "Diabetic Ulcers",
+  "@diabeticUlcers": {
+    "description": "Diabetic ulcers wound origin"
   },
-
-  "yesterday": "Yesterday",
-  "@yesterday": {
-    "description": "Yesterday date indicator"
+  "nonDiabeticUlcers": "Non-Diabetic Ulcers",
+  "@nonDiabeticUlcers": {
+    "description": "Non-diabetic ulcers wound origin"
   },
-
-  "daysAgo": "{count} days ago",
-  "@daysAgo": {
-    "placeholders": {
-      "count": {"type": "int"}
-    }
+  "neuropathicUlcers": "Neuropathic Ulcers",
+  "@neuropathicUlcers": {
+    "description": "Neuropathic ulcers wound origin"
   },
-
+  "venousUlcers": "Venous Ulcers",
+  "@venousUlcers": {
+    "description": "Venous ulcers wound origin"
+  },
+  "wagnerGrade0": "No open Lesion",
+  "@wagnerGrade0": {
+    "description": "Wagner classification grade 0"
+  },
+  "wagnerGrade1": "Superficial Lesion",
+  "@wagnerGrade1": {
+    "description": "Wagner classification grade 1"
+  },
+  "wagnerGrade2": "Deep Ulcer",
+  "@wagnerGrade2": {
+    "description": "Wagner classification grade 2"
+  },
+  "wagnerGrade3": "Abscess/Osteomyelitis",
+  "@wagnerGrade3": {
+    "description": "Wagner classification grade 3"
+  },
+  "wagnerGrade4": "Partial Foot Gangrene",
+  "@wagnerGrade4": {
+    "description": "Wagner classification grade 4"
+  },
+  "wagnerGrade5": "Whole Foot Gangrene",
+  "@wagnerGrade5": {
+    "description": "Wagner classification grade 5"
+  },
+  "createdTime": "Created",
+  "@createdTime": {
+    "description": "Created time prefix"
+  },
+  "grade": "Grade",
+  "@grade": {
+    "description": "Grade label for medical classifications"
+  },
+  "cmUnit": "cm",
+  "@cmUnit": {
+    "description": "Centimeter unit abbreviation"
+  },
+  "cm2Unit": "cm²",
+  "@cm2Unit": {
+    "description": "Square centimeter unit abbreviation"
+  },
+  "idLabel": "ID",
+  "@idLabel": {
+    "description": "ID label for identifiers"
+  },
+  "sampleNumber": "Sample",
+  "@sampleNumber": {
+    "description": "Sample number prefix"
+  },
   "weekAgo": "1 week ago",
   "weeksAgo": "{count} weeks ago",
   "@weeksAgo": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
-
   "monthAgo": "1 month ago",
   "monthsAgo": "{count} months ago",
   "@monthsAgo": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
-
   "yearAgo": "1 year ago",
   "yearsAgo": "{count} years ago",
   "@yearsAgo": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
-
   "hourAgo": "1 hour ago",
   "hoursAgo": "{count} hours ago",
   "@hoursAgo": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
-
   "minuteAgo": "1 minute ago",
   "minutesAgo": "{count} minutes ago",
   "@minutesAgo": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
-  },
-
-  "noSamplesRecorded": "No samples recorded",
-  "@noSamplesRecorded": {
-    "description": "No samples message"
-  },
-
-  "pendingReview": "Pending Review"
-} 
+  }
+}

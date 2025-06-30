@@ -148,7 +148,7 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
                 Icon(Icons.schedule, size: 16, color: Colors.grey.shade500),
                 const SizedBox(width: 4),
                 Text(
-                  'Created ${widget.wound.daysSinceCreation}',
+                  '${context.l10n.created} ${widget.wound.daysSinceCreation}',
                   style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                 ),
                 const SizedBox(width: 16),
@@ -159,7 +159,7 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  '${widget.wound.samples.length} sample${widget.wound.samples.length != 1 ? 's' : ''}',
+                  '${widget.wound.samples.length} ${widget.wound.samples.length == 1 ? context.l10n.sample : context.l10n.samples}',
                   style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                 ),
               ],
