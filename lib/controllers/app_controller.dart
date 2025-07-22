@@ -1,60 +1,62 @@
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../services/localization_service.dart';
+import '../services/institution_service.dart';
+import '../models/institution_model.dart';
+import '../controllers/auth_controller.dart';
 
 class AppController extends GetxController {
   final GetStorage _storage = GetStorage();
+  final InstitutionService _institutionService = InstitutionService();
+  final AuthController _authController = Get.find<AuthController>();
 
-  // Observable variables
-  RxInt currentIndex = 0.obs;
-  RxString selectedCompany = ''.obs;
-
-  // Mock companies list
-  final List<String> companies = [
-    'Acme Corporation',
-    'TechFlow Solutions',
-    'Global Industries',
-    'InnovateCorp',
-    'NextGen Systems',
-    'Digital Dynamics',
-  ];
-
-  // Storage key for selected company
-  final String _companyKey = 'selected_company';
+  final RxInt currentIndex = 0.obs;
+  final RxString selectedInstitution = ''.obs;
+  final RxList<Institution> institutions = <Institution>[].obs;
+  final String _institutionKey = 'selected_institution';
 
   @override
   void onInit() {
     super.onInit();
-    _loadSelectedCompany();
+    _loadInstitutions();
   }
 
-  // Load previously selected company
-  void _loadSelectedCompany() {
-    final savedCompany = _storage.read(_companyKey);
-    if (savedCompany != null && companies.contains(savedCompany)) {
-      selectedCompany.value = savedCompany;
-    } else if (companies.isNotEmpty) {
-      selectedCompany.value = companies.first;
+  Future<void> _loadInstitutions() async {
+    try {
+      List<Institution> list = [];
+      final professional = _authController.currentUser.value;
+      if (professional != null) {
+        list = await _institutionService.getInstitutionsForProfessional(
+          professional.coren,
+        );
+      }
+      if (list.isEmpty) {
+        // fallback to all institutions (admin use?)
+        list = await _institutionService.getAllInstitutions();
+      }
+      institutions.assignAll(list);
+
+      final saved = _storage.read<String>(_institutionKey);
+      if (saved != null && list.any((i) => i.name == saved)) {
+        selectedInstitution.value = saved;
+      } else if (list.isNotEmpty) {
+        selectedInstitution.value = list.first.name;
+      }
+    } catch (_) {
+      // keep empty list; UI can handle error message elsewhere
     }
   }
 
-  // Change selected company
-  void selectCompany(String company) {
-    selectedCompany.value = company;
-    _storage.write(_companyKey, company);
+  void selectInstitution(String name) {
+    selectedInstitution.value = name;
+    _storage.write(_institutionKey, name);
   }
 
-  // Change bottom navigation index
-  void changeIndex(int index) {
-    currentIndex.value = index;
-  }
+  void changeIndex(int idx) => currentIndex.value = idx;
 
-  // Get company display name (shortened if too long)
-  String get displayCompanyName {
-    if (selectedCompany.value.isEmpty) return l10n.selectCompany;
-    if (selectedCompany.value.length > 15) {
-      return '${selectedCompany.value.substring(0, 12)}...';
-    }
-    return selectedCompany.value;
+  String get displayInstitutionName {
+    final name = selectedInstitution.value;
+    if (name.isEmpty) return l10n.selectCompany; // reuse localization key
+    return name.length > 15 ? '${name.substring(0, 12)}...' : name;
   }
 }

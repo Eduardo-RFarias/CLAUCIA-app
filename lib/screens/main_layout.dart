@@ -144,7 +144,7 @@ class MainLayout extends StatelessWidget {
               const SizedBox(width: 8),
               Flexible(
                 child: Text(
-                  appController.displayCompanyName,
+                  appController.displayInstitutionName,
                   style: TextStyle(
                     color: Colors.grey.shade700,
                     fontSize: 12,
@@ -200,39 +200,43 @@ class MainLayout extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            ...appController.companies.map(
-              (company) => Obx(
+            ...appController.institutions.map(
+              (institution) => Obx(
                 () => ListTile(
                   leading: Icon(
                     Icons.business_center,
                     color:
-                        appController.selectedCompany.value == company
+                        appController.selectedInstitution.value ==
+                                institution.name
                             ? Colors.blue.shade600
                             : Colors.grey.shade600,
                   ),
                   title: Text(
-                    company,
+                    institution.name,
                     style: TextStyle(
                       fontWeight:
-                          appController.selectedCompany.value == company
+                          appController.selectedInstitution.value ==
+                                  institution.name
                               ? FontWeight.w600
                               : FontWeight.normal,
                       color:
-                          appController.selectedCompany.value == company
+                          appController.selectedInstitution.value ==
+                                  institution.name
                               ? Colors.blue.shade600
                               : Colors.black87,
                     ),
                   ),
                   trailing:
-                      appController.selectedCompany.value == company
+                      appController.selectedInstitution.value ==
+                              institution.name
                           ? Icon(Icons.check, color: Colors.blue.shade600)
                           : null,
                   onTap: () {
-                    appController.selectCompany(company);
+                    appController.selectInstitution(institution.name);
                     Get.back();
                     Get.snackbar(
                       context.l10n.companySelected,
-                      '${context.l10n.nowWorkingWith} $company',
+                      '${context.l10n.nowWorkingWith} ${institution.name}',
                       snackPosition: SnackPosition.BOTTOM,
                       duration: const Duration(seconds: 2),
                     );

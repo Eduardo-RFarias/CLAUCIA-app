@@ -12,7 +12,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
+  final _corenController = TextEditingController();
   final _passwordController = TextEditingController();
   final AuthController _authController = Get.put(AuthController());
 
@@ -20,7 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _corenController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -28,34 +28,10 @@ class _LoginScreenState extends State<LoginScreen> {
   void _login() {
     if (_formKey.currentState!.validate()) {
       _authController.login(
-        _emailController.text.trim(),
+        _corenController.text.trim(),
         _passwordController.text,
       );
     }
-  }
-
-  void _showDemoCredentials() {
-    Get.dialog(
-      AlertDialog(
-        title: Text(context.l10n.demoCredentials),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(context.l10n.demoCredentialsInfo),
-            const SizedBox(height: 16),
-            const Text('📧 john@example.com\n🔑 password123'),
-            const SizedBox(height: 8),
-            const Text('📧 jane@example.com\n🔑 password456'),
-            const SizedBox(height: 8),
-            const Text('📧 test@test.com\n🔑 test123'),
-          ],
-        ),
-        actions: [
-          TextButton(onPressed: () => Get.back(), child: Text(context.l10n.ok)),
-        ],
-      ),
-    );
   }
 
   @override
@@ -95,14 +71,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 48),
 
-                // Email Field
+                // COREN Field
                 TextFormField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
+                  controller: _corenController,
                   decoration: InputDecoration(
-                    labelText: context.l10n.email,
-                    hintText: context.l10n.enterEmail,
-                    prefixIcon: const Icon(Icons.email_outlined),
+                    labelText: 'COREN',
+                    hintText: 'Ex: COREN-SP-123456',
+                    prefixIcon: const Icon(Icons.badge_outlined),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -117,10 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return context.l10n.pleaseEnterEmail;
-                    }
-                    if (!GetUtils.isEmail(value)) {
-                      return context.l10n.pleaseEnterValidEmail;
+                      return 'Please enter your COREN';
                     }
                     return null;
                   },
@@ -238,16 +210,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-
-                // Demo Credentials Button
-                TextButton.icon(
-                  onPressed: _showDemoCredentials,
-                  icon: const Icon(Icons.info_outline),
-                  label: Text(context.l10n.viewDemoCredentials),
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.grey[600],
-                  ),
-                ),
               ],
             ),
           ),

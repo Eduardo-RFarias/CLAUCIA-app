@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'dart:io';
+import 'dart:convert';
 import '../models/patient_model.dart';
 import '../models/wound_model.dart';
 import '../controllers/wound_controller.dart';
@@ -11,11 +11,12 @@ import '../services/localization_service.dart';
 import '../services/date_service.dart';
 import 'create_wound_screen.dart';
 import 'wound_detail_screen.dart';
+import '../services/patient_service.dart';
 
 class PatientDetailScreen extends StatefulWidget {
-  final Patient patient;
+  final int patientId;
 
-  const PatientDetailScreen({super.key, required this.patient});
+  const PatientDetailScreen({super.key, required this.patientId});
 
   @override
   State<PatientDetailScreen> createState() => _PatientDetailScreenState();
@@ -26,18 +27,52 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
   final SampleController sampleController = Get.put(SampleController());
   final PatientController patientController = Get.find<PatientController>();
 
+  final PatientService _patientService = PatientService();
+
+  Patient? _patient;
+  bool _isLoadingPatient = true;
+
   @override
   void initState() {
     super.initState();
-    // Load wounds for this patient
-    woundController.loadWoundsByPatientId(widget.patient.id);
+    _loadPatient();
+  }
+
+  Future<void> _loadPatient() async {
+    try {
+      final p = await _patientService.getPatient(widget.patientId);
+      setState(() {
+        _patient = p;
+        _isLoadingPatient = false;
+      });
+      await woundController.loadWoundsByPatient(p.id);
+
+      // After wounds are loaded, fetch samples for each wound once.
+      for (final w in woundController.wounds) {
+        await sampleController.loadSamplesByWound(w.id);
+      }
+    } catch (_) {
+      setState(() => _isLoadingPatient = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoadingPatient) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (_patient == null) {
+      return Scaffold(
+        appBar: AppBar(title: Text(context.l10n.error)),
+        body: Center(child: Text(context.l10n.noUserDataAvailable)),
+      );
+    }
+
+    final patient = _patient!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.patient.name),
+        title: Text(patient.name),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Get.back(),
@@ -46,7 +81,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
           IconButton(
             icon: const Icon(Icons.delete),
             onPressed: () {
-              _showDeleteConfirmationDialog();
+              _showDeleteConfirmationDialog(patient);
             },
           ),
         ],
@@ -67,22 +102,15 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                     radius: 60,
                     backgroundColor: Colors.blue.shade100,
                     backgroundImage:
-                        widget.patient.profilePicture != null &&
-                                widget.patient.profilePicture!.isNotEmpty
-                            ? (widget.patient.profilePicture!.startsWith('http')
-                                    ? CachedNetworkImageProvider(
-                                      widget.patient.profilePicture!,
-                                    )
-                                    : FileImage(
-                                      File(widget.patient.profilePicture!),
-                                    ))
-                                as ImageProvider
+                        patient.photo != null && patient.photo!.isNotEmpty
+                            ? (patient.photo!.startsWith('http')
+                                ? CachedNetworkImageProvider(patient.photo!)
+                                : _localImageProvider(patient.photo!))
                             : null,
                     child:
-                        widget.patient.profilePicture == null ||
-                                widget.patient.profilePicture!.isEmpty
+                        patient.photo == null || patient.photo!.isEmpty
                             ? Text(
-                              widget.patient.initials,
+                              patient.initials,
                               style: TextStyle(
                                 fontSize: 32,
                                 fontWeight: FontWeight.bold,
@@ -95,7 +123,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
 
                   // Patient Name
                   Text(
-                    widget.patient.name,
+                    patient.name,
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -107,7 +135,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
 
                   // Age and Gender
                   Text(
-                    '${widget.patient.ageString} • ${widget.patient.localizedGender}',
+                    '${patient.ageString} • ${patient.sex.localizedValue}',
                     style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
                   ),
                 ],
@@ -144,21 +172,21 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                           _buildInfoRow(
                             Icons.cake,
                             context.l10n.dateOfBirth,
-                            widget.patient.dateOfBirth.formattedDate,
+                            patient.dateOfBirth.formattedDate,
                           ),
                           const SizedBox(height: 12),
 
                           _buildInfoRow(
                             Icons.wc,
                             context.l10n.biologicSex,
-                            widget.patient.localizedGender,
+                            patient.sex.localizedValue,
                           ),
                           const SizedBox(height: 12),
 
                           _buildInfoRow(
                             Icons.calendar_today,
                             context.l10n.age,
-                            widget.patient.ageString,
+                            patient.ageString,
                           ),
                         ],
                       ),
@@ -187,8 +215,8 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                           ),
                           const SizedBox(height: 16),
 
-                          if (widget.patient.medicalConditions != null &&
-                              widget.patient.medicalConditions!.isNotEmpty)
+                          if (patient.medicalConditions != null &&
+                              patient.medicalConditions!.isNotEmpty)
                             Container(
                               width: double.infinity,
                               padding: const EdgeInsets.all(12),
@@ -200,7 +228,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                                 ),
                               ),
                               child: Text(
-                                widget.patient.medicalConditions!,
+                                patient.medicalConditions!,
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.orange.shade800,
@@ -248,7 +276,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                                 onPressed: () {
                                   Get.to(
                                     () => CreateWoundScreen(
-                                      patient: widget.patient,
+                                      patientId: patient.id,
                                     ),
                                   );
                                 },
@@ -353,20 +381,14 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                           _buildInfoRow(
                             Icons.person_add,
                             context.l10n.created,
-                            widget
-                                .patient
-                                .createdAt
-                                .formattedDateTimeWithTimezone,
+                            patient.createdAt.formattedDateTimeWithTimezone,
                           ),
                           const SizedBox(height: 12),
 
                           _buildInfoRow(
                             Icons.update,
                             context.l10n.lastUpdated,
-                            widget
-                                .patient
-                                .updatedAt
-                                .formattedDateTimeWithTimezone,
+                            patient.updatedAt.formattedDateTimeWithTimezone,
                           ),
                         ],
                       ),
@@ -382,15 +404,19 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
   }
 
   Widget _buildWoundCard(Wound wound) {
-    // Get the latest sample for this wound
+    const Color uiColor = Colors.blue;
+    // Fetch samples corresponding to this wound from SampleController
+    final woundSamples =
+        sampleController.samples.where((s) => s.woundId == wound.id).toList();
+
     final latestSample =
-        wound.samples.isNotEmpty
-            ? wound.samples.reduce((a, b) => a.date.isAfter(b.date) ? a : b)
+        woundSamples.isNotEmpty
+            ? woundSamples.reduce((a, b) => a.date.isAfter(b.date) ? a : b)
             : null;
 
     return InkWell(
       onTap: () {
-        Get.to(() => WoundDetailScreen(wound: wound));
+        Get.to(() => WoundDetailScreen(woundId: wound.id));
       },
       borderRadius: BorderRadius.circular(8),
       child: Card(
@@ -409,7 +435,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                     width: 12,
                     height: 12,
                     decoration: BoxDecoration(
-                      color: wound.statusColor,
+                      color: uiColor,
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -434,18 +460,16 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: wound.statusColor.withValues(alpha: 0.1),
+                      color: uiColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: wound.statusColor.withValues(alpha: 0.3),
-                      ),
+                      border: Border.all(color: uiColor.withValues(alpha: 0.3)),
                     ),
                     child: Text(
                       wound.statusText,
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
-                        color: wound.statusColor,
+                        color: uiColor,
                       ),
                     ),
                   ),
@@ -524,7 +548,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                             height: 8,
                             decoration: BoxDecoration(
                               color:
-                                  (latestSample.mlClassification != null ||
+                                  (latestSample.aiClassification != null ||
                                           latestSample
                                                   .professionalClassification !=
                                               null)
@@ -538,18 +562,18 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                           const SizedBox(width: 6),
                           Expanded(
                             child: Text(
-                              (latestSample.mlClassification != null ||
+                              (latestSample.aiClassification != null ||
                                       latestSample.professionalClassification !=
                                           null)
                                   ? latestSample
                                       .effectiveClassification
-                                      .localizedDisplayName
+                                      .localizedDescription
                                   : context.l10n.pendingAssessment,
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
                                 color:
-                                    (latestSample.mlClassification != null ||
+                                    (latestSample.aiClassification != null ||
                                             latestSample
                                                     .professionalClassification !=
                                                 null)
@@ -576,7 +600,8 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                       ),
 
                       // Size information if available
-                      if (latestSample.size != null) ...[
+                      if (latestSample.height != null &&
+                          latestSample.width != null) ...[
                         const SizedBox(height: 4),
                         Row(
                           children: [
@@ -587,7 +612,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                             ),
                             const SizedBox(width: 6),
                             Text(
-                              '${context.l10n.size}: ${latestSample.size!.displayText}',
+                              '${context.l10n.size}: ${latestSample.height!.toStringAsFixed(1)} x ${latestSample.width!.toStringAsFixed(1)} cm',
                               style: TextStyle(
                                 fontSize: 11,
                                 color: Colors.grey.shade600,
@@ -612,14 +637,14 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      '${wound.samples.length} ${context.l10n.sample}${wound.samples.length != 1 ? 's' : ''}',
+                      '${woundSamples.length} ${context.l10n.sample}${woundSamples.length != 1 ? 's' : ''}',
                       style: TextStyle(
                         fontSize: 11,
                         color: Colors.grey.shade600,
                       ),
                     ),
                     const SizedBox(width: 12),
-                    if (wound.samples.any((s) => !s.hasBeenReviewed)) ...[
+                    if (woundSamples.any((s) => !s.hasBeenReviewed)) ...[
                       Icon(
                         Icons.pending_actions,
                         size: 14,
@@ -627,7 +652,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        '${wound.samples.where((s) => !s.hasBeenReviewed).length} ${context.l10n.pendingReview}',
+                        '${woundSamples.where((s) => !s.hasBeenReviewed).length} ${context.l10n.pendingReview}',
                         style: TextStyle(
                           fontSize: 11,
                           color: Colors.orange.shade600,
@@ -719,7 +744,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
     );
   }
 
-  void _showDeleteConfirmationDialog() {
+  void _showDeleteConfirmationDialog(Patient patient) {
     Get.dialog(
       AlertDialog(
         title: Text(context.l10n.deletePatient),
@@ -730,7 +755,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
             Text(context.l10n.areYouSureDeletePatient),
             const SizedBox(height: 8),
             Text(
-              widget.patient.name,
+              patient.name,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -740,10 +765,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
             const SizedBox(height: 8),
             Obx(() {
               final woundsCount = woundController.wounds.length;
-              final samplesCount = woundController.wounds.fold<int>(
-                0,
-                (sum, wound) => sum + wound.samples.length,
-              );
+              final samplesCount = sampleController.samples.length;
 
               return Text(
                 context.l10n.deleteWoundsAndSamples(woundsCount, samplesCount),
@@ -802,13 +824,13 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
     // Extract localized strings before async gap
     final successTitle = context.l10n.success;
     final successMessage = context.l10n.patientDeletedSuccessfully(
-      widget.patient.name,
+      _patient!.name,
     );
     final errorTitle = context.l10n.error;
     final errorMessage = context.l10n.failedToDeletePatient;
 
     try {
-      await patientController.deletePatient(widget.patient.id);
+      await patientController.deletePatient(_patient!.id);
 
       // Close confirmation dialog first
       Get.back();
@@ -834,6 +856,18 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
         '$errorMessage: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,
       );
+    }
+  }
+
+  /// Decode Base-64 image (raw or data URI) to MemoryImage, else null.
+  ImageProvider? _localImageProvider(String src) {
+    final base64Part =
+        src.startsWith('data:image/') ? src.split(',').last : src;
+    try {
+      final bytes = base64Decode(base64Part);
+      return MemoryImage(bytes);
+    } catch (_) {
+      return null;
     }
   }
 }

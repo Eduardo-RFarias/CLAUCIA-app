@@ -3,21 +3,24 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'dart:io';
+import 'dart:convert';
 
 import '../models/patient_model.dart';
 import '../models/wound_model.dart';
-import '../models/sample_model.dart';
+import '../dtos/create_wound_dto.dart';
+import '../dtos/create_sample_dto.dart';
 import '../controllers/wound_controller.dart';
 import '../controllers/sample_controller.dart';
 import '../controllers/auth_controller.dart';
 import '../utils/image_processor.dart';
 import '../services/localization_service.dart';
+import '../services/patient_service.dart';
 import 'wound_detail_screen.dart';
 
 class CreateWoundScreen extends StatefulWidget {
-  final Patient patient;
+  final int patientId;
 
-  const CreateWoundScreen({super.key, required this.patient});
+  const CreateWoundScreen({super.key, required this.patientId});
 
   @override
   State<CreateWoundScreen> createState() => _CreateWoundScreenState();
@@ -25,9 +28,13 @@ class CreateWoundScreen extends StatefulWidget {
 
 class _CreateWoundScreenState extends State<CreateWoundScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final WoundController woundController = Get.find<WoundController>();
-  final SampleController sampleController = Get.find<SampleController>();
+  final WoundController woundController = Get.put(WoundController());
+  final SampleController sampleController = Get.put(SampleController());
 
+  final PatientService _patientService = PatientService();
+
+  Patient? _patient;
+  bool _isLoadingPatient = true;
   // Form controllers
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -50,7 +57,36 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _loadPatient();
+  }
+
+  Future<void> _loadPatient() async {
+    try {
+      final p = await _patientService.getPatient(widget.patientId);
+      setState(() {
+        _patient = p;
+        _isLoadingPatient = false;
+      });
+    } catch (_) {
+      setState(() => _isLoadingPatient = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_isLoadingPatient) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (_patient == null) {
+      return Scaffold(
+        appBar: AppBar(title: Text(context.l10n.error)),
+        body: Center(child: Text(context.l10n.noUserDataAvailable)),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(context.l10n.createNewWound),
@@ -89,6 +125,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
   }
 
   Widget _buildPatientHeader() {
+    final patient = _patient!;
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -100,20 +137,16 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
               radius: 25,
               backgroundColor: Colors.blue.shade100,
               backgroundImage:
-                  widget.patient.profilePicture != null &&
-                          widget.patient.profilePicture!.isNotEmpty
-                      ? (widget.patient.profilePicture!.startsWith('http')
-                              ? CachedNetworkImageProvider(
-                                widget.patient.profilePicture!,
-                              )
-                              : FileImage(File(widget.patient.profilePicture!)))
+                  patient.photo != null && patient.photo!.isNotEmpty
+                      ? (patient.photo!.startsWith('http')
+                              ? CachedNetworkImageProvider(patient.photo!)
+                              : _localImageProvider(patient.photo!))
                           as ImageProvider
                       : null,
               child:
-                  widget.patient.profilePicture == null ||
-                          widget.patient.profilePicture!.isEmpty
+                  patient.photo == null || patient.photo!.isEmpty
                       ? Text(
-                        widget.patient.initials,
+                        patient.initials,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -128,7 +161,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.patient.name,
+                    patient.name,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -136,7 +169,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
                     ),
                   ),
                   Text(
-                    '${widget.patient.ageString} • ${widget.patient.localizedGender}',
+                    '${patient.ageString} • ${patient.sex.localizedValue}',
                     style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                   ),
                 ],
@@ -146,6 +179,20 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
         ),
       ),
     );
+  }
+
+  /// Decode base-64 or data URI to MemoryImage, else try local file.
+  ImageProvider? _localImageProvider(String src) {
+    final base64Part =
+        src.startsWith('data:image/') ? src.split(',').last : src;
+    try {
+      final bytes = base64Decode(base64Part);
+      return MemoryImage(bytes);
+    } catch (_) {
+      // Fallback to file path if decoding fails
+      final file = File(src);
+      return file.existsSync() ? FileImage(file) : null;
+    }
   }
 
   Widget _buildWoundInformationSection() {
@@ -549,56 +596,63 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
 
     try {
       final authController = Get.find<AuthController>();
-      final currentUser = authController.currentUser.value;
-      if (currentUser == null) {
+      final professional = authController.currentUser.value;
+      if (professional == null) {
         throw Exception('User not authenticated');
       }
 
-      // Create wound size if measurements are provided
-      WoundSize? size;
+      // Size measurements (optional)
+      double? height;
+      double? width;
       if (_hasOptionalSize &&
           _heightController.text.isNotEmpty &&
           _widthController.text.isNotEmpty) {
-        final height = double.parse(_heightController.text);
-        final width = double.parse(_widthController.text);
-        size = WoundSize(height: height, width: width);
+        height = double.parse(_heightController.text);
+        width = double.parse(_widthController.text);
       }
 
-      // Create the wound first
-      final newWound = Wound(
-        id: 0, // Will be assigned by service
-        patientId: widget.patient.id,
+      // Build DTO and create wound via controller
+      final woundDto = CreateWoundDto(
         location: _locationController.text.trim(),
-        origin: _selectedOrigin!,
+        origin: _selectedOrigin!.displayName,
         description:
             _descriptionController.text.trim().isEmpty
                 ? null
                 : _descriptionController.text.trim(),
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        isActive: true,
-        samples: [], // Will add sample after wound is created
+        patientId: _patient!.id,
       );
 
-      // Create wound through controller
-      final createdWound = await woundController.createWound(newWound);
+      final createdWound = await woundController.createWound(woundDto);
 
       if (createdWound == null) {
         throw Exception('Failed to create wound');
       }
 
       // Create the initial sample (always create one to document the wound's initial state)
-      await sampleController.createSample(
+      String? encodedPhoto;
+      if (_croppedImagePath != null) {
+        final bytes = await File(_croppedImagePath!).readAsBytes();
+        encodedPhoto = base64Encode(bytes);
+      }
+
+      // professional already retrieved earlier
+
+      final sampleDto = CreateSampleDto(
+        photo: encodedPhoto,
+        height: height,
+        width: width,
+        date: DateTime.now(),
         woundId: createdWound.id,
-        woundPhoto: _croppedImagePath,
-        size: size,
+        professionalCoren: professional.coren,
       );
 
+      await sampleController.createSample(sampleDto);
+
       // Navigate to wound detail screen
-      Get.off(() => WoundDetailScreen(wound: createdWound));
+      Get.off(() => WoundDetailScreen(woundId: createdWound.id));
 
       // Refresh the wounds list
-      woundController.loadWoundsByPatientId(widget.patient.id);
+      woundController.loadWoundsByPatient(_patient!.id);
     } catch (e) {
       Get.snackbar(
         errorTitle,

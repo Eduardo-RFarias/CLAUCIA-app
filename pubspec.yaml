@@ -45,6 +45,7 @@ dependencies:
   image: ^4.2.0
   path_provider: ^2.1.4
   intl: any
+  equatable: ^2.0.7
 
 dev_dependencies:
   flutter_test:

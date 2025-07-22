@@ -31,10 +31,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
 
   void _changePassword() {
     if (_formKey.currentState!.validate()) {
-      _authController.changePassword(
-        _currentPasswordController.text,
-        _newPasswordController.text,
-      );
+      _authController.changePassword(_newPasswordController.text);
       Get.back();
     }
   }

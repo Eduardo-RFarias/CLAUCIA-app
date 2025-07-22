@@ -1,29 +1,28 @@
 import 'package:get/get.dart';
 import '../models/wound_model.dart';
+import '../dtos/create_wound_dto.dart';
 import '../services/wound_service.dart';
 import '../services/localization_service.dart';
 
 class WoundController extends GetxController {
   final WoundService _woundService = WoundService();
 
-  // Observable lists and states
   final RxList<Wound> wounds = <Wound>[].obs;
   final RxBool isLoading = false.obs;
   final RxString error = ''.obs;
 
-  // Load wounds for a specific patient
-  Future<void> loadWoundsByPatientId(int patientId) async {
+  Future<void> loadWoundsByPatient(int patientId) async {
     try {
       isLoading.value = true;
       error.value = '';
 
-      final woundList = await _woundService.getWoundsByPatientId(patientId);
-      wounds.value = woundList;
+      final list = await _woundService.getWoundsByPatient(patientId);
+      wounds.assignAll(list);
     } catch (e) {
-      error.value = _cleanErrorMessage(e.toString());
+      error.value = _clean(e.toString());
       Get.snackbar(
         l10n.error,
-        l10n.failedToLoadWounds(error.value),
+        error.value,
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
@@ -31,28 +30,17 @@ class WoundController extends GetxController {
     }
   }
 
-  // Create new wound
-  Future<Wound?> createWound(Wound wound) async {
+  Future<Wound?> createWound(CreateWoundDto dto) async {
     try {
       isLoading.value = true;
-      error.value = '';
-
-      final newWound = await _woundService.createWound(wound);
-      wounds.add(newWound);
-      wounds.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
-
-      Get.snackbar(
-        l10n.success,
-        l10n.woundCreatedSuccessfully,
-        snackPosition: SnackPosition.BOTTOM,
-      );
-
-      return newWound;
+      final created = await _woundService.createWound(dto);
+      wounds.insert(0, created);
+      return created;
     } catch (e) {
-      error.value = _cleanErrorMessage(e.toString());
+      error.value = _clean(e.toString());
       Get.snackbar(
         l10n.error,
-        l10n.failedToCreateWound(error.value),
+        error.value,
         snackPosition: SnackPosition.BOTTOM,
       );
       return null;
@@ -61,42 +49,22 @@ class WoundController extends GetxController {
     }
   }
 
-  // Delete wound
-  Future<void> deleteWound(int woundId) async {
+  Future<void> deleteWound(int id) async {
     try {
-      isLoading.value = true;
-      error.value = '';
-
-      await _woundService.deleteWound(woundId);
-
-      // Remove the wound from the list
-      wounds.removeWhere((w) => w.id == woundId);
-
-      // Removed snackbar to prevent navigation conflicts
-      // Success feedback is handled at the UI level
+      await _woundService.deleteWound(id);
+      wounds.removeWhere((w) => w.id == id);
     } catch (e) {
-      error.value = _cleanErrorMessage(e.toString());
-      // Removed snackbar to prevent navigation conflicts
-      // Error feedback is handled at the UI level
+      error.value = _clean(e.toString());
+      Get.snackbar(
+        l10n.error,
+        error.value,
+        snackPosition: SnackPosition.BOTTOM,
+      );
       rethrow;
-    } finally {
-      isLoading.value = false;
     }
   }
 
-  // GetX Reactive Utility Methods (for UI state management)
-  List<Wound> get activeWounds =>
-      wounds.where((wound) => wound.isActive).toList();
+  int get woundsCount => wounds.length;
 
-  List<Wound> get healedWounds =>
-      wounds.where((wound) => !wound.isActive).toList();
-
-  int get activeWoundsCount => activeWounds.length;
-  int get healedWoundsCount => healedWounds.length;
-  int get totalWoundsCount => wounds.length;
-
-  // Helper method to clean error messages
-  String _cleanErrorMessage(String error) {
-    return error.replaceAll('Exception: ', '');
-  }
+  String _clean(String e) => e.replaceAll('Exception: ', '');
 }

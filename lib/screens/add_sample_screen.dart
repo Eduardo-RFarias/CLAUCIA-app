@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'dart:convert';
 
 import '../models/wound_model.dart';
-import '../models/sample_model.dart';
+import '../dtos/create_sample_dto.dart';
 import '../controllers/sample_controller.dart';
 import '../controllers/auth_controller.dart';
 import '../utils/image_processor.dart';
@@ -71,6 +72,7 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
   }
 
   Widget _buildWoundHeader() {
+    const Color uiColor = Colors.blue;
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -85,7 +87,7 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
                   width: 12,
                   height: 12,
                   decoration: BoxDecoration(
-                    color: widget.wound.statusColor,
+                    color: uiColor,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -106,18 +108,16 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: widget.wound.statusColor.withValues(alpha: 0.1),
+                    color: uiColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: widget.wound.statusColor.withValues(alpha: 0.3),
-                    ),
+                    border: Border.all(color: uiColor.withValues(alpha: 0.3)),
                   ),
                   child: Text(
                     widget.wound.statusText,
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
-                      color: widget.wound.statusColor,
+                      color: uiColor,
                     ),
                   ),
                 ),
@@ -158,10 +158,17 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
                   color: Colors.grey.shade500,
                 ),
                 const SizedBox(width: 4),
-                Text(
-                  '${widget.wound.samples.length} ${widget.wound.samples.length == 1 ? context.l10n.sample : context.l10n.samples}',
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                ),
+                Obx(() {
+                  final sampleController = Get.find<SampleController>();
+                  final count =
+                      sampleController.samples
+                          .where((s) => s.woundId == widget.wound.id)
+                          .length;
+                  return Text(
+                    '$count ${count == 1 ? context.l10n.sample : context.l10n.samples}',
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                  );
+                }),
               ],
             ),
           ],
@@ -496,27 +503,37 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
 
     try {
       final authController = Get.find<AuthController>();
-      final currentUser = authController.currentUser.value;
-      if (currentUser == null) {
+      final professional = authController.currentUser.value;
+      if (professional == null) {
         throw Exception('User not authenticated');
       }
 
-      // Create wound size if measurements are provided
-      WoundSize? size;
+      double? height;
+      double? width;
       if (_hasOptionalSize &&
           _heightController.text.isNotEmpty &&
           _widthController.text.isNotEmpty) {
-        final height = double.parse(_heightController.text);
-        final width = double.parse(_widthController.text);
-        size = WoundSize(height: height, width: width);
+        height = double.parse(_heightController.text);
+        width = double.parse(_widthController.text);
       }
 
-      // Create the sample without snackbar to avoid navigation conflicts
-      await sampleController.createSample(
+      // Encode photo if available
+      String? encodedPhoto;
+      if (_croppedImagePath != null) {
+        final bytes = await File(_croppedImagePath!).readAsBytes();
+        encodedPhoto = base64Encode(bytes);
+      }
+
+      final sampleDto = CreateSampleDto(
+        photo: encodedPhoto,
+        height: height,
+        width: width,
+        date: DateTime.now(),
         woundId: widget.wound.id,
-        woundPhoto: _croppedImagePath,
-        size: size,
+        professionalCoren: professional.coren,
       );
+
+      await sampleController.createSample(sampleDto);
 
       // Reset loading state and navigate immediately (no snackbar)
       if (mounted) {

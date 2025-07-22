@@ -1,191 +1,95 @@
 import 'package:get/get.dart';
 import '../models/patient_model.dart';
+import '../dtos/create_patient_dto.dart';
 import '../services/patient_service.dart';
 import '../services/localization_service.dart';
-import 'auth_controller.dart';
 import 'app_controller.dart';
 
 class PatientController extends GetxController {
   final PatientService _patientService = PatientService();
-  final AuthController _authController = Get.find<AuthController>();
   final AppController _appController = Get.find<AppController>();
 
   // Observable variables
-  RxList<Patient> patients = <Patient>[].obs;
-  RxBool isLoading = false.obs;
-  RxBool hasError = false.obs;
-  RxString errorMessage = ''.obs;
+  final RxList<Patient> patients = <Patient>[].obs;
+  final RxBool isLoading = false.obs;
+  final RxBool hasError = false.obs;
+  final RxString errorMessage = ''.obs;
 
   @override
   void onInit() {
-    fetchPatients();
-
-    // Listen to company changes and refetch patients
-    ever(_appController.selectedCompany, (_) {
-      fetchPatients();
-    });
-
     super.onInit();
+    _fetchByInstitution();
+    ever(_appController.selectedInstitution, (_) => _fetchByInstitution());
   }
 
-  // Fetch all patients
-  Future<void> fetchPatients() async {
-    try {
-      isLoading(true);
-      hasError(false);
-      errorMessage('');
-
-      final currentUser = _authController.currentUser.value;
-      final selectedCompany = _appController.selectedCompany.value;
-
-      if (currentUser == null || selectedCompany.isEmpty) {
-        patients.assignAll([]);
-        return;
-      }
-
-      final fetchedPatients = await _patientService.getPatients(
-        companyId: selectedCompany,
-        userEmail: currentUser.email,
-      );
-      patients.assignAll(fetchedPatients);
-    } catch (e) {
-      hasError(true);
-      errorMessage(_cleanErrorMessage(e.toString()));
-      Get.snackbar(
-        l10n.error,
-        l10n.failedToLoadPatients(errorMessage.value),
-        snackPosition: SnackPosition.BOTTOM,
-      );
-    } finally {
-      isLoading(false);
-    }
-  }
-
-  // Create new patient with individual parameters (convenience method)
-  Future<Patient?> createPatient({
-    required String name,
-    required DateTime dateOfBirth,
-    required String gender,
-    String? profilePicture,
-    String? medicalConditions,
-  }) async {
-    final patient = Patient(
-      id: 0, // Will be assigned by the service
-      name: name,
-      dateOfBirth: dateOfBirth,
-      gender: gender,
-      profilePicture: profilePicture,
-      medicalConditions: medicalConditions,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    );
-
-    return await createPatientFromObject(patient);
-  }
-
-  // Create new patient from Patient object
-  Future<Patient?> createPatientFromObject(Patient patient) async {
-    try {
-      isLoading(true);
-      hasError(false);
-      errorMessage('');
-
-      final currentUser = _authController.currentUser.value;
-      final selectedCompany = _appController.selectedCompany.value;
-
-      if (currentUser == null || selectedCompany.isEmpty) {
-        throw Exception('User not authenticated or no company selected');
-      }
-
-      final newPatient = await _patientService.createPatient(
-        patient,
-        companyId: selectedCompany,
-        userEmail: currentUser.email,
-      );
-
-      // Add to the beginning of the list (most recent)
-      patients.insert(0, newPatient);
-
-      Get.snackbar(
-        l10n.success,
-        l10n.patientCreatedSuccessfully(newPatient.name),
-        snackPosition: SnackPosition.BOTTOM,
-      );
-
-      return newPatient;
-    } catch (e) {
-      hasError(true);
-      errorMessage(_cleanErrorMessage(e.toString()));
-      Get.snackbar(
-        l10n.error,
-        l10n.failedToCreatePatient(errorMessage.value),
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      return null;
-    } finally {
-      isLoading(false);
-    }
-  }
-
-  // Delete patient
-  Future<void> deletePatient(int patientId) async {
+  Future<void> _fetchByInstitution() async {
     try {
       isLoading.value = true;
       hasError.value = false;
       errorMessage.value = '';
 
-      await _patientService.deletePatient(patientId);
-
-      // Remove the patient from the list
-      patients.removeWhere((p) => p.id == patientId);
-
-      // Removed snackbar to prevent navigation conflicts
-      // Success feedback is handled at the UI level
+      if (_appController.selectedInstitution.value.isEmpty) {
+        patients.clear();
+        return;
+      }
+      final fetched = await _patientService.getPatientsByInstitution(
+        _appController.selectedInstitution.value,
+      );
+      patients.assignAll(fetched);
     } catch (e) {
       hasError.value = true;
       errorMessage.value = _cleanErrorMessage(e.toString());
-      // Removed snackbar to prevent navigation conflicts
-      // Error feedback is handled at the UI level
-      rethrow;
+      Get.snackbar(
+        l10n.error,
+        errorMessage.value,
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } finally {
       isLoading.value = false;
     }
   }
 
-  // Search patients by name
-  List<Patient> searchPatients(String query) {
-    if (query.isEmpty) return patients;
+  /// Public wrapper so UI can refresh the patient list.
+  Future<void> fetchPatients() => _fetchByInstitution();
 
-    return patients.where((patient) {
-      return patient.name.toLowerCase().contains(query.toLowerCase());
-    }).toList();
+  Future<Patient?> createPatient(CreatePatientDto dto) async {
+    try {
+      isLoading.value = true;
+      final created = await _patientService.createPatient(dto);
+      patients.insert(0, created);
+      return created;
+    } catch (e) {
+      Get.snackbar(
+        l10n.error,
+        _cleanErrorMessage(e.toString()),
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return null;
+    } finally {
+      isLoading.value = false;
+    }
   }
 
-  // Get patients count
+  Future<void> deletePatient(int id) async {
+    try {
+      await _patientService.deletePatient(id);
+      patients.removeWhere((p) => p.id == id);
+    } catch (e) {
+      Get.snackbar(
+        l10n.error,
+        _cleanErrorMessage(e.toString()),
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
+
+  // Convenience filters
+  List<Patient> get malePatients =>
+      patients.where((p) => p.sex == Sex.male).toList();
+  List<Patient> get femalePatients =>
+      patients.where((p) => p.sex == Sex.female).toList();
   int get patientsCount => patients.length;
 
-  // Get patients by gender
-  List<Patient> getPatientsByGender(String gender) {
-    return patients
-        .where(
-          (patient) => patient.gender.toLowerCase() == gender.toLowerCase(),
-        )
-        .toList();
-  }
-
-  // Get patients with medical conditions
-  List<Patient> getPatientsWithConditions() {
-    return patients
-        .where(
-          (patient) =>
-              patient.medicalConditions != null &&
-              patient.medicalConditions!.isNotEmpty,
-        )
-        .toList();
-  }
-
-  // Helper method to clean error messages
-  String _cleanErrorMessage(String error) {
-    return error.replaceAll('Exception: ', '');
-  }
+  String _cleanErrorMessage(String error) =>
+      error.replaceAll('Exception: ', '');
 }

@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -24,7 +24,7 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: Obx(
           () => Text(
-            '${context.l10n.patients} - ${appController.selectedCompany.value}',
+            '${context.l10n.patients} - ${appController.displayInstitutionName}',
             style: const TextStyle(fontSize: 18),
           ),
         ),
@@ -221,21 +221,19 @@ class HomeScreen extends StatelessWidget {
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
-        onTap: () => Get.to(() => PatientDetailScreen(patient: patient)),
+        onTap: () => Get.to(() => PatientDetailScreen(patientId: patient.id)),
         contentPadding: const EdgeInsets.all(16),
         leading: CircleAvatar(
           radius: 28,
           backgroundColor: Colors.blue.shade100,
           backgroundImage:
-              patient.profilePicture != null &&
-                      patient.profilePicture!.isNotEmpty
-                  ? (patient.profilePicture!.startsWith('http')
-                          ? CachedNetworkImageProvider(patient.profilePicture!)
-                          : FileImage(File(patient.profilePicture!)))
-                      as ImageProvider
+              patient.photo != null && patient.photo!.isNotEmpty
+                  ? (patient.photo!.startsWith('http')
+                      ? CachedNetworkImageProvider(patient.photo!)
+                      : _localImageProvider(patient.photo!))
                   : null,
           child:
-              patient.profilePicture == null || patient.profilePicture!.isEmpty
+              patient.photo == null || patient.photo!.isEmpty
                   ? Text(
                     patient.initials,
                     style: TextStyle(
@@ -259,7 +257,7 @@ class HomeScreen extends StatelessWidget {
           children: [
             const SizedBox(height: 4),
             Text(
-              '${patient.ageString} • ${patient.localizedGender}',
+              '${patient.ageString} • ${patient.sex.localizedValue}',
               style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
             ),
             if (patient.medicalConditions != null &&
@@ -290,5 +288,18 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// Converts a Base-64 string (raw or data URI) to MemoryImage, otherwise
+  /// returns null so Flutter shows fallback avatar.
+  ImageProvider? _localImageProvider(String src) {
+    final base64Part =
+        src.startsWith('data:image/') ? src.split(',').last : src;
+    try {
+      final bytes = base64Decode(base64Part);
+      return MemoryImage(bytes);
+    } catch (_) {
+      return null;
+    }
   }
 }

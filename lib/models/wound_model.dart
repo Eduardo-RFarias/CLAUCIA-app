@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import 'sample_model.dart';
+import 'package:equatable/equatable.dart';
 import '../services/localization_service.dart';
 import '../services/date_service.dart';
 
@@ -12,7 +11,6 @@ enum WoundOrigin {
   const WoundOrigin(this.displayName);
   final String displayName;
 
-  // Get localized display name
   String get localizedDisplayName {
     switch (this) {
       case WoundOrigin.diabeticUlcers:
@@ -25,9 +23,25 @@ enum WoundOrigin {
         return l10n.venousUlcers;
     }
   }
+
+  static WoundOrigin? fromString(String? raw) {
+    if (raw == null) return null;
+    switch (raw.toLowerCase()) {
+      case 'diabetic ulcers':
+        return WoundOrigin.diabeticUlcers;
+      case 'non-diabetic ulcers':
+        return WoundOrigin.nonDiabeticUlcers;
+      case 'neuropathic ulcers':
+        return WoundOrigin.neuropathicUlcers;
+      case 'venous ulcers':
+        return WoundOrigin.venousUlcers;
+      default:
+        return null;
+    }
+  }
 }
 
-class Wound {
+class Wound extends Equatable {
   final int id;
   final int patientId;
   final String location;
@@ -35,11 +49,8 @@ class Wound {
   final String? description;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final bool isActive;
 
-  final List<Sample> samples;
-
-  Wound({
+  const Wound({
     required this.id,
     required this.patientId,
     required this.location,
@@ -47,43 +58,31 @@ class Wound {
     this.description,
     required this.createdAt,
     required this.updatedAt,
-    this.isActive = true,
-    this.samples = const <Sample>[],
   });
 
   factory Wound.fromJson(Map<String, dynamic> json) {
     return Wound(
-      id: json['id'] ?? 0,
-      patientId: json['patientId'] ?? 0,
-      location: json['location'] ?? '',
-      origin: WoundOrigin.values.firstWhere(
-        (e) => e.name == json['origin'],
-        orElse: () => WoundOrigin.diabeticUlcers,
-      ),
-      description: json['description'],
-      createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
-      updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ?? DateTime.now(),
-      isActive: json['isActive'] ?? true,
-      samples:
-          json['samples'] != null
-              ? (json['samples'] as List)
-                  .map((sampleJson) => Sample.fromJson(sampleJson))
-                  .toList()
-              : <Sample>[],
+      id: json['id'] as int,
+      patientId: json['patient_id'] as int,
+      location: json['location'] as String,
+      origin:
+          WoundOrigin.fromString(json['origin'] as String) ??
+          WoundOrigin.diabeticUlcers,
+      description: json['description'] as String?,
+      createdAt: DateTime.parse(json['created_at'] as String),
+      updatedAt: DateTime.parse(json['updated_at'] as String),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'patientId': patientId,
+      'patient_id': patientId,
       'location': location,
-      'origin': origin.name,
+      'origin': origin.displayName,
       'description': description,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
-      'isActive': isActive,
-      'samples': samples.map((sample) => sample.toJson()).toList(),
+      'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt.toIso8601String(),
     };
   }
 
@@ -95,8 +94,6 @@ class Wound {
     String? description,
     DateTime? createdAt,
     DateTime? updatedAt,
-    bool? isActive,
-    List<Sample>? samples,
   }) {
     return Wound(
       id: id ?? this.id,
@@ -106,23 +103,20 @@ class Wound {
       description: description ?? this.description,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-      isActive: isActive ?? this.isActive,
-      samples: samples ?? this.samples,
     );
   }
 
-  // Get formatted days since creation
-  String get daysSinceCreation {
-    return createdAt.relativeDate;
-  }
+  String get daysSinceCreation => createdAt.relativeDate;
+  String get statusText => l10n.statusActive;
 
-  // Get status color based on activity
-  Color get statusColor {
-    return isActive ? Colors.orange : Colors.green;
-  }
-
-  // Get status text
-  String get statusText {
-    return isActive ? l10n.statusActive : l10n.statusHealed;
-  }
+  @override
+  List<Object?> get props => [
+    id,
+    patientId,
+    location,
+    origin,
+    description,
+    createdAt,
+    updatedAt,
+  ];
 }

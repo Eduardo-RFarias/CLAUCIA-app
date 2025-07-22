@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'dart:io';
+import 'dart:convert'; // Added for base64Decode
 
 import '../models/sample_model.dart';
 import '../models/wound_model.dart';
 import '../controllers/sample_controller.dart';
 import '../services/localization_service.dart';
 import '../services/date_service.dart';
+import '../services/sample_service.dart'; // Added for updateSample
 
 class SampleDetailScreen extends StatefulWidget {
   final Sample sample;
@@ -61,13 +63,14 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
             _buildSampleHeader(),
 
             // Sample Photo Section
-            if (currentSample.woundPhoto != null) _buildPhotoSection(),
+            if (currentSample.photo != null) _buildPhotoSection(),
 
             // Classification Section
             _buildClassificationSection(),
 
             // Size Information
-            if (currentSample.size != null) _buildSizeSection(),
+            if (currentSample.height != null || currentSample.width != null)
+              _buildSizeSection(),
 
             // Professional Information
             _buildProfessionalSection(),
@@ -224,9 +227,9 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child:
-                      currentSample.woundPhoto!.startsWith('http')
+                      currentSample.photo!.startsWith('http')
                           ? CachedNetworkImage(
-                            imageUrl: currentSample.woundPhoto!,
+                            imageUrl: currentSample.photo!,
                             fit: BoxFit.cover,
                             placeholder:
                                 (context, url) => const Center(
@@ -236,14 +239,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
                                 (context, url, error) =>
                                     const Center(child: Icon(Icons.error)),
                           )
-                          : Image.file(
-                            File(currentSample.woundPhoto!),
-                            fit: BoxFit.cover,
-                            errorBuilder:
-                                (context, error, stackTrace) => const Center(
-                                  child: Icon(Icons.broken_image),
-                                ),
-                          ),
+                          : _buildImageFromSource(currentSample.photo!),
                 ),
               ),
             ],
@@ -251,6 +247,34 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
         ),
       ),
     );
+  }
+
+  Widget _buildImageFromSource(String imageSource) {
+    // Check if it's a base64 image or file path
+    final base64Part =
+        imageSource.startsWith('data:image/')
+            ? imageSource.split(',').last
+            : imageSource;
+
+    try {
+      final bytes = base64Decode(base64Part);
+      return Image.memory(
+        bytes,
+        fit: BoxFit.cover,
+        errorBuilder:
+            (context, error, stackTrace) =>
+                const Center(child: Icon(Icons.broken_image)),
+      );
+    } catch (_) {
+      // Fallback to file if base64 decode fails
+      return Image.file(
+        File(imageSource),
+        fit: BoxFit.cover,
+        errorBuilder:
+            (context, error, stackTrace) =>
+                const Center(child: Icon(Icons.broken_image)),
+      );
+    }
   }
 
   Widget _buildClassificationSection() {
@@ -288,11 +312,11 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
               ),
               const SizedBox(height: 16),
 
-              // ML Classification (only show if available)
-              if (currentSample.mlClassification != null)
+              // AI Classification (only show if available)
+              if (currentSample.aiClassification != null)
                 _buildClassificationCard(
                   title: context.l10n.aiClassification,
-                  classification: currentSample.mlClassification!,
+                  classification: currentSample.aiClassification!,
                   subtitle: context.l10n.automaticAnalysis,
                   icon: Icons.smart_toy,
                 )
@@ -429,7 +453,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  classification.localizedDisplayName,
+                  classification.localizedDescription,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -490,7 +514,11 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
                     child: _buildSizeCard(
                       icon: Icons.straighten,
                       label: context.l10n.dimensions,
-                      value: currentSample.size!.displayText,
+                      value:
+                          currentSample.height != null &&
+                                  currentSample.width != null
+                              ? '${currentSample.height!.toStringAsFixed(1)} x ${currentSample.width!.toStringAsFixed(1)} cm'
+                              : 'N/A',
                       color: Colors.blue,
                     ),
                   ),
@@ -500,7 +528,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
                       icon: Icons.crop_free,
                       label: context.l10n.area,
                       value:
-                          '${currentSample.size!.area.toStringAsFixed(1)} ${context.l10n.cm2Unit}',
+                          '${currentSample.area != null ? currentSample.area!.toStringAsFixed(1) : 'N/A'} cm²',
                       color: Colors.green,
                     ),
                   ),
@@ -587,7 +615,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          currentSample.responsibleProfessionalName,
+                          currentSample.professionalCoren,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -595,7 +623,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
                           ),
                         ),
                         Text(
-                          '${context.l10n.idLabel}: ${currentSample.responsibleProfessionalId}',
+                          '${context.l10n.idLabel}: ${currentSample.professionalCoren}',
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey.shade600,
@@ -747,7 +775,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${context.l10n.aiClassificationColon} ${currentSample.mlClassification?.localizedDisplayName ?? context.l10n.notAvailableNoPhoto}',
+                  '${context.l10n.aiClassificationColon} ${currentSample.aiClassification?.localizedDescription ?? 'N/A'}',
                   style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                 ),
                 const SizedBox(height: 16),
@@ -759,7 +787,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
                 ...WagnerClassification.values.map((classification) {
                   return RadioListTile<WagnerClassification>(
                     title: Text(
-                      classification.localizedDisplayName,
+                      classification.localizedDescription,
                       style: const TextStyle(fontSize: 14),
                     ),
                     value: classification,
@@ -782,11 +810,11 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
               Obx(
                 () => ElevatedButton(
                   onPressed:
-                      sampleController.isUpdating.value
+                      sampleController.isWorking.value
                           ? null
                           : () => _updateClassification(selectedClassification),
                   child:
-                      sampleController.isUpdating.value
+                      sampleController.isWorking.value
                           ? const SizedBox(
                             width: 20,
                             height: 20,
@@ -808,17 +836,14 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
     if (classification == null) return;
 
     try {
-      await sampleController.updateSampleClassification(
-        sampleId: currentSample.id,
-        professionalClassification: classification,
-      );
+      await sampleController.updateSample(currentSample.id, {
+        'professional_classification': classification.grade,
+      });
 
-      // Update local state
+      // Reload the sample to get updated data
+      final updatedSample = await SampleService().getSample(currentSample.id);
       setState(() {
-        currentSample = currentSample.copyWith(
-          professionalClassification: classification,
-          updatedAt: DateTime.now(),
-        );
+        currentSample = updatedSample;
       });
     } catch (e) {
       // Error handling is done in the controller
@@ -865,13 +890,13 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
           Obx(
             () => ElevatedButton(
               onPressed:
-                  sampleController.isUpdating.value ? null : _deleteSample,
+                  sampleController.isWorking.value ? null : _deleteSample,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red.shade600,
                 foregroundColor: Colors.white,
               ),
               child:
-                  sampleController.isUpdating.value
+                  sampleController.isWorking.value
                       ? const SizedBox(
                         width: 20,
                         height: 20,

@@ -1,37 +1,60 @@
+import 'package:equatable/equatable.dart';
 import '../services/localization_service.dart';
 
-class Patient {
+/// Possible patient biological sex values returned by the API.
+enum Sex { male, female }
+
+extension SexParsing on Sex {
+  static Sex fromString(String value) {
+    switch (value.toUpperCase()) {
+      case 'M':
+        return Sex.male;
+      case 'F':
+        return Sex.female;
+      default:
+        throw ArgumentError('Unknown sex value: $value');
+    }
+  }
+
+  String toShortString() => this == Sex.male ? 'M' : 'F';
+
+  String get localizedValue => this == Sex.male ? l10n.male : l10n.female;
+}
+
+class Patient extends Equatable {
   final int id;
   final String name;
   final DateTime dateOfBirth;
-  final String? profilePicture;
+  final Sex sex;
+  final String? photo; // URL or base64 string
+  final String institutionName;
+  final String? medicalConditions;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final String gender;
-  final String? medicalConditions;
 
-  Patient({
+  const Patient({
     required this.id,
     required this.name,
     required this.dateOfBirth,
-    this.profilePicture,
+    required this.sex,
+    this.photo,
+    required this.institutionName,
+    this.medicalConditions,
     required this.createdAt,
     required this.updatedAt,
-    required this.gender,
-    this.medicalConditions,
   });
 
   factory Patient.fromJson(Map<String, dynamic> json) {
     return Patient(
-      id: json['id'] ?? 0,
-      name: json['name'] ?? '',
-      dateOfBirth:
-          DateTime.tryParse(json['dateOfBirth'] ?? '') ?? DateTime.now(),
-      profilePicture: json['profilePicture'],
-      createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
-      updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ?? DateTime.now(),
-      gender: json['gender'] ?? '',
-      medicalConditions: json['medicalConditions'],
+      id: json['id'] as int,
+      name: json['name'] as String,
+      dateOfBirth: DateTime.parse(json['date_of_birth'] as String),
+      sex: SexParsing.fromString(json['sex'] as String),
+      photo: json['photo'] as String?,
+      institutionName: json['institution_name'] as String,
+      medicalConditions: json['medical_conditions'] as String?,
+      createdAt: DateTime.parse(json['created_at'] as String),
+      updatedAt: DateTime.parse(json['updated_at'] as String),
     );
   }
 
@@ -39,70 +62,74 @@ class Patient {
     return {
       'id': id,
       'name': name,
-      'dateOfBirth': dateOfBirth.toIso8601String(),
-      'profilePicture': profilePicture,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
-      'gender': gender,
-      'medicalConditions': medicalConditions,
+      'date_of_birth': dateOfBirth.toIso8601String(),
+      'sex': sex.toShortString(),
+      'photo': photo,
+      'institution_name': institutionName,
+      'medical_conditions': medicalConditions,
+      'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt.toIso8601String(),
     };
+  }
+
+  int get age {
+    final now = DateTime.now();
+    int years = now.year - dateOfBirth.year;
+    if (now.month < dateOfBirth.month ||
+        (now.month == dateOfBirth.month && now.day < dateOfBirth.day)) {
+      years--;
+    }
+    return years;
+  }
+
+  String get ageString => l10n.yearsOld(age);
+
+  String get initials {
+    final trimmed = name.trim();
+    if (trimmed.isEmpty) return 'P';
+    final parts = trimmed.split(' ');
+    if (parts.length == 1) {
+      return parts.first.substring(0, 1).toUpperCase();
+    }
+    final firstInitial = parts.first.substring(0, 1).toUpperCase();
+    final lastInitial = parts.last.substring(0, 1).toUpperCase();
+    return '$firstInitial$lastInitial';
   }
 
   Patient copyWith({
     int? id,
     String? name,
     DateTime? dateOfBirth,
-    String? profilePicture,
+    Sex? sex,
+    String? photo,
+    String? institutionName,
+    String? medicalConditions,
     DateTime? createdAt,
     DateTime? updatedAt,
-    String? gender,
-    String? medicalConditions,
   }) {
     return Patient(
       id: id ?? this.id,
       name: name ?? this.name,
       dateOfBirth: dateOfBirth ?? this.dateOfBirth,
-      profilePicture: profilePicture ?? this.profilePicture,
+      sex: sex ?? this.sex,
+      photo: photo ?? this.photo,
+      institutionName: institutionName ?? this.institutionName,
+      medicalConditions: medicalConditions ?? this.medicalConditions,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-      gender: gender ?? this.gender,
-      medicalConditions: medicalConditions ?? this.medicalConditions,
     );
   }
 
-  // Calculate age from date of birth
-  int get age {
-    final now = DateTime.now();
-    int age = now.year - dateOfBirth.year;
-    if (now.month < dateOfBirth.month ||
-        (now.month == dateOfBirth.month && now.day < dateOfBirth.day)) {
-      age--;
-    }
-    return age;
-  }
-
-  // Get formatted age string
-  String get ageString => l10n.yearsOld(age);
-
-  // Get localized gender string
-  String get localizedGender {
-    switch (gender.toLowerCase()) {
-      case 'male':
-      case 'masculino':
-        return l10n.male;
-      case 'female':
-      case 'feminino':
-        return l10n.female;
-      default:
-        return gender; // fallback to original if not recognized
-    }
-  }
-
-  // Get initials for avatar
-  String get initials {
-    if (name.isEmpty) return 'P';
-    final parts = name.split(' ');
-    if (parts.length == 1) return parts[0][0].toUpperCase();
-    return '${parts[0][0]}${parts[parts.length - 1][0]}'.toUpperCase();
-  }
+  @override
+  List<Object?> get props => [
+    id,
+    name,
+    dateOfBirth,
+    sex,
+    photo,
+    institutionName,
+    medicalConditions,
+    createdAt,
+    updatedAt,
+  ];
 }

@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -43,8 +43,8 @@ class ProfileScreen extends StatelessWidget {
                 authController,
                 imagePicker,
                 user.name,
-                user.email,
-                user.profilePicture,
+                user.coren,
+                user.photo,
               ),
               const SizedBox(height: 32),
 
@@ -60,14 +60,9 @@ class ProfileScreen extends StatelessWidget {
                   subtitle: user.name,
                 ),
                 _buildInfoTile(
-                  icon: Icons.email,
-                  title: context.l10n.emailAddress,
-                  subtitle: user.email,
-                ),
-                _buildInfoTile(
                   icon: Icons.badge,
-                  title: context.l10n.userId,
-                  subtitle: '#${user.id.toString().padLeft(6, '0')}',
+                  title: 'COREN',
+                  subtitle: user.coren,
                 ),
                 _buildInfoTile(
                   icon: Icons.verified_user,
@@ -142,9 +137,8 @@ class ProfileScreen extends StatelessWidget {
                 backgroundImage:
                     profilePicture != null && profilePicture.isNotEmpty
                         ? (profilePicture.startsWith('http')
-                                ? CachedNetworkImageProvider(profilePicture)
-                                : FileImage(File(profilePicture)))
-                            as ImageProvider
+                            ? CachedNetworkImageProvider(profilePicture)
+                            : _localImageProvider(profilePicture))
                         : null,
                 child:
                     profilePicture == null || profilePicture.isEmpty
@@ -202,6 +196,25 @@ class ProfileScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  /// Returns an [ImageProvider] for a local file path **or** a Base-64 image.
+  ///
+  /// 1. If [src] can be decoded from Base-64 (raw string or data URI) it uses
+  ///    [MemoryImage].
+  /// 2. Otherwise it falls back to loading a file from disk with [FileImage].
+  ImageProvider? _localImageProvider(String src) {
+    // Handle optional data URI prefix like "data:image/png;base64,XXX"
+    final base64Part =
+        src.startsWith('data:image/') ? src.split(',').last : src;
+
+    try {
+      final bytes = base64Decode(base64Part);
+      return MemoryImage(bytes);
+    } catch (_) {
+      // Not valid Base-64 => treat as file path
+      return null;
+    }
   }
 
   Widget _buildSectionTitle(String title) {
@@ -489,7 +502,7 @@ class ProfileScreen extends StatelessWidget {
       );
 
       if (pickedFile != null) {
-        authController.updateProfilePicture(pickedFile.path);
+        authController.updateProfilePhoto(pickedFile.path);
       }
     } catch (e) {
       Get.snackbar(
@@ -501,7 +514,7 @@ class ProfileScreen extends StatelessWidget {
   }
 
   void _removeProfilePicture(AuthController authController) {
-    authController.updateProfilePicture('');
+    authController.updateProfilePhoto('');
   }
 
   String _getCurrentLanguageName(BuildContext context) {

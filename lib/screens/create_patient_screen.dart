@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'dart:convert';
+import '../controllers/app_controller.dart';
 import '../controllers/patient_controller.dart';
+import '../models/patient_model.dart';
+import '../dtos/create_patient_dto.dart';
 import '../services/localization_service.dart';
 import '../services/date_service.dart';
 import 'patient_detail_screen.dart';
@@ -150,24 +154,35 @@ class _CreatePatientScreenState extends State<CreatePatientScreen> {
 
     // Extract localized strings before async operations
     final errorTitle = context.l10n.error;
+    final maleLabel = context.l10n.male;
 
     try {
-      final newPatient = await patientController.createPatient(
+      final appController = Get.find<AppController>();
+
+      // Encode image to Base-64 if provided
+      String? encodedPhoto;
+      if (_selectedImage != null) {
+        final bytes = await _selectedImage!.readAsBytes();
+        encodedPhoto = base64Encode(bytes);
+      }
+
+      final sexEnum = _selectedGender == maleLabel ? Sex.male : Sex.female;
+      final dto = CreatePatientDto(
         name: _nameController.text.trim(),
         dateOfBirth: _selectedDate!,
-        gender: _selectedGender!,
-        profilePicture: _selectedImage?.path,
+        sex: sexEnum.toShortString(),
+        institutionName: appController.selectedInstitution.value,
+        photo: encodedPhoto,
         medicalConditions:
             _medicalConditionsController.text.trim().isNotEmpty
                 ? _medicalConditionsController.text.trim()
                 : null,
       );
 
+      final newPatient = await patientController.createPatient(dto);
+
       if (newPatient != null) {
-        // Navigate to patient detail page
-        Get.off(() => PatientDetailScreen(patient: newPatient));
-      } else {
-        Get.back();
+        Get.off(() => PatientDetailScreen(patientId: newPatient.id));
       }
     } catch (e) {
       Get.snackbar(

@@ -1,22 +1,25 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import '../services/localization_service.dart';
 import '../services/date_service.dart';
+import '../services/localization_service.dart';
 
+/// Mapping of Wagner ulcer classification used by both AI & professionals.
+/// Backend returns an `int` (0–5). We keep the rich enum for UI while storing
+/// the raw integer in JSON.
 enum WagnerClassification {
-  grade0(0, 'No open Lesion'),
-  grade1(1, 'Superficial Lesion'),
-  grade2(2, 'Deep Ulcer'),
-  grade3(3, 'Abscess/Osteomyelitis'),
-  grade4(4, 'Partial Foot Gangrene'),
-  grade5(5, 'Whole Foot Gangrene');
+  grade0(0, 'No open lesion'),
+  grade1(1, 'Superficial lesion'),
+  grade2(2, 'Deep ulcer'),
+  grade3(3, 'Abscess / osteomyelitis'),
+  grade4(4, 'Partial foot gangrene'),
+  grade5(5, 'Whole foot gangrene');
 
   const WagnerClassification(this.grade, this.description);
   final int grade;
   final String description;
 
-  String get displayName => 'Grade $grade: $description';
+  String get displayName => '${l10n.grade} $grade: $localizedDescription';
 
-  // Get localized description
   String get localizedDescription {
     switch (this) {
       case WagnerClassification.grade0:
@@ -34,10 +37,6 @@ enum WagnerClassification {
     }
   }
 
-  String get localizedDisplayName =>
-      '${l10n.grade} $grade: $localizedDescription';
-
-  // Get color based on grade severity
   Color get color {
     switch (this) {
       case WagnerClassification.grade0:
@@ -54,151 +53,108 @@ enum WagnerClassification {
         return Colors.red.shade900;
     }
   }
-}
 
-class WoundSize {
-  final double height; // in centimeters
-  final double width; // in centimeters
-
-  WoundSize({required this.height, required this.width});
-
-  factory WoundSize.fromJson(Map<String, dynamic> json) {
-    return WoundSize(
-      height: (json['height'] ?? 0.0).toDouble(),
-      width: (json['width'] ?? 0.0).toDouble(),
+  static WagnerClassification fromInt(int? grade) {
+    return WagnerClassification.values.firstWhere(
+      (e) => e.grade == grade,
+      orElse: () => WagnerClassification.grade0,
     );
   }
-
-  Map<String, dynamic> toJson() {
-    return {'height': height, 'width': width};
-  }
-
-  String get displayText =>
-      '${height.toStringAsFixed(1)} x ${width.toStringAsFixed(1)} ${l10n.cmUnit}';
-  double get area => height * width;
 }
 
-class Sample {
+class Sample extends Equatable {
   final int id;
   final int woundId;
-  final String? woundPhoto; // Path to the wound photo
-  final WagnerClassification?
-  mlClassification; // ML model classification (null if no photo provided)
-  final WagnerClassification?
-  professionalClassification; // User can set this later
-  final WoundSize? size; // Optional size measurements
-  final DateTime date; // Sample date
-  final int responsibleProfessionalId; // Current user ID
-  final String responsibleProfessionalName; // Current user name
+  final String? photo; // url / base64 image
+  final WagnerClassification? aiClassification;
+  final WagnerClassification? professionalClassification;
+  final double? height; // centimetres
+  final double? width; // centimetres
+  final DateTime date;
+  final String professionalCoren;
   final DateTime createdAt;
   final DateTime updatedAt;
 
-  Sample({
+  const Sample({
     required this.id,
     required this.woundId,
-    this.woundPhoto,
-    this.mlClassification, // Now nullable - set only when photo is provided
+    this.photo,
+    this.aiClassification,
     this.professionalClassification,
-    this.size,
+    this.height,
+    this.width,
     required this.date,
-    required this.responsibleProfessionalId,
-    required this.responsibleProfessionalName,
+    required this.professionalCoren,
     required this.createdAt,
     required this.updatedAt,
   });
 
   factory Sample.fromJson(Map<String, dynamic> json) {
     return Sample(
-      id: json['id'] ?? 0,
-      woundId: json['woundId'] ?? 0,
-      woundPhoto: json['woundPhoto'],
-      mlClassification:
-          json['mlClassification'] != null
-              ? WagnerClassification.values.firstWhere(
-                (e) => e.grade == json['mlClassification'],
-              )
+      id: json['id'] as int,
+      woundId: json['wound_id'] as int,
+      photo: json['photo'] as String?,
+      aiClassification:
+          json['ai_classification'] != null
+              ? WagnerClassification.fromInt(json['ai_classification'] as int)
               : null,
       professionalClassification:
-          json['professionalClassification'] != null
-              ? WagnerClassification.values.firstWhere(
-                (e) => e.grade == json['professionalClassification'],
-                orElse: () => WagnerClassification.grade0,
+          json['professional_classification'] != null
+              ? WagnerClassification.fromInt(
+                json['professional_classification'] as int,
               )
               : null,
-      size: json['size'] != null ? WoundSize.fromJson(json['size']) : null,
-      date: DateTime.tryParse(json['date'] ?? '') ?? DateTime.now(),
-      responsibleProfessionalId: json['responsibleProfessionalId'] ?? 0,
-      responsibleProfessionalName: json['responsibleProfessionalName'] ?? '',
-      createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
-      updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ?? DateTime.now(),
+      height: (json['height'] as num?)?.toDouble(),
+      width: (json['width'] as num?)?.toDouble(),
+      date: DateTime.parse(json['date'] as String),
+      professionalCoren: json['professional_coren']?.toString() ?? '',
+      createdAt: DateTime.parse(json['created_at'] as String),
+      updatedAt: DateTime.parse(json['updated_at'] as String),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'woundId': woundId,
-      'woundPhoto': woundPhoto,
-      'mlClassification': mlClassification?.grade,
-      'professionalClassification': professionalClassification?.grade,
-      'size': size?.toJson(),
+      'wound_id': woundId,
+      'photo': photo,
+      'ai_classification': aiClassification?.grade,
+      'professional_classification': professionalClassification?.grade,
+      'height': height,
+      'width': width,
       'date': date.toIso8601String(),
-      'responsibleProfessionalId': responsibleProfessionalId,
-      'responsibleProfessionalName': responsibleProfessionalName,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
+      'professional_coren': professionalCoren,
+      'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt.toIso8601String(),
     };
   }
 
-  Sample copyWith({
-    int? id,
-    int? woundId,
-    String? woundPhoto,
-    WagnerClassification? mlClassification,
-    WagnerClassification? professionalClassification,
-    WoundSize? size,
-    DateTime? date,
-    int? responsibleProfessionalId,
-    String? responsibleProfessionalName,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) {
-    return Sample(
-      id: id ?? this.id,
-      woundId: woundId ?? this.woundId,
-      woundPhoto: woundPhoto ?? this.woundPhoto,
-      mlClassification: mlClassification ?? this.mlClassification,
-      professionalClassification:
-          professionalClassification ?? this.professionalClassification,
-      size: size ?? this.size,
-      date: date ?? this.date,
-      responsibleProfessionalId:
-          responsibleProfessionalId ?? this.responsibleProfessionalId,
-      responsibleProfessionalName:
-          responsibleProfessionalName ?? this.responsibleProfessionalName,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-    );
-  }
+  WagnerClassification get effectiveClassification =>
+      professionalClassification ??
+      aiClassification ??
+      WagnerClassification.grade0;
 
-  // Get the effective classification (professional override, ML, or fallback)
-  WagnerClassification get effectiveClassification {
-    // Priority: Professional classification > ML classification > Grade 0 fallback
-    return professionalClassification ??
-        mlClassification ??
-        WagnerClassification.grade0;
-  }
-
-  // Check if professional has overridden the ML classification
   bool get hasBeenReviewed => professionalClassification != null;
 
-  // Get formatted date
-  String get formattedDate {
-    return date.formattedDate;
-  }
+  String get formattedDate => date.formattedDate;
 
-  // Get time since sample
-  String get timeSinceCreation {
-    return date.relativeTime;
-  }
+  String get timeSinceCreation => date.relativeTime;
+
+  double? get area =>
+      (height != null && width != null) ? height! * width! : null;
+
+  @override
+  List<Object?> get props => [
+    id,
+    woundId,
+    photo,
+    aiClassification,
+    professionalClassification,
+    height,
+    width,
+    date,
+    professionalCoren,
+    createdAt,
+    updatedAt,
+  ];
 }
