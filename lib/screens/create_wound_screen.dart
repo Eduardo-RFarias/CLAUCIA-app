@@ -16,6 +16,7 @@ import '../utils/image_processor.dart';
 import '../utils/image_utils.dart';
 import '../services/localization_service.dart';
 import '../services/patient_service.dart';
+import '../services/wound_classifier_service.dart';
 import 'wound_detail_screen.dart';
 
 class CreateWoundScreen extends StatefulWidget {
@@ -692,8 +693,16 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
 
       // Create the initial sample (always create one to document the wound's initial state)
       String? encodedPhoto;
+      int? aiClassification;
+
       if (_croppedImagePath != null) {
         final imageFile = File(_croppedImagePath!);
+
+        // Run ML classification on the image
+        final classifier = await WoundClassifierService.getInstance();
+        aiClassification = await classifier.classifyWound(imageFile);
+
+        // Encode the image
         encodedPhoto = await ImageUtils.fileToDataUri(imageFile);
       }
 
@@ -701,6 +710,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
 
       final sampleDto = CreateSampleDto(
         photo: encodedPhoto,
+        aiClassification: aiClassification, // Include AI classification result
         height: height,
         width: width,
         date: DateTime.now(),
