@@ -133,28 +133,7 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            CircleAvatar(
-              radius: 25,
-              backgroundColor: Colors.blue.shade100,
-              backgroundImage:
-                  patient.photo != null && patient.photo!.isNotEmpty
-                      ? (patient.photo!.startsWith('http')
-                              ? CachedNetworkImageProvider(patient.photo!)
-                              : _localImageProvider(patient.photo!))
-                          as ImageProvider
-                      : null,
-              child:
-                  patient.photo == null || patient.photo!.isEmpty
-                      ? Text(
-                        patient.initials,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue.shade700,
-                        ),
-                      )
-                      : null,
-            ),
+            _buildPatientAvatar(patient, 25),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -192,6 +171,77 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
       // Fallback to file path if decoding fails
       final file = File(src);
       return file.existsSync() ? FileImage(file) : null;
+    }
+  }
+
+  /// Build patient avatar with proper error handling for network images
+  Widget _buildPatientAvatar(Patient patient, double radius) {
+    return Container(
+      width: radius * 2,
+      height: radius * 2,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.blue.shade100,
+      ),
+      child: ClipOval(
+        child:
+            (patient.photo != null && patient.photo!.isNotEmpty)
+                ? (patient.photo!.startsWith('http')
+                    ? CachedNetworkImage(
+                      imageUrl: patient.photo!,
+                      fit: BoxFit.cover,
+                      placeholder:
+                          (context, url) => Container(
+                            color: Colors.blue.shade100,
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.blue.shade600,
+                                ),
+                              ),
+                            ),
+                          ),
+                      errorWidget:
+                          (context, url, error) =>
+                              _buildPatientInitials(patient, radius),
+                    )
+                    : _buildLocalPatientImage(patient, radius))
+                : _buildPatientInitials(patient, radius),
+      ),
+    );
+  }
+
+  /// Build patient initials avatar
+  Widget _buildPatientInitials(Patient patient, double radius) {
+    return Container(
+      color: Colors.blue.shade100,
+      child: Center(
+        child: Text(
+          patient.initials,
+          style: TextStyle(
+            fontSize: radius * 0.7, // Scale font size with radius
+            fontWeight: FontWeight.bold,
+            color: Colors.blue.shade700,
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Build patient avatar from local image with error handling
+  Widget _buildLocalPatientImage(Patient patient, double radius) {
+    final imageProvider = _localImageProvider(patient.photo!);
+    if (imageProvider != null) {
+      return Image(
+        image: imageProvider,
+        fit: BoxFit.cover,
+        errorBuilder:
+            (context, error, stackTrace) =>
+                _buildPatientInitials(patient, radius),
+      );
+    } else {
+      return _buildPatientInitials(patient, radius);
     }
   }
 
@@ -343,6 +393,16 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
                   child: Image.file(
                     File(_croppedImagePath!),
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: Colors.grey.shade100,
+                        child: Icon(
+                          Icons.broken_image,
+                          size: 40,
+                          color: Colors.grey.shade400,
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),

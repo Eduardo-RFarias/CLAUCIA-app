@@ -4,7 +4,7 @@ import '../services/date_service.dart';
 import '../services/localization_service.dart';
 
 /// Mapping of Wagner ulcer classification used by both AI & professionals.
-/// Backend returns an `int` (0–5). We keep the rich enum for UI while storing
+/// Backend returns an `int` (0–6). We keep the rich enum for UI while storing
 /// the raw integer in JSON.
 enum WagnerClassification {
   grade0(0, 'No open lesion'),
@@ -12,16 +12,22 @@ enum WagnerClassification {
   grade2(2, 'Deep ulcer'),
   grade3(3, 'Abscess / osteomyelitis'),
   grade4(4, 'Partial foot gangrene'),
-  grade5(5, 'Whole foot gangrene');
+  grade5(5, 'Whole foot gangrene'),
+  normalSkin(6, 'Normal healthy skin');
 
   const WagnerClassification(this.grade, this.description);
   final int grade;
   final String description;
 
-  String get displayName => '${l10n.grade} $grade: $localizedDescription';
+  String get displayName =>
+      this == WagnerClassification.normalSkin
+          ? localizedDescription
+          : '${l10n.grade} $grade: $localizedDescription';
 
   String get localizedDescription {
     switch (this) {
+      case WagnerClassification.normalSkin:
+        return l10n.wagnerNormalSkin;
       case WagnerClassification.grade0:
         return l10n.wagnerGrade0;
       case WagnerClassification.grade1:
@@ -39,6 +45,8 @@ enum WagnerClassification {
 
   Color get color {
     switch (this) {
+      case WagnerClassification.normalSkin:
+        return Colors.blue.shade600;
       case WagnerClassification.grade0:
         return Colors.green;
       case WagnerClassification.grade1:

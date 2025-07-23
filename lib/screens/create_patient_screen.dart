@@ -236,6 +236,18 @@ class _CreatePatientScreenState extends State<CreatePatientScreen> {
                                 fit: BoxFit.cover,
                                 width: 120,
                                 height: 120,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    width: 120,
+                                    height: 120,
+                                    color: Colors.grey.shade100,
+                                    child: Icon(
+                                      Icons.broken_image,
+                                      size: 40,
+                                      color: Colors.grey.shade400,
+                                    ),
+                                  );
+                                },
                               ),
                             )
                             : Column(

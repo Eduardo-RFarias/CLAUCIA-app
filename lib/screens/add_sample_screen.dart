@@ -9,7 +9,9 @@ import '../dtos/create_sample_dto.dart';
 import '../controllers/sample_controller.dart';
 import '../controllers/auth_controller.dart';
 import '../utils/image_processor.dart';
+import '../utils/logger.dart';
 import '../services/localization_service.dart';
+import '../services/wound_classifier_service.dart';
 
 class AddSampleScreen extends StatefulWidget {
   final Wound wound;
@@ -245,6 +247,16 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
                   child: Image.file(
                     File(_croppedImagePath!),
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: Colors.grey.shade100,
+                        child: Icon(
+                          Icons.broken_image,
+                          size: 40,
+                          color: Colors.grey.shade400,
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),
@@ -517,15 +529,26 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
         width = double.parse(_widthController.text);
       }
 
-      // Encode photo if available
+      // Encode photo if available and run ML classification
       String? encodedPhoto;
+      int? aiClassification;
+
       if (_croppedImagePath != null) {
-        final bytes = await File(_croppedImagePath!).readAsBytes();
+        final imageFile = File(_croppedImagePath!);
+
+        // Run ML classification on the image
+        final classifier = await WoundClassifierService.getInstance();
+        aiClassification = await classifier.classifyWound(imageFile);
+        AppLogger.i('AI Classification result: $aiClassification');
+
+        // Encode the image to base64 for API
+        final bytes = await imageFile.readAsBytes();
         encodedPhoto = base64Encode(bytes);
       }
 
       final sampleDto = CreateSampleDto(
         photo: encodedPhoto,
+        aiClassification: aiClassification, // Include AI classification result
         height: height,
         width: width,
         date: DateTime.now(),

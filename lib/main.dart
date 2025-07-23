@@ -5,6 +5,8 @@ import 'controllers/auth_controller.dart';
 import 'screens/login_screen.dart';
 import 'screens/main_layout.dart';
 import 'services/localization_service.dart';
+import 'services/wound_classifier_service.dart';
+import 'utils/logger.dart';
 
 // Generated localization files
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -16,7 +18,22 @@ void main() async {
   // Initialize LocalizationService
   Get.put(LocalizationService());
 
+  // Preload the TFLite model in background
+  _preloadTFLiteModel();
+
   runApp(const MyApp());
+}
+
+// Preload the TFLite model to avoid delay during first classification
+Future<void> _preloadTFLiteModel() async {
+  try {
+    // Initialize the classifier service in the background
+    await WoundClassifierService.getInstance();
+    AppLogger.i('TFLite model preloaded successfully');
+  } catch (e) {
+    AppLogger.e('Error preloading TFLite model:', e);
+    // Continue with app initialization even if model fails to load
+  }
 }
 
 class MyApp extends StatelessWidget {

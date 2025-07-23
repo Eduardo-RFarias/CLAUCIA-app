@@ -92,10 +92,10 @@ class ProfileScreen extends StatelessWidget {
               ]),
               const SizedBox(height: 32),
 
-              // About Section
-              _buildSectionTitle(context.l10n.about),
+              // Version Information
+              _buildSectionTitle(context.l10n.version),
               const SizedBox(height: 16),
-              _buildAboutCard(context),
+              _buildVersionCard(context),
               const SizedBox(height: 32),
 
               // Logout Button
@@ -131,27 +131,7 @@ class ProfileScreen extends StatelessWidget {
         children: [
           Stack(
             children: [
-              CircleAvatar(
-                radius: 50,
-                backgroundColor: Colors.white,
-                backgroundImage:
-                    profilePicture != null && profilePicture.isNotEmpty
-                        ? (profilePicture.startsWith('http')
-                            ? CachedNetworkImageProvider(profilePicture)
-                            : _localImageProvider(profilePicture))
-                        : null,
-                child:
-                    profilePicture == null || profilePicture.isEmpty
-                        ? Text(
-                          name.isNotEmpty ? name[0].toUpperCase() : 'U',
-                          style: TextStyle(
-                            fontSize: 36,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue.shade600,
-                          ),
-                        )
-                        : null,
-              ),
+              _buildProfileAvatar(profilePicture, name),
               Positioned(
                 bottom: 0,
                 right: 0,
@@ -214,6 +194,72 @@ class ProfileScreen extends StatelessWidget {
     } catch (_) {
       // Not valid Base-64 => treat as file path
       return null;
+    }
+  }
+
+  /// Build profile avatar with proper error handling for network images
+  Widget _buildProfileAvatar(String? profilePicture, String name) {
+    return Container(
+      width: 100,
+      height: 100,
+      decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white),
+      child: ClipOval(
+        child:
+            (profilePicture != null && profilePicture.isNotEmpty)
+                ? (profilePicture.startsWith('http')
+                    ? CachedNetworkImage(
+                      imageUrl: profilePicture,
+                      fit: BoxFit.cover,
+                      placeholder:
+                          (context, url) => Container(
+                            color: Colors.white,
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.blue.shade600,
+                                ),
+                              ),
+                            ),
+                          ),
+                      errorWidget:
+                          (context, url, error) => _buildInitialsAvatar(name),
+                    )
+                    : _buildLocalImageAvatar(profilePicture, name))
+                : _buildInitialsAvatar(name),
+      ),
+    );
+  }
+
+  /// Build avatar with initials fallback
+  Widget _buildInitialsAvatar(String name) {
+    return Container(
+      color: Colors.white,
+      child: Center(
+        child: Text(
+          name.isNotEmpty ? name[0].toUpperCase() : 'U',
+          style: TextStyle(
+            fontSize: 36,
+            fontWeight: FontWeight.bold,
+            color: Colors.blue.shade600,
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Build avatar from local image with error handling
+  Widget _buildLocalImageAvatar(String imagePath, String name) {
+    final imageProvider = _localImageProvider(imagePath);
+    if (imageProvider != null) {
+      return Image(
+        image: imageProvider,
+        fit: BoxFit.cover,
+        errorBuilder:
+            (context, error, stackTrace) => _buildInitialsAvatar(name),
+      );
+    } else {
+      return _buildInitialsAvatar(name);
     }
   }
 
@@ -317,38 +363,17 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAboutCard(BuildContext context) {
+  Widget _buildVersionCard(BuildContext context) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            Row(
-              children: [
-                Icon(Icons.info_outline, color: Colors.blue.shade600),
-                const SizedBox(width: 8),
-                Text(
-                  context.l10n.aboutThisApp,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Text(
-              context.l10n.appDescription,
-              style: TextStyle(fontSize: 14, color: Colors.grey, height: 1.5),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                _buildInfoChip(context.l10n.version, '1.0.0'),
-                const SizedBox(width: 8),
-                _buildInfoChip(context.l10n.build, '1'),
-              ],
-            ),
+            _buildInfoChip(context.l10n.version, '1.0.0'),
+            const SizedBox(width: 8),
+            _buildInfoChip(context.l10n.build, '1'),
           ],
         ),
       ),

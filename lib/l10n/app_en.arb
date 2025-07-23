@@ -953,6 +953,10 @@
   "@venousUlcers": {
     "description": "Venous ulcers wound origin"
   },
+  "wagnerNormalSkin": "Normal Healthy Skin",
+  "@wagnerNormalSkin": {
+    "description": "Wagner classification normal healthy skin"
+  },
   "wagnerGrade0": "No open Lesion",
   "@wagnerGrade0": {
     "description": "Wagner classification grade 0"
