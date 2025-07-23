@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'dart:io';
-import 'dart:convert'; // Added for base64Decode
 
 import '../models/sample_model.dart';
 import '../models/wound_model.dart';
@@ -10,6 +7,7 @@ import '../controllers/sample_controller.dart';
 import '../services/localization_service.dart';
 import '../services/date_service.dart';
 import '../services/sample_service.dart'; // Added for updateSample
+import '../utils/image_utils.dart';
 
 class SampleDetailScreen extends StatefulWidget {
   final Sample sample;
@@ -227,19 +225,18 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child:
-                      currentSample.photo!.startsWith('http')
-                          ? CachedNetworkImage(
-                            imageUrl: currentSample.photo!,
+                      currentSample.photo != null
+                          ? Image(
+                            image: ImageUtils.getImageProvider(
+                              currentSample.photoUrl,
+                            ),
                             fit: BoxFit.cover,
-                            placeholder:
-                                (context, url) => const Center(
-                                  child: CircularProgressIndicator(),
+                            errorBuilder:
+                                (context, error, stackTrace) => const Center(
+                                  child: Icon(Icons.broken_image),
                                 ),
-                            errorWidget:
-                                (context, url, error) =>
-                                    const Center(child: Icon(Icons.error)),
                           )
-                          : _buildImageFromSource(currentSample.photo!),
+                          : const Center(child: Icon(Icons.no_photography)),
                 ),
               ),
             ],
@@ -247,34 +244,6 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
         ),
       ),
     );
-  }
-
-  Widget _buildImageFromSource(String imageSource) {
-    // Check if it's a base64 image or file path
-    final base64Part =
-        imageSource.startsWith('data:image/')
-            ? imageSource.split(',').last
-            : imageSource;
-
-    try {
-      final bytes = base64Decode(base64Part);
-      return Image.memory(
-        bytes,
-        fit: BoxFit.cover,
-        errorBuilder:
-            (context, error, stackTrace) =>
-                const Center(child: Icon(Icons.broken_image)),
-      );
-    } catch (_) {
-      // Fallback to file if base64 decode fails
-      return Image.file(
-        File(imageSource),
-        fit: BoxFit.cover,
-        errorBuilder:
-            (context, error, stackTrace) =>
-                const Center(child: Icon(Icons.broken_image)),
-      );
-    }
   }
 
   Widget _buildClassificationSection() {

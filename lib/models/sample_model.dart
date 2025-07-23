@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import '../services/date_service.dart';
 import '../services/localization_service.dart';
+import '../utils/image_utils.dart';
 
 /// Mapping of Wagner ulcer classification used by both AI & professionals.
 /// Backend returns an `int` (0–6). We keep the rich enum for UI while storing
@@ -150,6 +151,9 @@ class Sample extends Equatable {
 
   double? get area =>
       (height != null && width != null) ? height! * width! : null;
+
+  /// Returns the full URL for the sample's photo
+  String get photoUrl => ImageUtils.pathToUrl(photo);
 
   @override
   List<Object?> get props => [

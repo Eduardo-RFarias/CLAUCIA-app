@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'dart:convert';
 
 import '../models/wound_model.dart';
 import '../dtos/create_sample_dto.dart';
 import '../controllers/sample_controller.dart';
 import '../controllers/auth_controller.dart';
 import '../utils/image_processor.dart';
+import '../utils/image_utils.dart';
 import '../utils/logger.dart';
 import '../services/localization_service.dart';
 import '../services/wound_classifier_service.dart';
@@ -541,9 +541,8 @@ class _AddSampleScreenState extends State<AddSampleScreen> {
         aiClassification = await classifier.classifyWound(imageFile);
         AppLogger.i('AI Classification result: $aiClassification');
 
-        // Encode the image to base64 for API
-        final bytes = await imageFile.readAsBytes();
-        encodedPhoto = base64Encode(bytes);
+        // Encode the image to data URI format for API
+        encodedPhoto = await ImageUtils.fileToDataUri(imageFile);
       }
 
       final sampleDto = CreateSampleDto(

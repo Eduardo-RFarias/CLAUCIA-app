@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'dart:convert';
 import '../controllers/app_controller.dart';
 import '../controllers/patient_controller.dart';
 import '../models/patient_model.dart';
 import '../dtos/create_patient_dto.dart';
 import '../services/localization_service.dart';
 import '../services/date_service.dart';
+import '../utils/image_utils.dart';
 import 'patient_detail_screen.dart';
 
 class CreatePatientScreen extends StatefulWidget {
@@ -159,11 +159,10 @@ class _CreatePatientScreenState extends State<CreatePatientScreen> {
     try {
       final appController = Get.find<AppController>();
 
-      // Encode image to Base-64 if provided
+      // Encode image to data URI if provided
       String? encodedPhoto;
       if (_selectedImage != null) {
-        final bytes = await _selectedImage!.readAsBytes();
-        encodedPhoto = base64Encode(bytes);
+        encodedPhoto = await ImageUtils.fileToDataUri(_selectedImage!);
       }
 
       final sexEnum = _selectedGender == maleLabel ? Sex.male : Sex.female;

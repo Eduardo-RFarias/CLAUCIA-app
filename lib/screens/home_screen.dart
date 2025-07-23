@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -270,19 +269,6 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  /// Converts a Base-64 string (raw or data URI) to MemoryImage, otherwise
-  /// returns null so Flutter shows fallback avatar.
-  ImageProvider? _localImageProvider(String src) {
-    final base64Part =
-        src.startsWith('data:image/') ? src.split(',').last : src;
-    try {
-      final bytes = base64Decode(base64Part);
-      return MemoryImage(bytes);
-    } catch (_) {
-      return null;
-    }
-  }
-
   /// Build patient avatar with proper error handling for network images
   Widget _buildPatientAvatar(Patient patient, double radius) {
     return Container(
@@ -295,27 +281,25 @@ class HomeScreen extends StatelessWidget {
       child: ClipOval(
         child:
             (patient.photo != null && patient.photo!.isNotEmpty)
-                ? (patient.photo!.startsWith('http')
-                    ? CachedNetworkImage(
-                      imageUrl: patient.photo!,
-                      fit: BoxFit.cover,
-                      placeholder:
-                          (context, url) => Container(
-                            color: Colors.blue.shade100,
-                            child: Center(
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.blue.shade600,
-                                ),
-                              ),
+                ? CachedNetworkImage(
+                  imageUrl: patient.photoUrl,
+                  fit: BoxFit.cover,
+                  placeholder:
+                      (context, url) => Container(
+                        color: Colors.blue.shade100,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.blue.shade600,
                             ),
                           ),
-                      errorWidget:
-                          (context, url, error) =>
-                              _buildPatientInitials(patient, radius),
-                    )
-                    : _buildLocalPatientImage(patient, radius))
+                        ),
+                      ),
+                  errorWidget:
+                      (context, url, error) =>
+                          _buildPatientInitials(patient, radius),
+                )
                 : _buildPatientInitials(patient, radius),
       ),
     );
@@ -336,21 +320,5 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  /// Build patient avatar from local image with error handling
-  Widget _buildLocalPatientImage(Patient patient, double radius) {
-    final imageProvider = _localImageProvider(patient.photo!);
-    if (imageProvider != null) {
-      return Image(
-        image: imageProvider,
-        fit: BoxFit.cover,
-        errorBuilder:
-            (context, error, stackTrace) =>
-                _buildPatientInitials(patient, radius),
-      );
-    } else {
-      return _buildPatientInitials(patient, radius);
-    }
   }
 }

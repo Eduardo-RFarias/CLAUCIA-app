@@ -5,8 +5,9 @@ import '../services/auth_service.dart';
 import '../screens/main_layout.dart';
 import '../screens/login_screen.dart';
 import '../services/localization_service.dart';
+import '../utils/image_utils.dart';
+import '../utils/logger.dart';
 import 'dart:io';
-import 'dart:convert';
 
 class AuthController extends GetxController {
   final AuthService _authService = AuthService();
@@ -68,17 +69,33 @@ class AuthController extends GetxController {
     Get.offAll(() => const LoginScreen());
   }
 
-  Future<void> updateProfilePhoto(String imagePath) async {
+  Future<void> updateProfilePhoto(String photoSource) async {
     final prof = currentUser.value;
     if (prof == null) return;
     try {
       isLoading.value = true;
-      String b64 = '';
-      if (imagePath.isNotEmpty) {
-        final bytes = await File(imagePath).readAsBytes();
-        b64 = base64Encode(bytes);
+
+      // If photoSource is empty, send an empty string to remove the photo
+      String dataUri = '';
+
+      // If photoSource is already a data URI, use it as is
+      if (photoSource.startsWith('data:image/')) {
+        dataUri = photoSource;
       }
-      final updated = await _authService.updatePhoto(prof.coren, b64);
+      // If it's a file path, convert it to a data URI
+      else if (photoSource.isNotEmpty) {
+        try {
+          final file = File(photoSource);
+          if (await file.exists()) {
+            dataUri = await ImageUtils.fileToDataUri(file);
+          }
+        } catch (e) {
+          // If there's an error, log it and continue with empty string
+          AppLogger.i('Error processing image file: $e');
+        }
+      }
+
+      final updated = await _authService.updatePhoto(prof.coren, dataUri);
       currentUser.value = updated.copyWith(token: prof.token);
     } catch (e) {
       Get.snackbar(

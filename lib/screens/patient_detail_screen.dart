@@ -863,9 +863,10 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
       child: ClipOval(
         child:
             (patient.photo != null && patient.photo!.isNotEmpty)
-                ? (patient.photo!.startsWith('http')
+                ? ((patient.photo!.startsWith('http') ||
+                        patient.photo!.startsWith('/'))
                     ? CachedNetworkImage(
-                      imageUrl: patient.photo!,
+                      imageUrl: patient.photoUrl,
                       fit: BoxFit.cover,
                       placeholder:
                           (context, url) => Container(

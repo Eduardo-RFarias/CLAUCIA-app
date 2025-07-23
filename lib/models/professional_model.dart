@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../utils/image_utils.dart';
 
 class Professional extends Equatable {
   final String coren;
@@ -39,6 +40,9 @@ class Professional extends Equatable {
     'updated_at': updatedAt.toIso8601String(),
     if (token != null) 'token': token,
   };
+
+  /// Returns the full URL for the professional's photo
+  String get photoUrl => ImageUtils.pathToUrl(photo);
 
   Professional copyWith({
     String? coren,

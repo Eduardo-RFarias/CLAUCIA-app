@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'dart:io';
 
 import '../models/wound_model.dart';
 import '../models/sample_model.dart';
-import '../controllers/sample_controller.dart';
 import '../controllers/wound_controller.dart';
+import '../controllers/sample_controller.dart';
 import '../services/localization_service.dart';
 import '../services/date_service.dart';
+import '../utils/image_utils.dart';
 import 'add_sample_screen.dart';
 import 'sample_detail_screen.dart';
 import '../services/wound_service.dart';
@@ -467,42 +466,20 @@ class _WoundDetailScreenState extends State<WoundDetailScreen> {
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child:
-                          sample.photo!.startsWith('http')
-                              ? CachedNetworkImage(
-                                imageUrl: sample.photo!,
-                                fit: BoxFit.cover,
-                                placeholder:
-                                    (context, url) => Container(
-                                      color: Colors.grey.shade100,
-                                      child: const Center(
-                                        child: CircularProgressIndicator(),
-                                      ),
-                                    ),
-                                errorWidget:
-                                    (context, url, error) => Container(
-                                      color: Colors.grey.shade100,
-                                      child: Icon(
-                                        Icons.broken_image,
-                                        size: 40,
-                                        color: Colors.grey.shade400,
-                                      ),
-                                    ),
-                              )
-                              : Image.file(
-                                File(sample.photo!),
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    color: Colors.grey.shade100,
-                                    child: Icon(
-                                      Icons.broken_image,
-                                      size: 40,
-                                      color: Colors.grey.shade400,
-                                    ),
-                                  );
-                                },
-                              ),
+                      child: Image(
+                        image: ImageUtils.getImageProvider(sample.photoUrl),
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: Colors.grey.shade100,
+                            child: Icon(
+                              Icons.broken_image,
+                              size: 40,
+                              color: Colors.grey.shade400,
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
                   const SizedBox(height: 12),

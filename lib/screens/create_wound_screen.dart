@@ -13,6 +13,7 @@ import '../controllers/wound_controller.dart';
 import '../controllers/sample_controller.dart';
 import '../controllers/auth_controller.dart';
 import '../utils/image_processor.dart';
+import '../utils/image_utils.dart';
 import '../services/localization_service.dart';
 import '../services/patient_service.dart';
 import 'wound_detail_screen.dart';
@@ -186,9 +187,10 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
       child: ClipOval(
         child:
             (patient.photo != null && patient.photo!.isNotEmpty)
-                ? (patient.photo!.startsWith('http')
+                ? ((patient.photo!.startsWith('http') ||
+                        patient.photo!.startsWith('/'))
                     ? CachedNetworkImage(
-                      imageUrl: patient.photo!,
+                      imageUrl: patient.photoUrl,
                       fit: BoxFit.cover,
                       placeholder:
                           (context, url) => Container(
@@ -691,8 +693,8 @@ class _CreateWoundScreenState extends State<CreateWoundScreen> {
       // Create the initial sample (always create one to document the wound's initial state)
       String? encodedPhoto;
       if (_croppedImagePath != null) {
-        final bytes = await File(_croppedImagePath!).readAsBytes();
-        encodedPhoto = base64Encode(bytes);
+        final imageFile = File(_croppedImagePath!);
+        encodedPhoto = await ImageUtils.fileToDataUri(imageFile);
       }
 
       // professional already retrieved earlier

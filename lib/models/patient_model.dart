@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import '../services/localization_service.dart';
+import '../utils/image_utils.dart';
 
 /// Possible patient biological sex values returned by the API.
 enum Sex { male, female }
@@ -95,6 +96,9 @@ class Patient extends Equatable {
     final lastInitial = parts.last.substring(0, 1).toUpperCase();
     return '$firstInitial$lastInitial';
   }
+
+  /// Returns the full URL for the patient's photo
+  String get photoUrl => ImageUtils.pathToUrl(photo);
 
   Patient copyWith({
     int? id,

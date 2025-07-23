@@ -1,10 +1,11 @@
-import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../controllers/auth_controller.dart';
 import '../services/localization_service.dart';
+import '../utils/image_utils.dart';
 import 'change_password_dialog.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -178,25 +179,6 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  /// Returns an [ImageProvider] for a local file path **or** a Base-64 image.
-  ///
-  /// 1. If [src] can be decoded from Base-64 (raw string or data URI) it uses
-  ///    [MemoryImage].
-  /// 2. Otherwise it falls back to loading a file from disk with [FileImage].
-  ImageProvider? _localImageProvider(String src) {
-    // Handle optional data URI prefix like "data:image/png;base64,XXX"
-    final base64Part =
-        src.startsWith('data:image/') ? src.split(',').last : src;
-
-    try {
-      final bytes = base64Decode(base64Part);
-      return MemoryImage(bytes);
-    } catch (_) {
-      // Not valid Base-64 => treat as file path
-      return null;
-    }
-  }
-
   /// Build profile avatar with proper error handling for network images
   Widget _buildProfileAvatar(String? profilePicture, String name) {
     return Container(
@@ -206,26 +188,24 @@ class ProfileScreen extends StatelessWidget {
       child: ClipOval(
         child:
             (profilePicture != null && profilePicture.isNotEmpty)
-                ? (profilePicture.startsWith('http')
-                    ? CachedNetworkImage(
-                      imageUrl: profilePicture,
-                      fit: BoxFit.cover,
-                      placeholder:
-                          (context, url) => Container(
-                            color: Colors.white,
-                            child: Center(
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.blue.shade600,
-                                ),
-                              ),
+                ? CachedNetworkImage(
+                  imageUrl: ImageUtils.pathToUrl(profilePicture),
+                  fit: BoxFit.cover,
+                  placeholder:
+                      (context, url) => Container(
+                        color: Colors.white,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.blue.shade600,
                             ),
                           ),
-                      errorWidget:
-                          (context, url, error) => _buildInitialsAvatar(name),
-                    )
-                    : _buildLocalImageAvatar(profilePicture, name))
+                        ),
+                      ),
+                  errorWidget:
+                      (context, url, error) => _buildInitialsAvatar(name),
+                )
                 : _buildInitialsAvatar(name),
       ),
     );
@@ -246,21 +226,6 @@ class ProfileScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  /// Build avatar from local image with error handling
-  Widget _buildLocalImageAvatar(String imagePath, String name) {
-    final imageProvider = _localImageProvider(imagePath);
-    if (imageProvider != null) {
-      return Image(
-        image: imageProvider,
-        fit: BoxFit.cover,
-        errorBuilder:
-            (context, error, stackTrace) => _buildInitialsAvatar(name),
-      );
-    } else {
-      return _buildInitialsAvatar(name);
-    }
   }
 
   Widget _buildSectionTitle(String title) {
@@ -527,7 +492,10 @@ class ProfileScreen extends StatelessWidget {
       );
 
       if (pickedFile != null) {
-        authController.updateProfilePhoto(pickedFile.path);
+        // Convert the image to data URI format for the API
+        final file = File(pickedFile.path);
+        final dataUri = await ImageUtils.fileToDataUri(file);
+        authController.updateProfilePhoto(dataUri);
       }
     } catch (e) {
       Get.snackbar(
