@@ -18,7 +18,7 @@ class ApiClient {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-          final token = _storage.read<String>('token');
+          final token = _storage.read<String>('auth_token');
           if (token != null) {
             options.headers['Authorization'] = 'Bearer $token';
           }
@@ -46,10 +46,10 @@ class ApiClient {
   Dio get dio => _dio;
 
   void setToken(String token) {
-    _storage.write('token', token);
+    _storage.write('auth_token', token);
   }
 
   void clearToken() {
-    _storage.remove('token');
+    _storage.remove('auth_token');
   }
 }

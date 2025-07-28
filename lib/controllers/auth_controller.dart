@@ -30,8 +30,36 @@ class AuthController extends GetxController {
   void _restoreSession() async {
     final token = _storage.read<String>(_tokenKey);
     if (token == null) return; // not logged in
-    // Token is already saved in storage and ApiClient adds it automatically in requests.
-    // We still need the Professional profile. For simplicity, require user to login again if app restarts.
+
+    // Try to use existing token
+    try {
+      _authService.setToken(token);
+      // Try to fetch some user data to validate the token
+      await _restoreUserProfile(token);
+    } catch (e) {
+      // Token is invalid/expired, clear it
+      await _storage.remove(_tokenKey);
+      await _storage.remove('user_coren'); // Also clear stored COREN
+      _authService.clearAllTokens();
+      isLoggedIn.value = false;
+    }
+  }
+
+  /// Restores user profile from stored token
+  Future<void> _restoreUserProfile(String token) async {
+    // We need to get the identifier somehow - let's try a different approach
+    // For now, we'll store the COREN alongside the token or get it from token
+    final storedCoren = _storage.read<String>('user_coren');
+    if (storedCoren != null) {
+      final professional = await _authService.fetchProfessionalProfile(
+        storedCoren,
+        token,
+      );
+      currentUser.value = professional;
+      isLoggedIn.value = true;
+    } else {
+      throw Exception('No stored user identifier');
+    }
   }
 
   Future<void> login(String coren, String password) async {
@@ -42,6 +70,10 @@ class AuthController extends GetxController {
       isLoggedIn.value = true;
       if (professional.token != null) {
         await _storage.write(_tokenKey, professional.token);
+        await _storage.write(
+          'user_coren',
+          coren,
+        ); // Store COREN for session restoration
       }
       Get.offAll(() => const MainLayout());
       Get.snackbar(
@@ -64,6 +96,7 @@ class AuthController extends GetxController {
   Future<void> logout() async {
     await _authService.logout();
     await _storage.remove(_tokenKey);
+    await _storage.remove('user_coren'); // Also clear stored COREN
     currentUser.value = null;
     isLoggedIn.value = false;
     Get.offAll(() => const LoginScreen());
