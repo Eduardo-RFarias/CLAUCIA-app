@@ -6,7 +6,8 @@
             "request": "launch",
             "type": "dart",
             "args": [
-                "--dart-define=API_BASE_URL=http://10.0.2.2:3000"
+                "--dart-define=API_BASE_URL=https://claucia.com.br/api",
+                "--dart-define=CDN_BASE_URL=https://claucia.com.br"
             ]
         }
     ]

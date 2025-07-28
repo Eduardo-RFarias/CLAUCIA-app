@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 class ImageUtils {
-  static const String _baseUrl = String.fromEnvironment(
-    'API_BASE_URL',
+  static const String _cdnBaseUrl = String.fromEnvironment(
+    'CDN_BASE_URL',
     defaultValue: 'http://10.0.2.2:3000',
   );
 
@@ -28,7 +28,7 @@ class ImageUtils {
     return 'data:$mimeType;base64,$base64Data';
   }
 
-  /// Converts a relative path from the API to a full URL
+  /// Converts a relative path to a full CDN URL for static assets
   static String pathToUrl(String? path) {
     if (path == null || path.isEmpty) {
       return '';
@@ -41,7 +41,8 @@ class ImageUtils {
 
     // Ensure path starts with '/'
     final normalizedPath = path.startsWith('/') ? path : '/$path';
-    return '$_baseUrl$normalizedPath';
+    // Use CDN base URL for static assets
+    return '$_cdnBaseUrl$normalizedPath';
   }
 
   /// Returns an appropriate ImageProvider based on the image source
@@ -76,7 +77,7 @@ class ImageUtils {
       // Fall through to convert relative path to URL
     }
 
-    // Assume it's a relative path from the API
+    // Assume it's a relative path from the CDN
     return NetworkImage(pathToUrl(src));
   }
 }
