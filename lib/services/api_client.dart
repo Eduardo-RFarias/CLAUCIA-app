@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
 import 'package:get_storage/get_storage.dart';
 
 class ApiClient {
@@ -6,7 +8,10 @@ class ApiClient {
     _dio = Dio(
       BaseOptions(
         baseUrl: _baseUrl,
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept-Encoding': 'gzip, deflate, br',
+        },
       ),
     );
 
@@ -21,6 +26,13 @@ class ApiClient {
         },
       ),
     );
+
+    // Configure HTTP client for automatic compression handling
+    (_dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () {
+      final client = HttpClient();
+      client.autoUncompress = true;
+      return client;
+    };
   }
 
   static const String _baseUrl = String.fromEnvironment(
