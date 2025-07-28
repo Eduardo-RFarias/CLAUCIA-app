@@ -47,6 +47,44 @@ flutter pub get
 flutter gen-l10n
 ```
 
+## Configuração da API
+
+O aplicativo suporta configuração flexível da URL da API através de variáveis de ambiente:
+
+### Desenvolvimento no VS Code/Cursor
+
+O projeto inclui configuração para desenvolvimento no VS Code em `.vscode/launch.json`:
+
+```json
+{
+  "name": "Flutter Development",
+  "request": "launch",
+  "type": "dart",
+  "args": [
+    "--dart-define=API_BASE_URL=https://claucia.com.br/api",
+    "--dart-define=CDN_BASE_URL=https://claucia.com.br"
+  ]
+}
+```
+
+### Configuração Manual
+
+Para executar com URL personalizada:
+
+```bash
+flutter run --dart-define=API_BASE_URL=https://sua-api.com --dart-define=CDN_BASE_URL=https://seu-cdn.com
+```
+
+### Build de Produção
+
+Para compilar APK com configuração específica:
+
+```bash
+flutter build apk --dart-define=API_BASE_URL=https://claucia.com.br/api --dart-define=CDN_BASE_URL=https://claucia.com.br
+```
+
+**Nota**: Se não configurado, o app usará `http://10.0.2.2:3000` como padrão (ideal para desenvolvimento local no emulador Android).
+
 ## Executando o Projeto
 
 ### Para desenvolvimento
